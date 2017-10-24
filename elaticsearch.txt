@@ -1,12 +1,3 @@
-
-
-http://www.cnblogs.com/dennisit/p/4133131.html
-
-
-
-
-
-
 	
 ElasticSearch学习资料
 	
