@@ -1,0 +1,982 @@
+1、查看数据库中有哪些用户？ 
+select username from all_users; 
+2、查看数据库中有哪些DBA用户？ 
+select username from dba_users; 
+3、查看当前用户拥有哪些表？ 
+select table_name from user_tables; 
+4、Oracle新建表空间，建立用户的步骤？ 
+A，创建表空间 
+create tablespace blueskydb datafile 'D:\oracle\product\10.2.0\oradata\bluesky\blueskydb.dbf' size 500m; 
+B、新建用户 
+create user bluesky identified by bluesky; 
+C、用户授权 
+grant resource, connect, RECOVERY_CATALOG_OWNER to bluesky; 
+grant create table to bluesky; 
+alter user bluesky quota unlimited on blueskydb; 
+alter user bluesky default tablespace blueskydb; 
+D、这样就可以了，使用SQLPLUS或其他的工具连接试试吧！
+查看当前实例名：
+select instance_name from v$instance;
+查看表空间名字：
+select distinct TABLESPACE_NAME from tabs;
+查看几个表空间：
+select count(distinct TABLESPACE_NAME) from tabs;
+
+　　1、用户 
+
+　　查看当前用户的缺省表空间 
+　　SQL>select username,default_tablespace from user_users; 
+
+　　查看当前用户的角色 
+　　SQL>select * from user_role_privs; 
+
+　　查看当前用户的系统权限和表级权限 
+　　SQL>select * from user_sys_privs; 
+　　SQL>select * from user_tab_privs; 
+
+　　显示当前会话所具有的权限 
+　　SQL>select * from session_privs; 
+
+　　显示指定用户所具有的系统权限 
+　　SQL>select * from dba_sys_privs where grantee='GAME'; 
+
+　　显示特权用户 
+　　select * from v$pwfile_users; 
+
+　　显示用户信息(所属表空间) 
+　　select default_tablespace,temporary_tablespace 
+　　from dba_users where username='GAME'; 
+
+　　显示用户的PROFILE 
+　　select profile from dba_users where username='GAME'; 
+
+　　 
+　　2、表 
+
+　　查看用户下所有的表 
+　　SQL>select * from user_tables; 
+
+　　查看名称包含log字符的表 
+　　SQL>select object_name,object_id from user_objects 
+　　where instr(object_name,'LOG')>0; 
+
+　　查看某表的创建时间 
+　　SQL>select object_name,created from user_objects where object_name=upper('&table_name'); 
+
+　　查看某表的大小 
+　　SQL>select sum(bytes)/(1024*1024) as "size(M)" from user_segments 
+　　where segment_name=upper('&table_name'); 
+
+　　查看放在Oracle的内存区里的表 
+　　SQL>select table_name,cache from user_tables where instr(cache,'Y')>0; 
+
+　　3、索引 
+
+　　查看索引个数和类别 
+　　SQL>select index_name,index_type,table_name from user_indexes order by table_name; 
+
+　　查看索引被索引的字段 
+　　SQL>select * from user_ind_columns where index_name=upper('&index_name'); 
+
+　　查看索引的大小 
+　　SQL>select sum(bytes)/(1024*1024) as "size(M)" from user_segments 
+　　where segment_name=upper('&index_name'); 
+
+　　4、序列号 
+
+　　查看序列号，last_number是当前值 
+　　SQL>select * from user_sequences; 
+
+　　5、视图 
+
+　　查看视图的名称 
+　　SQL>select view_name from user_views; 
+
+　　查看创建视图的select语句 
+　　SQL>set view_name,text_length from user_views; 
+　　SQL>set long 2000; 说明：可以根据视图的text_length值设定set long 的大小 
+　　SQL>select text from user_views where view_name=upper('&view_name'); 
+
+　　6、同义词 
+
+　　查看同义词的名称 
+　　SQL>select * from user_synonyms; 
+
+　　7、约束条件 
+
+　　查看某表的约束条件 
+　　SQL>select constraint_name, constraint_type,search_condition, r_constraint_name 
+　　from user_constraints where table_name = upper('&table_name'); 
+
+　　SQL>select c.constraint_name,c.constraint_type,cc.column_name 
+　　from user_constraints c,user_cons_columns cc 
+　　where c.owner = upper('&table_owner') and c.table_name = upper('&table_name') 
+　　and c.owner = cc.owner and c.constraint_name = cc.constraint_name 
+　　order by cc.position; 
+
+　　8、存储函数和过程 
+
+　　查看函数和过程的状态 
+　　SQL>select object_name,status from user_objects where object_type='FUNCTION'; 
+　　SQL>select object_name,status from user_objects where object_type='PROCEDURE'; 
+
+　　查看函数和过程的源代码 
+　　SQL>select text from all_source where owner=user and name=upper('&plsql_name');
+profile相关参数的单位以及参数说明。
+Oracle系统为了合理分配和使用系统的资源提出了概要文件的概念。所谓概要文件，就是一份描述如何使用系统的资源(主要是CPU资源)的配置文件。将概要文件赋予某个数据库用户，在用户连接并访问数据库服务器时，系统就按照概要文件给他分配资源。 
+在有的书中将其翻译为配置文件，其作用包括。
+1、管理数据库系统资源。
+利用Profile来分配资源限额，必须把初始化参数resource_limit设置为true
+ALTER SYSTEM SET resource_limit=TRUE SCOPE=BOTH;
+2、管理数据库口令及验证方式。
+默认给用户分配的是DEFAULT概要文件，将该文件赋予了每个创建的用户。但该文件对资源没有任何限制，因此管理员常常需要根据自己数
+据库系统的环境自行建立概要文件，下面介绍如何创建及管理概要文件。
+示例:
+CREATE PROFILE pro_test
+LIMIT CPU_PER_SESSION 1000 
+--cpu每秒会话数
+任意一个会话所消耗的CPU时间量(时间量为1/100秒)
+CPU_PER_CALL 1000 
+--cpu每秒调用数
+任意一个会话中的任意一个单独数据库调用所消耗的CPU时间量(时间量为1/100秒)
+CONNECT_TIME 30 
+--允许连接时间
+任意一个会话连接时间限定在指定的分钟数内
+IDLE_TIME DEFAULT 
+--允许空闲时间
+SESSIONS_PER_USER 10 
+--用户最大并行会话数(指定用户的会话数量)
+LOGICAL_READS_PER_SESSION 1000 --读取数/会话(单位:块)
+LOGICAL_READS_PER_CALL 1000 --读取数/调用(单位:块)
+PRIVATE_SGA 16K --专用sga
+COMPOSITE_LIMIT 1000000 --组合限制(单位:单元)
+FAILED_LOGIN_ATTEMPTS 10 --登录几次后
+PASSWORD_LOCK_TIME 10 --锁定时间(单位:天)
+PASSWORD_GRACE_TIME 120 --多少天后锁定
+PASSWORD_LIFE_TIME 60 --口令有效期(单位:天)
+PASSWORD_REUSE_MAX UNLIMITED --保留口令历史记录:保留次数(单位:次)
+PASSWORD_REUSE_TIME 120 --保留口令历史记录:保留时间(单位:天)
+PASSWORD_VERIFY_FUNCTION DEFAULT --启用口令复杂性函数(null或者default)
+
+更改参数实例：
+alter profile pro_test LIMIT CPU_PER_SESSION 5000
+删除概要文件：
+drop profile pro_test
+为一个具体用户分配 概要文件
+alter user test profile pro_test;
+将用户的概要文件改为默认
+alter user test profile default;
+查看概要文件的信息
+select * from SYS.DBA_PROFILES;
+select * from SYS.USER_RESOURCE_LIMITS;
+修改用户密码
+
+sqlplus "/@服务名 as sysdba"
+然后在sqlplus中
+alter user sys identified by 新密码;
+alter user system identified by 新密码;
+
+
+一、ORACLE的启动和关闭
+1、在单机环境下
+要想启动或关闭ORACLE系统必须首先切换到ORACLE用户，如下
+su - oracle
+a、启动ORACLE系统
+oracle>svrmgrl
+SVRMGR>connect internal
+SVRMGR>startup
+SVRMGR>quit
+b、关闭ORACLE系统
+oracle>svrmgrl
+SVRMGR>connect internal
+SVRMGR>shutdown
+SVRMGR>quit
+启动oracle9i数据库命令：
+$ sqlplus /nolog
+SQL*Plus: Release 9.2.0.1.0 - Production on Fri Oct 31 13:53:53 2003
+Copyright (c) 1982, 2002, Oracle Corporation.   All rights reserved.
+SQL> connect / as sysdba  
+Connected to an idle instance.
+SQL> startup^C
+SQL> startup
+ORACLE instance started.
+2、在双机环境下
+要想启动或关闭ORACLE系统必须首先切换到root用户，如下
+su － root
+a、启动ORACLE系统
+hareg －y oracle
+b、关闭ORACLE系统
+hareg －n oracle
+Oracle数据库有哪几种启动方式
+说明：
+有以下几种启动方式：
+1、startup nomount
+非安装启动，这种方式启动下可执行：重建控制文件、重建数据库
+读取init.ora文件，启动instance，即启动SGA和后台进程，这种启动只需要init.ora文件。
+2、startup mount dbname
+安装启动，这种方式启动下可执行：
+数据库日志归档、
+数据库介质恢复、
+使数据文件联机或脱机，
+重新定位数据文件、重做日志文件。
+执行“nomount”，然后打开控制文件，确认数据文件和联机日志文件的位置，
+但此时不对数据文件和日志文件进行校验检查。
+3、startup open dbname
+先执行“nomount”，然后执行“mount”，再打开包括Redo log文件在内的所有数据库文件，
+这种方式下可访问数据库中的数据。
+4、startup，等于以下三个命令
+startup nomount
+alter database mount
+alter database open
+5、startup restrict
+约束方式启动
+这种方式能够启动数据库，但只允许具有一定特权的用户访问
+非特权用户访问时，会出现以下提示：
+ERROR：
+ORA-01035: ORACLE 只允许具有 RESTRICTED SESSION 权限的用户使用
+6、startup force
+强制启动方式
+当不能关闭数据库时，可以用startup force来完成数据库的关闭
+先关闭数据库，再执行正常启动数据库命令
+7、startup pfile=参数文件名
+带初始化参数文件的启动方式
+先读取参数文件，再按参数文件中的设置启动数据库
+例：startup pfile=E:Oracleadminoradbpfileinit.ora
+8、startup EXCLUSIVE
+二、用户如何有效地利用数据字典
+   　ORACLE的数据字典是数据库的重要组成部分之一，它随着数据库的产生而产生, 随着数据库的变化而变化,
+体现为sys用户下的一些表和视图。数据字典名称是大写的英文字符。
+数据字典里存有用户信息、用户的权限信息、所有数据对象信息、表的约束条件、统计分析数据库的视图等。
+我们不能手工修改数据字典里的信息。
+　　很多时候，一般的ORACLE用户不知道如何有效地利用它。
+　　dictionary　　　全部数据字典表的名称和解释，它有一个同义词dict
+dict_column　　 全部数据字典表里字段名称和解释
+如果我们想查询跟索引有关的数据字典时，可以用下面这条SQL语句:
+SQL>select * from dictionary where instr(comments,'index')>0;
+如果我们想知道user_indexes表各字段名称的详细含义，可以用下面这条SQL语句:
+SQL>select column_name,comments from dict_columns where table_name='USER_INDEXES';
+依此类推，就可以轻松知道数据字典的详细名称和解释，不用查看ORACLE的其它文档资料了。
+下面按类别列出一些ORACLE用户常用数据字典的查询使用方法。
+
+三、查看数据库的SQL
+1、查看表空间的名称及大小
+select t.tablespace_name, round(sum(bytes/(1024*1024)),0) ts_size
+from dba_tablespaces t, dba_data_files d
+where t.tablespace_name = d.tablespace_name
+group by t.tablespace_name;
+2、查看表空间物理文件的名称及大小
+select tablespace_name, file_id, file_name,
+round(bytes/(1024*1024),0) total_space
+from dba_data_files
+order by tablespace_name;
+3、查看回滚段名称及大小
+select segment_name, tablespace_name, r.status,
+(initial_extent/1024) InitialExtent,(next_extent/1024) NextExtent,
+max_extents, v.curext CurExtent
+From dba_rollback_segs r, v$rollstat v
+Where r.segment_id = v.usn(+)
+order by segment_name ;
+4、查看控制文件
+select name from v$controlfile;
+5、查看日志文件
+select member from v$logfile;
+6、查看表空间的使用情况
+select sum(bytes)/(1024*1024) as free_space,tablespace_name
+from dba_free_space
+group by tablespace_name;
+SELECT A.TABLESPACE_NAME,A.BYTES TOTAL,B.BYTES USED, C.BYTES FREE,
+(B.BYTES*100)/A.BYTES "% USED",(C.BYTES*100)/A.BYTES "% FREE"
+FROM SYS.SM$TS_AVAIL A,SYS.SM$TS_USED B,SYS.SM$TS_FREE C
+WHERE A.TABLESPACE_NAME=B.TABLESPACE_NAME AND A.TABLESPACE_NAME=C.TABLESPACE_NAME;
+7、查看数据库库对象
+select owner, object_type, status, count(*) count# from all_objects group by owner, object_type, status;
+8、查看数据库的版本
+Select version FROM Product_component_version
+Where SUBSTR(PRODUCT,1,6)='Oracle';
+9、查看数据库的创建日期和归档方式
+Select Created, Log_Mode, Log_Mode From V$Database;
+四、ORACLE用户连接的管理
+用系统管理员，查看当前数据库有几个用户连接：
+SQL> select username,sid,serial# from v$session;
+如果要停某个连接用
+SQL> alter system kill session 'sid,serial#';
+如果这命令不行,找它UNIX的进程数
+SQL> select pro.spid from v$session ses,v$process pro where ses.sid=21 and ses.paddr=pro.addr;
+说明：21是某个连接的sid数
+然后用 kill 命令杀此进程号。
+五、SQL*PLUS使用
+a、近入SQL*Plus
+$sqlplus 用户名/密码
+退出SQL*Plus
+SQL>exit
+b、在sqlplus下得到帮助信息
+列出全部SQL命令和SQL*Plus命令
+SQL>help
+列出某个特定的命令的信息
+SQL>help 命令名
+c、显示表结构命令DESCRIBE
+SQL>DESC 表名
+d、SQL*Plus中的编辑命令
+显示SQL缓冲区命令
+SQL>L
+修改SQL命令
+首先要将待改正行变为当前行
+SQL>n
+用CHANGE命令修改内容
+SQL>c/旧/新
+重新确认是否已正确
+SQL>L
+使用INPUT命令可以在SQL缓冲区中增加一行或多行
+SQL>i
+SQL>输入内容
+e、调用外部系统编辑器
+SQL>edit 文件名
+可以使用DEFINE命令设置系统变量EDITOR来改变文本编辑器的类型，在login.sql文件中定义如下一行
+DEFINE_EDITOR=vi
+f、运行命令文件
+SQL>START test
+SQL>@test
+六、ORACLE逻辑备份的SH文件
+完全备份的SH文件：exp_comp.sh
+rq=` date +"%m%d" `
+su - oracle -c "exp system/manager full=y inctype=complete file=/oracle/export/db_comp$rq.dmp"
+累计备份的SH文件：exp_cumu.sh
+rq=` date +"%m%d" `
+su - oracle -c "exp system/manager full=y inctype=cumulative file=/oracle/export/db_cumu$rq.dmp"
+增量备份的SH文件: exp_incr.sh
+rq=` date +"%m%d" `
+su - oracle -c "exp system/manager full=y inctype=incremental file=/oracle/export/db_incr$rq.dmp"
+root用户crontab文件
+/var/spool/cron/crontabs/root增加以下内容
+0 2 1 * * /oracle/exp_comp.sh
+30 2 * * 0-5 /oracle/exp_incr.sh
+45 2 * * 6 /oracle/exp_cumu.sh
+当然这个时间表可以根据不同的需求来改变的，这只是一个例子。
+四.ORACLE里常用的数据对象 (SCHEMA)
+1.索引 (INDEX)
+CREATE INDEX 索引名ON 表名 ( 字段1, [字段2, ……] );
+ALTER INDEX 索引名 REBUILD;
+一个表的索引最好不要超过三个 (特殊的大表除外), 最好用单字段索引, 结合SQL语句的分析执行情况,
+也可以建立多字段的组合索引和基于函数的索引
+ORACLE8.1.7字符串可以索引的最大长度为1578 单字节
+ORACLE8.0.6字符串可以索引的最大长度为758 单字节
+2.视图 (VIEW)
+CREATE VIEW 视图名AS SELECT …. FROM …..;
+ALTER VIEW视图名 COMPILE;
+视图仅是一个SQL查询语句, 它可以把表之间复杂的关系简洁化.
+3.同义词 (SYNONMY)
+CREATE SYNONYM同义词名FOR 表名;
+CREATE SYNONYM同义词名FOR 表名@数据库链接名;
+4.数据库链接 (DATABASE LINK)
+CREATE DATABASE LINK数据库链接名CONNECT TO 用户名 IDENTIFIED BY 密码 USING ‘数据库连接字符串’;
+数据库连接字符串可以用NET8 EASY CONFIG或者直接修改TNSNAMES.ORA里定义.
+数据库参数global_name=true时要求数据库链接名称跟远端数据库名称一样
+数据库全局名称可以用以下命令查出
+SELECT * FROM GLOBAL_NAME;
+查询远端数据库里的表
+SELECT …… FROM 表名@数据库链接名;
+五.权限管理 (DCL) 语句
+1.GRANT        赋于权限
+常用的系统权限集合有以下三个:
+CONNECT(基本的连接), RESOURCE(程序开发), DBA(数据库管理)
+常用的数据对象权限有以下五个:
+ALL       ON 数据对象名,       SELECT ON 数据对象名,       UPDATE ON 数据对象名,
+DELETE       ON 数据对象名,   INSERT ON 数据对象名, ALTER   ON 数据对象名
+GRANT CONNECT, RESOURCE TO 用户名;
+GRANT SELECT ON 表名 TO 用户名;
+GRANT SELECT, INSERT, DELETE ON表名 TO 用户名1, 用户名2;
+2.REVOKE 回收权限
+REVOKE CONNECT, RESOURCE FROM 用户名;
+REVOKE SELECT ON 表名 FROM 用户名;
+REVOKE SELECT, INSERT, DELETE ON表名 FROM 用户名1, 用户名2;
+查询数据库中第63号错误：
+select orgaddr,destaddr from sm_histable0116 where error_code='63';
+查询数据库中开户用户最大提交和最大下发数： select MSISDN,TCOS,OCOS from ms_usertable；
+查询数据库中各种错误代码的总和：
+select error_code,count(*) from sm_histable0513 group by error_code order
+by error_code;
+查询报表数据库中话单统计种类查询。
+select sum(Successcount) from tbl_MiddleMt0411 where ServiceType2=111
+select sum(successcount),servicetype from tbl_middlemt0411 group by servicetype
+原文地址：
+http://www.cnoug.org/viewthread.php?tid=60293
+//创建一个控制文件命令到跟踪文件 
+alter database backup controlfile to trace; 
+//增加一个新的日志文件组的语句 
+connect internal as sysdba 
+alter database 
+add logfile group 4 
+(’/db01/oracle/CC1/log_1c.dbf’, 
+’/db02/oracle/CC1/log_2c.dbf’) size 5M; 
+alter database 
+add logfile member ’/db03/oracle/CC1/log_3c.dbf’ 
+to group 4; 
+//在Server Manager上MOUNT并打开一个数据库: 
+connect internal as sysdba 
+startup mount ORA1 exclusive; 
+alter database open; 
+//生成数据字典 
+@catalog 
+@catproc 
+//在init.ora 中备份数据库的位置 
+log_archive_dest_1 = ’/db00/arch’ 
+log_archive_dest_state_1 = enable 
+log_archive_dest_2 = "service=stby.world mandatory reopen=60" 
+log_archive_dest_state_2 = enable 
+//对用户的表空间的指定和管理相关的语句 
+create user USERNAME identified by PASSWORD 
+default tablespace TABLESPACE_NAME; 
+alter user USERNAME default tablespace TABLESPACE_NAME; 
+alter user SYSTEM quota 0 on SYSTEM; 
+alter user SYSTEM quota 50M on TOOLS; 
+create user USERNAME identified by PASSWORD 
+default tablespace DATA 
+temporary tablespace TEMP; 
+alter user USERNAME temporary tablespace TEMP; 
+//重新指定一个数据文件的大小 : 
+alter database 
+datafile ’/db05/oracle/CC1/data01.dbf’ resize 200M; 
+//创建一个自动扩展的数据文件: 
+create tablespace DATA 
+datafile ’/db05/oracle/CC1/data01.dbf’ size 200M 
+autoextend ON 
+next 10M 
+maxsize 250M; 
+//在表空间上增加一个自动扩展的数据文件: 
+alter tablespace DATA 
+add datafile ’/db05/oracle/CC1/data02.dbf’ 
+size 50M 
+autoextend ON 
+maxsize 300M; 
+//修改参数: 
+alter database 
+datafile ’/db05/oracle/CC1/data01.dbf’ 
+autoextend ON 
+maxsize 300M; 
+//在数据文件移动期间重新命名: 
+alter database rename file 
+’/db01/oracle/CC1/data01.dbf’ to 
+’/db02/oracle/CC1/data01.dbf’; 
+alter tablespace DATA rename datafile 
+’/db01/oracle/CC1/data01.dbf’ to 
+’/db02/oracle/CC1/data01.dbf’; 
+alter database rename file  
+’/db05/oracle/CC1/redo01CC1.dbf’ to 
+’/db02/oracle/CC1/redo01CC1.dbf’; 
+alter database datafile ’/db05/oracle/CC1/data01.dbf’  
+resize 80M; 
+//创建和使用角色: 
+create role APPLICATION_USER; 
+grant CREATE SESSION to APPLICATION_USER; 
+grant APPLICATION_USER to username; 
+//回滚段的管理 
+create rollback segment SEGMENT_NAME 
+tablespace RBS; 
+alter rollback segment SEGMENT_NAME offline; 
+drop rollback segment SEGMENT_NAME; 
+alter rollback segment SEGMENT_NAME online; 
+//回滚段上指定事务 
+commit; 
+set transaction use rollback segment ROLL_BATCH; 
+insert into TABLE_NAME 
+select * from DATA_LOAD_TABLE; 
+commit; 
+//查询回滚段的 大小和优化参数 
+select * from DBA_SEGMENTS 
+where Segment_Type = ’ROLLBACK’; 
+select N.Name,       /* rollback segment name */ 
+   S.OptSize    /* rollback segment OPTIMAL size */ 
+from V$ROLLNAME N, V$ROLLSTAT S 
+where N.USN=S.USN; 
+//回收回滚段 
+alter rollback segment R1 shrink to 15M; alter rollback segment R1 shrink; 
+//例子 
+set transaction use rollback segment SEGMENT_NAME 
+alter tablespace RBS 
+default storage 
+(initial 125K next 125K minextents 18 maxextents 249) 
+create rollback segment R4 tablespace RBS 
+storage (optimal 2250K); 
+alter rollback segment R4 online; 
+select Sessions_Highwater from V$LICENSE; 
+grant select on EMPLOYEE to PUBLIC; 
+//用户和角色  
+create role ACCOUNT_CREATOR; 
+grant CREATE SESSION, CREATE USER, ALTER USER  
+to ACCOUNT_CREATOR; 
+alter user THUMPER default role NONE; 
+alter user THUMPER default role CONNECT; 
+alter user THUMPER default role all except ACCOUNT_CREATOR; 
+alter profile DEFAULT 
+limit idle_time 60; 
+create profile LIMITED_PROFILE limit 
+FAILED_LOGIN_ATTEMPTS 5; 
+create user JANE identified by EYRE 
+profile LIMITED_PROFILE; 
+grant CREATE SESSION to JANE; 
+alter user JANE account unlock; 
+alter user JANE account lock; 
+alter profile LIMITED_PROFILE limit 
+PASSWORD_LIFE_TIME 30; 
+alter user jane password expire; 
+//创建操作系统用户 
+REM   Creating OPS$ accounts 
+create user OPS$FARMER 
+identified by SOME_PASSWORD 
+default tablespace USERS 
+temporary tablespace TEMP; 
+REM   Using identified externally 
+create user OPS$FARMER 
+identified externally 
+default tablespace USERS 
+temporary tablespace TEMP; 
+//执行ORAPWD 
+ORAPWD FILE=filename PASSWORD=password ENTRIES=max_users 
+create role APPLICATION_USER; 
+grant CREATE SESSION to APPLICATION_USER; 
+create role DATA_ENTRY_CLERK; 
+grant select, insert on THUMPER.EMPLOYEE to DATA_ENTRY_CLERK; 
+grant select, insert on THUMPER.TIME_CARDS to DATA_ENTRY_CLERK; 
+grant select, insert on THUMPER.DEPARTMENT to DATA_ENTRY_CLERK; 
+grant APPLICATION_USER to DATA_ENTRY_CLERK; 
+grant DATA_ENTRY_CLERK to MCGREGOR; 
+grant DATA_ENTRY_CLERK to BPOTTER with admin option; 
+//设置角色 
+set role DATA_ENTRY_CLERK; 
+set role NONE; 
+//回收权利: 
+revoke delete on EMPLOYEE from PETER; 
+revoke all on EMPLOYEE from MCGREGOR; 
+//回收角色: 
+revoke ACCOUNT_CREATOR from HELPDESK; 
+drop user USERNAME cascade; 
+grant SELECT on EMPLOYEE to MCGREGOR with grant option; 
+grant SELECT on THUMPER.EMPLOYEE to BPOTTER with grant option; 
+revoke SELECT on EMPLOYEE from MCGREGOR; 
+create user MCGREGOR identified by VALUES ’1A2DD3CCEE354DFA’; 
+alter user OPS$FARMER identified by VALUES ’no way’; 
+
+//创建一个控制文件命令到跟踪文件 
+alter database backup controlfile to trace; 
+//增加一个新的日志文件组的语句 
+connect internal as sysdba 
+alter database 
+add logfile group 4 
+(’/db01/oracle/CC1/log_1c.dbf’, 
+’/db02/oracle/CC1/log_2c.dbf’) size 5M; 
+alter database 
+add logfile member ’/db03/oracle/CC1/log_3c.dbf’ 
+to group 4; 
+//在Server Manager上MOUNT并打开一个数据库: 
+connect internal as sysdba 
+startup mount ORA1 exclusive; 
+alter database open; 
+//生成数据字典 
+@catalog 
+@catproc 
+//在init.ora 中备份数据库的位置 
+log_archive_dest_1 = ’/db00/arch’ 
+log_archive_dest_state_1 = enable 
+log_archive_dest_2 = "service=stby.world mandatory reopen=60" 
+log_archive_dest_state_2 = enable 
+//对用户的表空间的指定和管理相关的语句 
+create user USERNAME identified by PASSWORD 
+default tablespace TABLESPACE_NAME; 
+alter user USERNAME default tablespace TABLESPACE_NAME; 
+alter user SYSTEM quota 0 on SYSTEM; 
+alter user SYSTEM quota 50M on TOOLS; 
+create user USERNAME identified by PASSWORD 
+default tablespace DATA 
+temporary tablespace TEMP; 
+alter user USERNAME temporary tablespace TEMP; 
+//重新指定一个数据文件的大小 : 
+alter database 
+datafile ’/db05/oracle/CC1/data01.dbf’ resize 200M; 
+//创建一个自动扩展的数据文件: 
+create tablespace DATA 
+datafile ’/db05/oracle/CC1/data01.dbf’ size 200M 
+autoextend ON 
+next 10M 
+maxsize 250M; 
+//在表空间上增加一个自动扩展的数据文件: 
+alter tablespace DATA 
+add datafile ’/db05/oracle/CC1/data02.dbf’ 
+size 50M 
+autoextend ON 
+maxsize 300M; 
+//修改参数: 
+alter database 
+datafile ’/db05/oracle/CC1/data01.dbf’ 
+autoextend ON 
+maxsize 300M; 
+//在数据文件移动期间重新命名: 
+alter database rename file 
+’/db01/oracle/CC1/data01.dbf’ to 
+’/db02/oracle/CC1/data01.dbf’; 
+alter tablespace DATA rename datafile 
+’/db01/oracle/CC1/data01.dbf’ to 
+’/db02/oracle/CC1/data01.dbf’; 
+alter database rename file  
+’/db05/oracle/CC1/redo01CC1.dbf’ to 
+’/db02/oracle/CC1/redo01CC1.dbf’; 
+alter database datafile ’/db05/oracle/CC1/data01.dbf’  
+resize 80M; 
+//创建和使用角色: 
+create role APPLICATION_USER; 
+grant CREATE SESSION to APPLICATION_USER; 
+grant APPLICATION_USER to username; 
+//回滚段的管理 
+create rollback segment SEGMENT_NAME 
+tablespace RBS; 
+alter rollback segment SEGMENT_NAME offline; 
+drop rollback segment SEGMENT_NAME; 
+alter rollback segment SEGMENT_NAME online; 
+//回滚段上指定事务 
+commit; 
+set transaction use rollback segment ROLL_BATCH; 
+insert into TABLE_NAME 
+select * from DATA_LOAD_TABLE; 
+commit; 
+//查询回滚段的 大小和优化参数 
+select * from DBA_SEGMENTS 
+where Segment_Type = ’ROLLBACK’; 
+select N.Name,       /* rollback segment name */ 
+   S.OptSize    /* rollback segment OPTIMAL size */ 
+from V$ROLLNAME N, V$ROLLSTAT S 
+where N.USN=S.USN; 
+//回收回滚段 
+alter rollback segment R1 shrink to 15M; alter rollback segment R1 shrink; 
+//例子 
+set transaction use rollback segment SEGMENT_NAME 
+alter tablespace RBS 
+default storage 
+(initial 125K next 125K minextents 18 maxextents 249) 
+create rollback segment R4 tablespace RBS 
+storage (optimal 2250K); 
+alter rollback segment R4 online; 
+select Sessions_Highwater from V$LICENSE; 
+grant select on EMPLOYEE to PUBLIC; 
+//用户和角色  
+create role ACCOUNT_CREATOR; 
+grant CREATE SESSION, CREATE USER, ALTER USER  
+to ACCOUNT_CREATOR; 
+alter user THUMPER default role NONE; 
+alter user THUMPER default role CONNECT; 
+alter user THUMPER default role all except ACCOUNT_CREATOR; 
+alter profile DEFAULT 
+limit idle_time 60; 
+create profile LIMITED_PROFILE limit 
+FAILED_LOGIN_ATTEMPTS 5; 
+create user JANE identified by EYRE 
+profile LIMITED_PROFILE; 
+grant CREATE SESSION to JANE; 
+alter user JANE account unlock; 
+alter user JANE account lock; 
+alter profile LIMITED_PROFILE limit 
+PASSWORD_LIFE_TIME 30; 
+alter user jane password expire; 
+//创建操作系统用户 
+REM   Creating OPS$ accounts 
+create user OPS$FARMER 
+identified by SOME_PASSWORD 
+default tablespace USERS 
+temporary tablespace TEMP; 
+REM   Using identified externally 
+create user OPS$FARMER 
+identified externally 
+default tablespace USERS 
+temporary tablespace TEMP; 
+//执行ORAPWD 
+ORAPWD FILE=filename PASSWORD=password ENTRIES=max_users 
+create role APPLICATION_USER; 
+grant CREATE SESSION to APPLICATION_USER; 
+create role DATA_ENTRY_CLERK; 
+grant select, insert on THUMPER.EMPLOYEE to DATA_ENTRY_CLERK; 
+grant select, insert on THUMPER.TIME_CARDS to DATA_ENTRY_CLERK; 
+grant select, insert on THUMPER.DEPARTMENT to DATA_ENTRY_CLERK; 
+grant APPLICATION_USER to DATA_ENTRY_CLERK; 
+grant DATA_ENTRY_CLERK to MCGREGOR; 
+grant DATA_ENTRY_CLERK to BPOTTER with admin option; 
+//设置角色 
+set role DATA_ENTRY_CLERK; 
+set role NONE; 
+//回收权利: 
+revoke delete on EMPLOYEE from PETER; 
+revoke all on EMPLOYEE from MCGREGOR; 
+//回收角色: 
+revoke ACCOUNT_CREATOR from HELPDESK; 
+drop user USERNAME cascade; 
+grant SELECT on EMPLOYEE to MCGREGOR with grant option; 
+grant SELECT on THUMPER.EMPLOYEE to BPOTTER with grant option; 
+revoke SELECT on EMPLOYEE from MCGREGOR; 
+create user MCGREGOR identified by VALUES ’1A2DD3CCEE354DFA’; 
+alter user OPS$FARMER identified by VALUES ’no way’; 
+//对用户的表空间的指定和管理相关的语句 
+create user USERNAME identified by PASSWORD 
+default tablespace TABLESPACE_NAME; 
+alter user USERNAME default tablespace TABLESPACE_NAME; 
+alter user SYSTEM quota 0 on SYSTEM; 
+alter user SYSTEM quota 50M on TOOLS; 
+create user USERNAME identified by PASSWORD 
+default tablespace DATA 
+temporary tablespace TEMP; 
+alter user USERNAME temporary tablespace TEMP; 
+//重新指定一个数据文件的大小 : 
+alter database 
+datafile ’/db05/oracle/CC1/data01.dbf’ resize 200M; 
+//创建一个自动扩展的数据文件: 
+create tablespace DATA 
+datafile ’/db05/oracle/CC1/data01.dbf’ size 200M 
+autoextend ON 
+next 10M 
+maxsize 250M; 
+//在表空间上增加一个自动扩展的数据文件: 
+alter tablespace DATA 
+add datafile ’/db05/oracle/CC1/data02.dbf’ 
+size 50M 
+autoextend ON 
+maxsize 300M; 
+//修改参数: 
+alter database 
+datafile ’/db05/oracle/CC1/data01.dbf’ 
+autoextend ON 
+maxsize 300M; 
+//在数据文件移动期间重新命名: 
+alter database rename file 
+’/db01/oracle/CC1/data01.dbf’ to 
+’/db02/oracle/CC1/data01.dbf’; 
+alter tablespace DATA rename datafile 
+’/db01/oracle/CC1/data01.dbf’ to 
+’/db02/oracle/CC1/data01.dbf’; 
+alter database rename file  
+’/db05/oracle/CC1/redo01CC1.dbf’ to 
+’/db02/oracle/CC1/redo01CC1.dbf’; 
+alter database datafile ’/db05/oracle/CC1/data01.dbf’  
+resize 80M; //创建和使用角色: 
+create role APPLICATION_USER; 
+grant CREATE SESSION to APPLICATION_USER; 
+grant APPLICATION_USER to username; 
+//回滚段的管理 
+create rollback segment SEGMENT_NAME
+tablespace RBS; 
+alter rollback segment SEGMENT_NAME offline; 
+drop rollback segment SEGMENT_NAME; 
+alter rollback segment SEGMENT_NAME online; 
+//回滚段上指定事务 
+commit; 
+set transaction use rollback segment ROLL_BATCH; 
+insert into TABLE_NAME 
+select * from DATA_LOAD_TABLE; 
+commit; 
+//查询回滚段的 大小和优化参数 
+select * from DBA_SEGMENTS 
+where Segment_Type = ’ROLLBACK’; 
+select N.Name,       /* rollback segment name */ 
+   S.OptSize    /* rollback segment OPTIMAL size */ 
+from V$ROLLNAME N, V$ROLLSTAT S 
+where N.USN=S.USN; 
+//回收回滚段 
+alter rollback segment R1 shrink to 15M; 
+alter rollback segment R1 shrink; 
+//例子 
+set transaction use rollback segment SEGMENT_NAME 
+alter tablespace RBS 
+default storage 
+(initial 125K next 125K minextents 18 maxextents 249) 
+create rollback segment R4 tablespace RBS 
+storage (optimal 2250K); 
+alter rollback segment R4 online; 
+select Sessions_Highwater from V$LICENSE; 
+grant select on EMPLOYEE to PUBLIC; 
+//用户和角色  
+create role ACCOUNT_CREATOR; 
+grant CREATE SESSION, CREATE USER, ALTER USER  
+to ACCOUNT_CREATOR; 
+alter user THUMPER default role NONE; 
+alter user THUMPER default role CONNECT; 
+alter user THUMPER default role all except ACCOUNT_CREATOR; 
+alter profile DEFAULT 
+limit idle_time 60; 
+create profile LIMITED_PROFILE limit 
+FAILED_LOGIN_ATTEMPTS 5; 
+create user JANE identified by EYRE 
+profile LIMITED_PROFILE; 
+grant CREATE SESSION to JANE; 
+alter user JANE account unlock; 
+alter user JANE account lock; 
+alter profile LIMITED_PROFILE limit 
+PASSWORD_LIFE_TIME 30; 
+alter user jane password expire; 
+//创建操作系统用户 REM   Creating OPS$ accounts 
+create user OPS$FARMER 
+identified by SOME_PASSWORD 
+default tablespace USERS 
+temporary tablespace TEMP; 
+REM   Using identified externally
+create user OPS$FARMER 
+identified externally 
+default tablespace USERS 
+temporary tablespace TEMP; 
+//执行ORAPWD 
+ORAPWD FILE=filename PASSWORD=password ENTRIES=max_users 
+create role APPLICATION_USER; 
+grant CREATE SESSION to APPLICATION_USER; 
+create role DATA_ENTRY_CLERK; 
+grant select, insert on THUMPER.EMPLOYEE to DATA_ENTRY_CLERK; 
+grant select, insert on THUMPER.TIME_CARDS to DATA_ENTRY_CLERK; 
+grant select, insert on THUMPER.DEPARTMENT to DATA_ENTRY_CLERK; 
+grant APPLICATION_USER to DATA_ENTRY_CLERK; 
+grant DATA_ENTRY_CLERK to MCGREGOR; 
+grant DATA_ENTRY_CLERK to BPOTTER with admin option; 
+//设置角色 
+set role DATA_ENTRY_CLERK; 
+set role NONE; 
+//回收权利: 
+revoke delete on EMPLOYEE from PETER; 
+revoke all on EMPLOYEE from MCGREGOR; 
+//回收角色: 
+revoke ACCOUNT_CREATOR from HELPDESK; 
+drop user USERNAME cascade; 
+grant SELECT on EMPLOYEE to MCGREGOR with grant option; 
+grant SELECT on THUMPER.EMPLOYEE to BPOTTER with grant option; 
+revoke SELECT on EMPLOYEE from MCGREGOR; 
+create user MCGREGOR identified by VALUES ’1A2DD3CCEE354DFA’; 
+alter user OPS$FARMER identified by VALUES ’no way’; 
+
+//监视器的管理 
+lsnrctl start 
+lsnrctl start my_lsnr 
+lsnrctl status 
+lsnrctl status hq 
+检查监视器的进程 
+ps -ef | grep tnslsnr 
+//在 lsnrctl   内停止监视器 
+set password lsnr_password 
+stop 
+//在lsnrctl 内列出所有的服务 
+set password lsnr_password 
+services 
+//启动或停止一个NT的listener 
+net start OracleTNSListener 
+net stop OracleTNSListener 
+
+$(function(){ $('.circs').click(function(){ $('.vote_opts').slideToggle('slow'); }); //提取所有投票的详情 vote_id = ""; $.post("http://hi3ms.huawei.com/index.php?app=home&mod=Vote&act=getVotesDetail", {ids:vote_id}, function(result) { if(result == '""') { $('#vote_add_vote').show(); //显示“发起投票”按钮 return ; } result = eval("("+result+")"); for(var one in result){ $('#vote_detail_'+one).html(result[one]); updateData(one); $('#vote_LogList').prepend(''); } }); }); //发起投票 function addVote() { $.tbox.popup("http://hi3ms.huawei.com/index.php?app=home&mod=Vote&act=add&type=2",'发起投票',{ok:"doAddVote"}); } function check_add_vote() { var tit = $.trim($("#vote_title").val()); if(tit == ''){ $.tbox.no('投票主题不能为空', '提示'); setTimeout("$.tbox.close()",1500); return false; } var flag = 0; $(".vote_opt").each(function (i) { if($.trim($(this).val())) flag++; }); if(flag flag-1 ) { $.tbox.no('投票选项不得少于可选选项限数', '提示'); setTimeout("$.tbox.close()",1500); return false; } return true; } //添加投票 function doAddVote() { if(check_add_vote() == false) { return false; } var app = "bbs"; var field = "id"; var fieldId = "38499"; var groupId = "1415"; var tit = $('#vote_title').val(); var exp = $('#vote_explain').val(); var typ = $('#vote_type').val(); var d_typ = $(".deadline_type:checked").val(); var year = $('#vote_year').val(); var month = $('#vote_month').val(); var day = $('#vote_day').val(); var anony = $(".is_anonymous:checked").val(); var opt = new Array(); $("#addVoteForm :text").each(function(i, n){ if(i != 0) { opt.push($(this).val()); } }); $.post("http://hi3ms.huawei.com/index.php?app=home&mod=Vote&act=doAddVote", {isAjax:1, app:app, field:field, fieldId:fieldId, groupId:groupId, title:tit, explain:exp, type:typ, deadline_type:d_typ, year:year, month:month, day:day, is_anonymous:anony, opt:opt}, function(result) { if(result >= 1) { $.tbox.yes('保存成功','提示'); setTimeout("$.tbox.close()",1500); var li = $('#vote_clone').clone(true); li.insertAfter('#vote_clone'); li.attr('id','vote_list_'+result).show(); li.find('.style_1').attr('id', 'vote_summary_'+result); li.find('.tips').attr('href', "http://hi3ms.huawei.com/space/4773"); li.find('img').attr('src', "/public/themes/blue/images/user_pic.gif"); li.find('.U').attr('href', "http://hi3ms.huawei.com/space/4773"); li.find('.U').html("王广凤"); li.find('strong').html(tit); if(typ max){ $.tbox.no("{L:(vote_more_vote)}"+max+"选项", '提示'); setTimeout("$.tbox.close()",2500); return false; } } if(!opts) { $.tbox.no('请至少选择一个选项', '提示'); setTimeout("$.tbox.close()",2500); return false; } $.post("http://hi3ms.huawei.com/index.php?app=home&mod=Vote&act=postVote",{vote_id:vid,opts:opts,opts_ids:opts_ids},function(txt){ if(txt){ if( -2 == txt ){ $.tbox.no('已结束', '提示'); setTimeout("$.tbox.close()",2500); }else if( -1 == txt ){ $.tbox.no('您已投票', '提示'); setTimeout("$.tbox.close()",2500); }else{ updateData(vid); updateUsers(vid); $('.vote_'+vid+'_check').remove(); $('#vote_detail_'+vid).find("input[value='投票']").val('您已投票').attr('disabled', true); } } }); } //显示投票详情 function show_vote_detail(vid) { $('#vote_summary_'+vid).hide("fast"); $('#vote_detail_'+vid).show("fast"); updateData(vid); updateUsers(vid); } //隐藏投票详情 function hide_vote_detail(vid) { $('#vote_summary_'+vid).show("fast"); $('#vote_detail_'+vid).hide("fast"); } //更新进度条 function updateData(vid) { $.post("http://hi3ms.huawei.com/index.php?app=home&mod=Vote&act=getOptPercent", {id:vid}, function(res) { if(res == 0) { $.tbox.no('提取投票数据失败','提示'); setTimeout("$.tbox.close()",1500); return; } res = eval("("+res+")"); var num = 0; for(var one in res) { if(one == 'num_of_users') { $('#vote_list_'+vid+'_num').html(res[one]+'人'); }else { temp = res[one].split(';'); $('#vote_'+vid+'_opt_'+one+'_static').html(temp[0] + ' / ' + temp[1] + '%'); $('#vote_'+vid+'_opt_'+one+'_per').animate({width:temp[1] + '%'}, 2000); num += parseInt(temp[0]); } } $('#vote_'+vid+'_num').html('已投票数：' + num); }); } //更新参与投票的用户 function updateUsers(vid, limit_b, limit_e) { $.post("http://hi3ms.huawei.com/index.php?app=home&mod=Vote&act=getVoteUsers", {id:vid, limit_b:limit_b, limit_e:limit_e}, function(users) { if(users == 0) { $.tbox.no('提取投票数据失败','提示'); setTimeout("$.tbox.close()",1500); return ; }else if(users == 'is_anonymous') { $('#circs_vote_'+vid).html('本投票为匿名投票
+'); return ; } users = eval("("+users+")"); var now_uid = "4773"; var flag = 0; //投票的人数 html = ''; for(var i in users) { if(users[i]['id'] == undefined) continue; html += '
+'; if(now_uid == users[i]["uid"]) { html += ''; } html += '
+'; html += '
+'+users[i]['name']+' '+users[i]['cTime']+' 投票给“'+users[i]['opts']+'”
+'; flag ++; } if(limit_b != undefined && limit_e != undefined) { if(flag
+新的有效时间(以现在为基准)：
+一周
+一月 
+自定义 2011 2012 2013 年 123456789101112 月 12345678910111213141516171819202122232425262728293031 日
+ 曹坤
+2 楼 回复于 2010年12月08日 08:27:13
+Oracle查询用户权限
+-- 确定角色的权限
+select * from role_tab_privs ;              包含了授予角色的对象权限
+select * from role_role_privs ;             包含了授予另一角色的角色
+select * from role_sys_privs ;              包含了授予角色的系统权限
+-- 确定用户帐户所授予的权限
+select * from DBA_tab_privs ;   直接授予用户帐户的对象权限
+select * from DBA_role_privs ; 授予用户帐户的角色
+select * from DBA_sys_privs ;   授予用户帐户的系统权限
+查看当前用户权限:
+SQL> select * from session_privs;
+PRIVILEGE
+----------------------------------------
+CREATE SESSION
+CREATE TABLE
+CREATE CLUSTER
+CREATE SYNONYM
+CREATE VIEW
+CREATE SEQUENCE
+CREATE PROCEDURE
+CREATE TRIGGER
+8 rows selected.
+Oracle 本身的数据字典设计我个人觉得很合理, 因为DBA_xxx, ALL_xxx,USER_xxx 让人一看大概就知道这个视图是干什么用的. 本文简要总结了一下与权限,角色相关的视图.
+一. 概述
+   与权限,角色相关的视图大概有下面这些:
+       DBA_SYS_PRIVS: 查询某个用户所拥有的系统权限
+      USER_SYS_PRIVS:   当前用户所拥有的系统权限
+      SESSION_PRIVS:     当前用户所拥有的全部权限
+      ROLE_SYS_PRIVS:     某个角色所拥有的系统权限
+       注意: 要以SYS用户登陆查询这个视图,否则返回空.
+      ROLE_ROLE_PRIVS:    当前角色被赋予的角色
+      SESSION_ROLES:      当前用户被激活的角色
+      USER_ROLE_PRIVS:   当前用户被授予的角色
+
+      另外还有针对表的访问权限的视图:
+       TABLE_PRIVILEGES
+        ALL_TAB_PRIVS  
+       ROLE_TAB_PRIVS:     某个角色被赋予的相关表的权限
+       ...  
+
+二. Examples
+   1. 查询当前用户所拥有的权限
+               Select * from session_privs;     
+   2.   查询某个用户被赋予的系统权限.
+            可以有多种方式
+                    Select * from user_sys_privs;
+           或者: select * from DBA_SYS_PRIVS where grantee='XXX'
+                 (需要当前用户拥有DBA角色)
+
+   3. 查询当前用户被授予的角色:
+            1. Select * from SESSION_ROLES order by ROLE
+            说明: 这个查询会返回当前用户所被授予的全部角色, 其中包括
+            嵌套授权的角色. 例如将DBA角色授予了一个用户,DBA角色
+            已经被授予的角色(例如 exp_full_database 和 imp_full_database)
+             也会被查询出来             
+            2. Select * from USER_ROLE_PRIVS      
+
+     4. 查询某一角色被赋予的系统权限
+           Select Privilege from ROLE_SYS_PRIVS where ROLE=&Role
+        输入 role='CONNECT'
+         输出:
+           PRIVILEGE
+           --------------------
+          ALTER SESSION
+            CREATE CLUSTER
+            CREATE DATABASE LINK
+            CREATE SEQUENCE
+            CREATE SESSION
+            CREATE SYNONYM
+            CREATE TABLE
+            CREATE VIEW
+
+    5. 查询当前角色被授予的角色
+         Select GRANTED_ROLE from ROLE_ROLE_PRIVS where ROLE=&ROLE
+         输入 role= 'DBA'
+          输出:
+           GRANTED_ROLE
+           ----------------------
+          DELETE_CATALOG_ROLE
+            EXECUTE_CATALOG_ROLE
+            EXP_FULL_DATABASE
+            IMP_FULL_DATABASE
+            PLUSTRACE
+            SELECT_CATALOG_ROLE
+        说明: PLUSTRACE这个角色是用于执行SQL AUTO TRACE的, 通过执行
+               $ORACLE_HOME/sqlplus/admin/plustrce.sql可以生成这个角色.
+系统的role
+ROLE                           PASSWORD
+------------------------------ --------
+CONNECT                        NO
+RESOURCE                       NO
+DBA                            NO
+SELECT_CATALOG_ROLE            NO
+EXECUTE_CATALOG_ROLE           NO
+DELETE_CATALOG_ROLE            NO
+EXP_FULL_DATABASE              NO
+IMP_FULL_DATABASE              NO
+RECOVERY_CATALOG_OWNER         NO
+GATHER_SYSTEM_STATISTICS       NO
+LOGSTDBY_ADMINISTRATOR         NO
+ROLE                           PASSWORD
+------------------------------ --------
+AQ_ADMINISTRATOR_ROLE          NO
+AQ_USER_ROLE                   NO
+GLOBAL_AQ_USER_ROLE            GLOBAL
+OEM_MONITOR                    NO
+HS_ADMIN_ROLE                  NO
+WM_ADMIN_ROLE                  NO
