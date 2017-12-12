@@ -1,0 +1,3978 @@
+-- 首先，以超级管理员的身份登录oracle  
+     sqlplus sys/bjsxt as sysdba  
+   
+ --然后，解除对scott用户的锁  
+     alter user scott account unlock;  
+ --那么这个用户名就能使用了。  
+ --(默认全局数据库名orcl)  
+   
+ 1、select ename, sal * 12 from emp; --计算年薪  
+ 2、select 2*3 from dual;  --计算一个比较纯的数据用dual表 
+ 3、select sysdate from dual;  --查看当前的系统时间  
+ 4、select ename, sal*12 anuual_sal from emp; --给搜索字段更改名称（双引号 keepFormat 别名有特殊字符，要加双引号）。  
+ 5、--任何含有空值的数学表达式，最后的计算结果都是空值。  
+ 6、select ename||sal from emp;  --(将sal的查询结果转化为字符串，与ename连接到一起，相当于Java中的字符串连接)  
+ 7、select ename||'afasjkj' from emp;   --字符串的连接  
+ 8、select distinct deptno from emp;   --消除deptno字段重复的值  
+ 9、select distinct deptno , job from emp; --将与这两个字段都重复的值去掉  
+ 10、select * from emp where deptno=10;   --(条件过滤查询)               
+ 11、select * from emp where empno &gt; 10;  --大于 过滤判断  
+ 12、select * from emp where empno &lt;&gt; 10  --不等于  过滤判断  
+ 13、select * from emp where ename &gt; 'cba';  --字符串比较，实际上比较的是每个字符的AscII值，与在Java中字符串的比较是一样的  
+ 14、select ename, sal from emp where sal between 800 and 1500;  --(between and过滤，包含800 1500)  
+ 15、select ename, sal, comm from emp where comm is null;  --(选择comm字段为null的数据)  
+ 16、select ename, sal, comm from emp where comm is not null;  --(选择comm字段不为null的数据)  
+ 17、select ename, sal, comm from emp where sal in (800, 1500,2000);  --(in 表范围)  
+ 18、select ename, sal, hiredate from emp where hiredate &gt; '02-2月-1981'; --(只能按照规定的格式写)  
+ 19、select ename, sal from emp where deptno =10 or sal &gt;1000;  
+ 20、select ename, sal from emp where deptno =10 and sal &gt;1000;  
+ 21、select ename, sal, comm from emp where sal not in (800, 1500,2000);  --(可以对in指定的条件进行取反)  
+ 22、select ename from emp where ename like '%ALL%';   --(模糊查询)  
+ 23、select ename from emp where ename like '_A%';    --(取第二个字母是A的所有字段)  
+ 24、select ename from emp where ename like '%/%%';   --(用转义字符/查询字段中本身就带%字段的)  
+ 25、select ename from emp where ename like '%$%%' escape '$';   --(用转义字符/查询字段中本身就带%字段的)  
+ 26、select * from dept order by deptno desc; (使用order by  desc字段 对数据进行降序排列 默认为升序asc);  
+ 27、select * from dept where deptno &lt;&gt;10 order by deptno asc;   --(我们可以将过滤以后的数据再进行排序)    
+ 28、select ename, sal, deptno from emp order by deptno asc, ename desc;   --(按照多个字段排序 首先按照deptno升序排列,当detpno相同时，内部再按照ename的降序排列)  
+ 29、select lower(ename) from emp;  --(函数lower() 将ename搜索出来后全部转化为小写)；  
+ 30、select ename from emp where lower(ename) like '_a%';  --(首先将所搜索字段转化为小写，然后判断第二个字母是不是a)  
+ 31、select substr(ename, 2, 3) from emp;    --(使用函数substr() 将搜素出来的ename字段从第二个字母开始截，一共截3个字符)  
+ 32、select chr(65) from dual;  --(函数chr() 将数字转化为AscII中相对应的字符)   
+ 33、select ascii('A') from dual;  --(函数ascii()与32中的chr()函数是相反的 将相应的字符转化为相应的Ascii编码）                                                                                                                                                                                                                                                                                                                                             )  
+ 34、select round(23.232) from dual;  --(函数round() 进行四舍五入操作)  
+ 35、select round(23.232, 2) from dual;  --(四舍五入后保留的小数位数 0 个位 -1 十位)  
+ 36、select to_char(sal, '$99,999.9999')from emp;  --(加$符号加入千位分隔符，保留四位小数，没有的补零)  
+ 37、select to_char(sal, 'L99,999.9999')from emp;  --(L 将货币转化为本地币种此处将显示￥人民币)  
+ 38、select to_char(sal, 'L00,000.0000')from emp;  --(补零位数不一样，可到数据库执行查看)  
+ 39、select to_char(hiredate, 'yyyy-MM-DD HH:MI:SS') from emp;  --(改变日期默认的显示格式)  
+ 40、select to_char(sysdate, 'yyyy-MM-DD HH:MI:SS') from dual;  --(用12小时制显示当前的系统时间)  
+ 41、select to_char(sysdate, 'yyyy-MM-DD HH24:MI:SS') from dual;  --(用24小时制显示当前的系统时间)  
+ 42、select ename, hiredate from emp where hiredate &gt; to_date('1981-2-20 12:24:45','YYYY-MM-DD HH24:MI:SS');   --(函数to-date 查询公司在所给时间以后入职的人员)  
+ 43、select sal from emp where sal &gt; to_number('$1,250.00', '$9,999.99');   --(函数to_number()求出这种薪水里带有特殊符号的)  
+ 44、select ename, sal*12 +  nvl(comm,0) from emp;   --(函数nvl() 求出员工的"年薪 + 提成(或奖金)问题")  
+ 45、select max(sal) from emp;  -- (函数max() 求出emp表中sal字段的最大值)  
+ 46、select min(sal) from emp;  -- (函数max() 求出emp表中sal字段的最小值)  
+ 47、select avg(sal) from emp;  --(avg()求平均薪水);  
+ 48、select to_char(avg(sal), '999999.99') from emp;   --(将求出来的平均薪水只保留2位小数)  
+ 49、select round(avg(sal), 2) from emp;  --(将平均薪水四舍五入到小数点后2位)  
+ 50、select sum(sal) from emp;  --(求出每个月要支付的总薪水)  
+   
+ ------------------------/组函数(共5个)：将多个条件组合到一起最后只产生一个数据------min() max() avg() sum() count()----------------------------/  
+ 51、select count(*) from emp;  --求出表中一共有多少条记录  
+ 52、select count(*) from emp where deptno=10;  --再要求一共有多少条记录的时候，还可以在后面跟上限定条件  
+ 53、select count(distinct deptno) from emp;   --统计部门编号前提是去掉重复的值  
+ ------------------------聚组函数group by() --------------------------------------  
+ 54、select deptno, avg(sal) from emp group by deptno;  --按照deptno分组，查看每个部门的平均工资  
+ 55、select max(sal) from emp group by deptno, job; --分组的时候，还可以按照多个字段进行分组，两个字段不相同的为一组  
+ 56、select ename from emp where sal = (select max(sal) from emp); --求出  
+ 57、select deptno, max(sal) from emp group by deptno; --搜素这个部门中薪水最高的的值  
+ --------------------------------------------------having函数对于group by函数的过滤 不能用where--------------------------------------  
+ 58、select deptno, avg(sal) from emp group by deptno having avg(sal) &gt;2000; （order by ）--求出每个部门的平均值，并且要 &gt; 2000  
+ 59、select avg(sal) from emp where sal &gt;1200 group by deptno having avg(sal) &gt;1500 order by avg(sal) desc;--求出sal&gt;1200的平均值按照deptno分组，平均值要&gt;1500最后按照sal的倒序排列  
+ 60、select ename,sal from emp where sal &gt; (select avg(sal) from emp);  --求那些人的薪水是在平均薪水之上的。  
+ 61、select ename, sal from emp join (select max(sal) max_sal ,deptno from emp group by deptno) t on (emp.sal = t.max_sal and emp.deptno=t.deptno);  --查询每个部门中工资最高的那个人  
+ ------------------------------/等值连接--------------------------------------  
+ 62、select e1.ename, e2.ename from emp e1, emp e2 where e1.mgr = e2.empno;  --自连接，把一张表当成两张表来用  
+ 63、select ename, dname from emp, dept;  --92年语法 两张表的连接 笛卡尔积。  
+ 64、select ename, dname from emp cross join dept; --99年语法 两张表的连接用cross join  
+ 65、select ename, dname from emp, dept where emp.deptno = dept.deptno; -- 92年语法 表连接 + 条件连接  
+ 66、select ename, dname from emp join dept on(emp.deptno = dept.deptno); -- 新语法  
+ 67、select ename,dname from emp join dept using(deptno); --与66题的写法是一样的，但是不推荐使用using ： 假设条件太多  
+ --------------------------------------/非等值连接------------------------------------------/  
+ 68、select ename,grade from emp e join salgrade s on(e.sal between s.losal and s.hisal); --两张表的连接 此种写法比用where更清晰  
+ 69、select ename, dname, grade from emp e  
+     join dept d on(e.deptno = d.deptno)  
+     join salgrade s on (e.sal between s.losal and s.hisal)  
+     where ename not like '_A%';  --三张表的连接  
+ 70、select e1.ename, e2.ename from emp e1 join emp e2 on(e1.mgr = e2.empno); --自连接第二种写法，同62  
+ 71、select e1.ename, e2.ename from emp e1 left join emp e2 on(e1.mgr = e2.empno); --左外连接 把左边没有满足条件的数据也取出来  
+ 72、select ename, dname from emp e right join dept d on(e.deptno = d.deptno); --右外连接  
+ 73、select deptno, avg_sal, grade from (select deptno, avg(sal) avg_sal from emp group by deptno) t join salgrade s  on    (t.avg_sal between s.losal and s.hisal);--求每个部门平均薪水的等级  
+ 74、select ename from emp where empno in (select mgr from emp); -- 在表中搜索那些人是经理  
+ 75、select sal from emp where sal not in(select distinct e1.sal from emp e1 join emp e2 on(e1.sal &lt; e2.sal)); -- 面试题 不用组函数max()求薪水的最大值  
+ 76、select deptno, max_sal from  
+     (select avg(sal) max_sal,deptno from emp group by deptno)  
+         where max_sal =  
+         (select max(max_sal) from  
+          (select avg(sal) max_sal,deptno from emp group by deptno)  
+     );--求平均薪水最高的部门名称和编号。  
+ 77、select t1.deptno, grade, avg_sal from  
+       (select deptno, grade, avg_sal from  
+     (select deptno, avg(sal) avg_sal from emp group by deptno) t  
+         join salgrade s on(t.avg_sal between s.losal and s.hisal)  
+       ) t1  
+     join dept on (t1.deptno = dept.deptno)  
+     where t1.grade =   
+       (  
+         select min(grade) from  
+           (select deptno, grade, avg_sal from  
+     (select deptno, avg(sal) avg_sal from emp group by deptno) t  
+     join salgrade s on(t.avg_sal between s.losal and s.hisal)  
+      )  
+    )--求平均薪水等级最低的部门的名称 哈哈 确实比较麻烦  
+ 78、create view v$_dept_avg_sal_info as  
+     select deptno, grade, avg_sal from  
+        (select deptno, avg(sal) avg_sal from emp group by deptno) t  
+     join salgrade s on(t.avg_sal between s.losal and s.hisal);  
+     --视图的创建，一般以v$开头，但不是固定的  
+   
+   
+ 79、select t1.deptno, grade, avg_sal from v$_dept_avg_sal_info t1  
+     join dept on (t1.deptno = dept.deptno)  
+     where t1.grade =   
+       (  
+         select min(grade) from  
+          v$_dept_avg_sal_info t1  
+      )  
+    )--求平均薪水等级最低的部门的名称 用视图，能简单一些，相当于Java中方法的封装  
+   
+ 80、---创建视图出现权限不足时候的解决办法：  
+     conn sys/admin as sysdba;  
+         --显示：连接成功 Connected  
+     grant create table, create view to scott;  
+        -- 显示: 授权成功 Grant succeeded  
+ 81、-------求比普通员工最高薪水还要高的经理人的名称 -------  
+     select ename, sal from emp where empno in  
+        (select distinct mgr from emp where mgr is not null)  
+     and sal &gt;  
+     (  
+        select max(sal) from emp where empno not in  
+          (select distinct mgr from emp where mgr is not null)  
+     )  
+ 82、---面试题：比较效率  
+        select * from emp where deptno = 10 and ename like '%A%';--好，将过滤力度大的放在前面  
+        select * from emp where ename like '%A%' and deptno = 10;  
+ 83、-----表的备份  
+        create table dept2 as select * from dept;  
+ 84、-----插入数据  
+         insert into dept2 values(50,'game','beijing');  
+       ----只对某个字段插入数据  
+         insert into dept2(deptno,dname) values(60,'game2');  
+ 85、-----将一个表中的数据完全插入另一个表中（表结构必须一样）  
+     insert into dept2 select * from dept;  
+ 86、-----求前五名员工的编号和名称（使用虚字段rownum 只能使用 &lt; 或 = 要使用 &gt; 必须使用子查询）  
+     select empno,ename from emp where rownum &lt;= 5;  
+ 86、----求10名雇员以后的雇员名称--------  
+     select ename from (select rownum r,ename from emp) where r &gt; 10;  
+ 87、----求薪水最高的前5个人的薪水和名字---------  
+     select ename, sal from (select ename, sal from emp order by sal desc) where rownum &lt;=5;    
+ 88、----求按薪水倒序排列后的第6名到第10名的员工的名字和薪水--------  
+     select ename, sal from  
+            (select ename, sal, rownum r from  
+               (select ename, sal from emp order by sal desc)  
+            )  
+         where r&gt;=6 and r&lt;=10  
+ 89、----------------创建新用户---------------  
+     1、backup scott--备份  
+         exp--导出  
+     2、create user  
+         create user guohailong identified(认证) by guohailong  default tablespace users quota(配额) 10M on users  
+         grant create session(给它登录到服务器的权限),create table, create view to guohailong  
+     3、import data  
+         imp  
+ 90、-----------事务回退语句--------  
+     rollback;  
+       
+ 91、-----------事务确认语句--------  
+     commit;--此时再执行rollback无效  
+   
+ 92、--当正常断开连接的时候例如exit,事务自动提交。  当非正常断开连接，例如直接关闭dos窗口或关机，事务自动提交  
+ 93、/*有3个表S，C，SC   
+     S（SNO，SNAME）代表（学号，姓名）   
+     C（CNO，CNAME，CTEACHER）代表（课号，课名，教师）   
+     SC（SNO，CNO，SCGRADE）代表（学号，课号成绩）   
+     问题：   
+     1，找出没选过“黎明”老师的所有学生姓名。   
+     2，列出2门以上（含2门）不及格学生姓名及平均成绩。   
+     3，即学过1号课程有学过2号课所有学生的姓名。  
+     */答案：  
+     1、  
+         select sname from s join sc on(s.sno = sc.sno) join c on (sc.cno = c.cno) where cteacher &lt;&gt; '黎明';  
+     2、  
+         select sname where sno in (select sno from sc where scgrade &lt; 60 group by sno having count(*) &gt;=2);  
+     3、  
+         select sname from s where sno in (select sno, from sc where cno=1 and cno in  
+                             (select distinct sno from sc where cno = 2);  
+                          )  
+   
+ 94、--------------创建表--------------  
+        create table stu  
+     (  
+     id number(6),  
+     name varchar2(20) constraint stu_name_mm not null,  
+     sex number(1),  
+     age number(3),  
+     sdate date,  
+     grade number(2) default 1,  
+     class number(4),  
+     email varchar2(50) unique  
+     );  
+ 95、--------------给name字段加入 非空 约束，并给约束一个名字，若不取，系统默认取一个-------------  
+        create table stu  
+     (  
+     id number(6),  
+     name varchar2(20) constraint stu_name_mm not null,  
+     sex number(1),  
+     age number(3),  
+     sdate date,  
+     grade number(2) default 1,  
+     class number(4),  
+     email varchar2(50)  
+     );  
+ 96、--------------给nameemail字段加入 唯一 约束 两个 null值 不为重复-------------  
+        create table stu  
+     (  
+     id number(6),  
+     name varchar2(20) constraint stu_name_mm not null,  
+     sex number(1),  
+     age number(3),  
+     sdate date,  
+     grade number(2) default 1,  
+     class number(4),  
+     email varchar2(50) unique  
+     );  
+ 97、--------------两个字段的组合不能重复 约束：表级约束-------------  
+        create table stu  
+     (  
+     id number(6),  
+     name varchar2(20) constraint stu_name_mm not null,  
+     sex number(1),  
+     age number(3),  
+     sdate date,  
+     grade number(2) default 1,  
+     class number(4),  
+     email varchar2(50)，  
+     constraint stu_name_email_uni unique(email, name)  
+     );  
+ 98、--------------主键约束-------------  
+        create table stu  
+     (  
+     id number(6),  
+     name varchar2(20) constraint stu_name_mm not null,  
+     sex number(1),  
+     age number(3),  
+     sdate date,  
+     grade number(2) default 1,  
+     class number(4),  
+     email varchar2(50)，  
+     constraint stu_id_pk primary key (id),  
+     constraint stu_name_email_uni unique(email, name)  
+     );  
+   99、--------------外键约束   被参考字段必须是主键 -------------  
+        create table stu  
+     (  
+     id number(6),  
+     name varchar2(20) constraint stu_name_mm not null,  
+     sex number(1),  
+     age number(3),  
+     sdate date,  
+     grade number(2) default 1,  
+     class number(4) references class(id),  
+     email varchar2(50)，  
+     constraint stu_class_fk foreign key (class) references class(id),  
+     constraint stu_id_pk primary key (id),  
+     constraint stu_name_email_uni unique(email, name)  
+     );  
+       
+     create table class   
+     (  
+     id number(4) primary key,  
+     name varchar2(20) not null  
+     );  
+ 100、---------------修改表结构，添加字段------------------  
+     alter table stu add(addr varchar2(29));  
+ 101、---------------删除字段--------------------------  
+     alter table stu drop (addr);  
+ 102、---------------修改表字段的长度------------------  
+     alter table  stu modify (addr varchar2(50));--更改后的长度必须要能容纳原先的数据  
+ 103、----------------删除约束条件----------------  
+     alter table stu drop constraint  约束名  
+ 104、-----------修改表结构添加约束条件---------------  
+     alter table  stu add constraint stu_class_fk foreign key (class) references class (id);  
+ 105、---------------数据字典表----------------  
+      desc dictionary;  
+      --数据字典表共有两个字段 table_name comments  
+      --table_name主要存放数据字典表的名字  
+      --comments主要是对这张数据字典表的描述  
+        
+ 105、---------------查看当前用户下面所有的表、视图、约束-----数据字典表user_tables---  
+     select table_name from user_tables;  
+     select view_name from user_views;  
+     select constraint_name from user-constraints;  
+ 106、-------------索引------------------  
+     create index idx_stu_email on stu (email);-- 在stu这张表的email字段上建立一个索引：idx_stu_email  
+ 107、---------- 删除索引 ------------------  
+     drop index index_stu_email;  
+ 108、---------查看所有的索引----------------  
+     select index_name from user_indexes;  
+ 109、---------创建视图-------------------  
+     create view v$stu as selesct id,name,age from stu;  
+      视图的作用: 简化查询 保护我们的一些私有数据，通过视图也可以用来更新数据，但是我们一般不这么用 缺点：要对视图进行维护  
+   
+ 110、-----------创建序列------------  
+     create sequence seq;--创建序列  
+     select seq.nextval from dual;-- 查看seq序列的下一个值  
+     drop sequence seq;--删除序列  
+ 111、------------数据库的三范式--------------  
+     （1）、要有主键，列不可分  
+     （2）、不能存在部分依赖：当有多个字段联合起来作为主键的时候，不是主键的字段不能部分依赖于主键中的某个字段  
+     （3）、不能存在传递依赖   
+ ==============================================PL/SQL==========================  
+ 112、-------------------在客户端输出helloworld-------------------------------  
+     set serveroutput on;--默认是off，设成on是让Oracle可以在客户端输出数据  
+ 113、begin  
+     dbms_output.put_line('helloworld');  
+     end;  
+     /  
+ 114、----------------pl/sql变量的赋值与输出----  
+     declare  
+         v_name varchar2(20);--声明变量v_name变量的声明以v_开头  
+     begin  
+         v_name := 'myname';  
+         dbms_output.put_line(v_name);  
+     end;  
+     /  
+ 115、-----------pl/sql对于异常的处理(除数为0)-------------  
+     declare  
+         v_num number := 0;  
+     begin  
+         v_num := 2/v_num;  
+         dbms_output.put_line(v_num);  
+     exception  
+         when others then  
+         dbms_output.put_line('error');  
+     end;  
+     /  
+ 116、----------变量的声明----------  
+     binary_integer:整数，主要用来计数而不是用来表示字段类型   比number效率高  
+     number:数字类型  
+     char:定长字符串  
+     varchar2：变长字符串  
+     date：日期  
+     long：字符串，最长2GB  
+     boolean：布尔类型，可以取值true，false，null--最好给一初值  
+ 117、----------变量的声明，使用 '%type'属性  
+     declare  
+         v_empno number(4);  
+         v_empno2 emp.empno%type;  
+         v_empno3 v_empno2%type;  
+     begin  
+         dbms_output.put_line('Test');  
+     end;  
+     /  
+     --使用%type属性，可以使变量的声明根据表字段的类型自动变换，省去了维护的麻烦，而且%type属性，可以用于变量身上  
+ 118、---------------Table变量类型(table表示的是一个数组)-------------------  
+     declare  
+         type type_table_emp_empno is table of emp.empno%type index by binary_integer;  
+             v_empnos type_table type_table_empno;  
+     begin  
+         v_empnos(0) := 7345;  
+         v_empnos(-1) :=9999;  
+         dbms_output.put_line(v_empnos(-1));  
+     end;  
+ 119、-----------------Record变量类型  
+     declare  
+         type type_record_dept is record  
+         (  
+             deptno dept.deptno%type,  
+             dname dept.dname%type,  
+             loc dept.loc%type  
+         );  
+     begin  
+         v_temp.deptno:=50;  
+         v_temp.dname:='aaaa';  
+         v_temp.loc:='bj';  
+         dbms_output.put_line(v temp.deptno || ' ' || v temp.dname);  
+     end;  
+ 120、-----------使用 %rowtype声明record变量  
+     declare  
+         v_temp dept%rowtype;  
+     begin  
+         v_temp.deptno:=50;  
+         v_temp.dname:='aaaa';  
+         v_temp.loc:='bj';  
+     dbms_output.put_line(v temp.deptno || '' || v temp.dname)             
+     end;  
+       
+ 121、--------------sql%count 统计上一条sql语句更新的记录条数   
+ 122、--------------sql语句的运用  
+     declare  
+         v_ename emp.ename%type;  
+         v_sal emp.sal%type;  
+     begin  
+         select ename,sal into v_ename,v_sal from emp where empno = 7369;  
+         dbms_output.put_line(v_ename || '' || v_sal);  
+     end;  
+   
+ 123、  -------- pl/sql语句的应用  
+     declare  
+         v_emp emp%rowtype;  
+     begin  
+         select * into v_emp from emp where empno=7369;  
+         dbms_output_line(v_emp.ename);  
+     end;  
+ 124、-------------pl/sql语句的应用   
+     declare  
+         v_deptno dept.deptno%type := 50;  
+         v_dname dept.dname%type :='aaa';  
+         v_loc dept.loc%type := 'bj';  
+     begin  
+         insert into dept2 values(v_deptno,v_dname,v_loc);  
+     commit;  
+     end;  
+ 125、-----------------ddl语言，数据定义语言  
+     begin  
+         execute immediate 'create table T (nnn varchar(30) default ''a'')';  
+     end;  
+ 126、------------------if else的运用  
+      declare  
+         v_sal emp.sal%type;  
+      begin  
+         select sal into v_sal from emp where empno = 7369;  
+     if(v_sal &lt; 2000) then  
+         dbms_output.put_line('low');  
+     elsif(v_sal &gt; 2000) then  
+         dbms_output.put_line('middle');  
+     else   
+         dbms_output.put_line('height');  
+         end if;  
+       end;  
+ 127、-------------------循环 =====do while  
+     declare  
+         i binary_integer := 1;  
+     begin  
+         loop  
+                 dbms_output.put_line(i);  
+                 i := i + 1;  
+             exit when (i&gt;=11);  
+         end loop;  
+     end;  
+ 128、---------------------while   
+     declare  
+         j binary_integer := 1;  
+     begin  
+         while j &lt; 11 loop  
+             dbms_output.put_line(j);  
+         j:=j+1;  
+         end loop;  
+     end;  
+ 129、---------------------for  
+     begin  
+         for k in 1..10 loop  
+             dbms_output.put_line(k);  
+         end loop;  
+         for k in reverse 1..10 loop  
+             dbms_output.put_line(k);  
+         end loop;  
+     end;  
+ 130、-----------------------异常(1)  
+     declare  
+         v_temp number(4);  
+     begin  
+         select empno into v_temp from emp where empno = 10;  
+     exception  
+         when too_many_rows then  
+             dbms_output.put_line('太多记录了');  
+         when others then  
+             dbms_output.put_line('error');    
+     end;  
+ 131、-----------------------异常(2)  
+     declare  
+         v_temp number(4);  
+     begin  
+         select empno into v_temp from emp where empno = 2222;  
+     exception  
+         when no_data_found then  
+             dbms_output.put_line('太多记录了');  
+     end;  
+ 132、----------------------创建序列  
+     create sequence seq_errorlog_id start with 1 increment by 1;  
+ 133、-----------------------错误处理(用表记录：将系统日志存到数据库便于以后查看)  
+   
+   
+    -- 创建日志表:  
+     create table errorlog  
+     (  
+     id number primary key,  
+     errcode number,  
+     errmsg varchar2(1024),  
+     errdate date  
+     );  
+   
+   
+       
+     declare  
+         v_deptno dept.deptno%type := 10;  
+         v_errcode  number;  
+         v_errmsg varchar2(1024);  
+     begin  
+         delete from dept where deptno = v_deptno;  
+        commit;  
+     exception  
+         when others then  
+             rollback;  
+                 v_errcode := SQLCODE;  
+                 v_errmsg := SQLERRM;  
+         insert into errorlog values (seq_errorlog_id.nextval, v_errcode,v_errmsg, sysdate);  
+                 commit;  
+     end;  
+ 133---------------------PL/SQL中的重点cursor(游标)和指针的概念差不多  
+     declare  
+         cursor c is  
+             select * from emp; --此处的语句不会立刻执行，而是当下面的open c的时候，才会真正执行  
+         v_emp c%rowtype;  
+     begin  
+         open c;  
+             fetch c into v_emp;  
+         dbms_output.put_line(v_emp.ename); --这样会只输出一条数据 134将使用循环的方法输出每一条记录  
+       close c;  
+     end;  
+ 134----------------------使用do while  循环遍历游标中的每一个数据  
+     declare  
+         cursor c is  
+             select * from emp;  
+         v_emp c%rowtype;  
+     begin  
+         open c;   
+         loop  
+             fetch c into v_emp;  
+             (1) exit when (c%notfound);  --notfound是oracle中的关键字，作用是判断是否还有下一条数据  
+             (2) dbms_output.put_line(v_emp.ename);  --(1)(2)的顺序不能颠倒，最后一条数据，不会出错，会把最后一条数据，再次的打印一遍  
+        end loop;  
+        close c;  
+     end;  
+ 135------------------------while循环，遍历游标  
+     declare  
+         cursor c is  
+             select * from emp;  
+         v_emp emp%rowtype;  
+     begin  
+         open c;  
+         fetch c into v_emp;  
+         while(c%found) loop  
+            dbms_output.put_line(v_emp.ename);  
+            fetch c into v_emp;  
+        end loop;  
+        close c;  
+     end;  
+ 136--------------------------for 循环，遍历游标  
+     declare  
+         cursor c is  
+            select * from emp;  
+     begin  
+         for v_emp in c loop  
+             dbms_output.put_line(v_emp.ename);  
+         end loop;  
+     end;  
+   
+ 137---------------------------带参数的游标  
+     declare  
+         cursor c(v_deptno emp.deptno%type, v_job emp.job%type)  
+         is  
+            select ename, sal from emp where deptno=v_deptno and job=v_job;  
+         --v_temp c%rowtype;此处不用声明变量类型  
+     begin  
+         for v_temp in c(30, 'click') loop  
+             dbms_output.put_line(v_temp.ename);  
+         end loop;  
+     end;  
+ 138-----------------------------可更新的游标  
+     declare  
+         cursor c  --有点小错误  
+         is  
+            select * from emp2 for update;  
+         -v_temp c%rowtype;  
+     begin  
+        for v_temp in c loop  
+         if(v_temp.sal &lt; 2000) then  
+             update emp2 set sal = sal * 2 where current of c;  
+           else if (v_temp.sal =5000) then  
+         delete from emp2 where current of c;  
+            end if;  
+          end loop;  
+          commit;  
+     end;  
+ 139-----------------------------------procedure存储过程(带有名字的程序块)  
+     create or replace procedure p  
+         is--这两句除了替代declare，下面的语句全部都一样    
+         cursor c is  
+             select * from emp2 for update;  
+     begin  
+          for v_emp in c loop  
+         if(v_emp.deptno = 10) then  
+             update emp2 set sal = sal +10 where current of c;  
+         else if(v_emp.deptno =20) then  
+             update emp2 set sal =  sal + 20 where current of c;  
+         else  
+             update emp2 set sal = sal + 50 where current of c;  
+         end if;  
+         end loop;  
+       commit;  
+      end;  
+       
+     --执行存储过程的两种方法：  
+     （1）exec p;(p是存储过程的名称)  
+     （2）  
+         begin  
+             p;  
+         end;  
+         /  
+ 140-------------------------------带参数的存储过程  
+     create or replace procedure p  
+         (v_a in number, v_b number, v_ret out number, v_temp in out number)  
+     is  
+       
+     begin  
+         if(v_a &gt; v_b) then  
+             v_ret := v_a;  
+         else  
+             v_ret := v_b;  
+         end if;  
+         v_temp := v_temp + 1;  
+     end;  
+ 141----------------------调用140  
+     declare  
+         v_a  number := 3;  
+         v_b  number := 4;  
+         v_ret number;  
+         v_temp number := 5;  
+   
+     begin  
+         p(v_a, v_b, v_ret, v_temp);  
+         dbms_output.put_line(v_ret);  
+         dbms_output.put_line(v_temp);  
+     end;  
+   
+ 142------------------删除存储过程  
+     drop procedure p;  
+ 143------------------------创建函数计算个人所得税    
+     create or replace function sal_tax  
+         (v_sal  number)   
+         return number  
+     is  
+     begin  
+         if(v_sal &lt; 2000) then  
+             return 0.10;  
+         elsif(v_sal &lt;2750) then  
+             return 0.15;  
+         else  
+             return 0.20;  
+         end if;  
+     end;  
+ ----144-------------------------创建触发器（trigger）  触发器不能单独的存在，必须依附在某一张表上  
+   
+     --创建触发器的依附表  
+       
+     create table emp2_log  
+     (  
+     ename varchar2(30) ,  
+     eaction varchar2(20),  
+     etime date  
+     );    
+   
+     create or replace trigger trig  
+         after insert or delete or update on emp2 ---for each row 加上此句，每更新一行，触发一次，不加入则值触发一次  
+     begin  
+         if inserting then  
+             insert into emp2_log values(USER, 'insert', sysdate);  
+         elsif updating then  
+             insert into emp2_log values(USER, 'update', sysdate);  
+         elsif deleting then  
+             insert into emp2_log values(USER, 'delete', sysdate);  
+         end if;  
+     end;  
+ 145-------------------------------通过触发器更新数据  
+     create or replace trigger trig  
+         after update on dept  
+         for each row  
+     begin  
+         update emp set deptno =:NEW.deptno where deptno =: OLD.deptno;  
+     end;  
+       
+   
+     ------只编译不显示的解决办法 set serveroutput on;  
+ 145-------------------------------通过创建存储过程完成递归  
+     create or replace procedure p(v_pid article.pid%type,v_level binary_integer) is  
+         cursor c is select * from article where pid = v_pid;  
+         v_preStr varchar2(1024) := '';  
+     begin  
+       for i in 0..v_leave loop  
+         v_preStr := v_preStr || '****';  
+       end loop;  
+   
+       for v_article in c loop  
+         dbms_output.put_line(v_article.cont);  
+         if(v_article.isleaf = 0) then  
+             p(v_article.id);  
+         end if;  
+         end loop;  
+       
+     end;  
+ 146-------------------------------查看当前用户下有哪些表---  
+     --首先，用这个用户登录然后使用语句：  
+     select * from tab;  
+       
+ 147-----------------------------用Oracle进行分页！--------------  
+     --因为Oracle中的隐含字段rownum不支持'&gt;'所以：  
+     select * from (  
+         select rownum rn, t.* from (  
+             select * from t_user where user_id &lt;&gt; 'root'  
+         ) t where rownum &lt;6  
+     ) where rn &gt;3  
+ 148------------------------Oracle下面的清屏命令----------------  
+     clear screen; 或者 cle scr;  
+   
+ 149-----------将创建好的guohailong的这个用户的密码改为abc--------------  
+     alter user guohailong identified by abc  
+     --当密码使用的是数字的时候可能会不行  
+     
+     
+     
+     
+     
+     
+     --使用在10 Oracle以上的正则表达式在dual表查询
+  with test1 as(
+        select 'ao' name from dual union all
+        select 'yang' from dual union all
+        select 'feng' from dual  )
+        select distinct regexp_replace(name,'[0-9]','') from test1
+   
+ ------------------------------------------
+ with tab as (
+       select 'hong'  name from dual union all
+       select 'qi' name from dual union all 
+       select 'gong' name from dual) 
+       select translate(name,'\\0123456789','\\') from tab; 
+ 
+     
+     
+     
+     
+     
+     
+ CREATE OR REPLACE PROCEDURE 
+     calc(i_birth VARCHAR2) IS 
+     s VARCHAR2(8);  
+     o VARCHAR2(8);  
+     PROCEDURE cc(num VARCHAR2, s OUT VARCHAR2) IS 
+     BEGIN 
+     FOR i 
+        IN REVERSE 2 .. length(num) LOOP
+      s := s || substr(substr(num, i, 1) + substr(num, i - 1, 1), -1);
+       END LOOP; 
+        SELECT REVERSE(s) INTO s FROM dual; 
+         END; 
+          BEGIN o := i_birth; 
+          LOOP 
+           cc(o, s); 
+           o := s; 
+          dbms_output.put_line(s); 
+         EXIT WHEN length(o) &lt; 2; 
+         END LOOP; 
+      END; 
+    set serveroutput on; 
+      
+  exec calc('19880323');  
+  
+  
+  
+  
+  ----算命pl/sql
+  with t as
+  (select '19880323' x from dual)
+	  select 
+	    case 
+		     when mod (i, 2) = 0 then '命好'
+		     when  i = 9 		 then '命运悲惨' 
+		        else '一般'
+		     end result
+	    from (select mod(sum((to_number(substr(x, level, 1)) +to_number(substr(x, -level, 1))) *                      
+	         greatest(((level - 1) * 2 - 1) * 7, 1)),10) i from t connect by level &lt;= 4);
+       
+       
+ 
+--构造一个表，和emp表的部分字段相同，但是顺序不同
+SQL&gt; create table t_emp as
+  2  select ename,empno,deptno,sal
+  3  from emp
+  4  where 1=0
+  5  /
+ 
+Table created
+ --添加数据
+SQL&gt; insert into t_emp(ename,empno,deptno,sal)
+  2  select ename,empno,deptno,sal
+  3  from emp
+  4  where sal &gt;= 2500 
+  5  /
+  
+  
+  select * from tb_product where createdate&gt;=to_date('2011-6-13','yyyy-MM-dd') and createdate&lt;=to_date('2011-6-16','yyyy-MM-dd');  
+
+sysdate --获取当前系统的时间
+
+
+to_date('','yyyy-mm-dd')
+
+
+select * from tb_product where to_char(createdate,'yyyy-MM-dd')&gt;='2011-6-13' and to_char(createdate,'yyyy-MM-dd')&lt;='2011-6-16';  
+
+
+select * from tb_product where trunc(createdate)&gt;=? and trunc(createdate)&lt;=?
+用trunc函数就可以了 
+
+
+ </pre>
+<p> </p>
+<pre name="code" >第一次
+1、Oracle安装及基本命令
+1.1、Orace简介
+Oracleso一个生产中间件和数据库的较大生产商。其发展依靠了IBM公司。创始人是Larry Ellison。
+1.2、Oracle的安装
+1) Oracle的主要版本
+Oracle 8；
+Oracle 8i；i，指的是Internet
+Oracle 9i；相比Oracle8i比较类似
+Oracle 10g；g，表示网格技术
+所谓网格技术，拿百度搜索为例，现在我们需要搜索一款叫做“EditPlus”的文本编辑器软件，当我们在百度搜索框中输入“EditPlus”进行搜索时， 会得到百度为我们搜索到的大量关于它的链接，此时，我们考虑一个问题，如果在我所处的网络环境周边的某个地方的服务器就提供这款软件的下载（也就是说提供一个下载链接供我们下载），那么，我们就没必要去访问一个远在地球对面的某个角落的服务器去下载这款软件。如此一来就可以节省大量的网络资源。使用网格技术就能解决这种问题。我们将整个网络划分为若干个网格，也就是说每一个使用网络的用户，均存在于某一个网格，当我们需要搜索指定资源时，首先在我们所处的网格中查找是否存在指定资源，没有的话就扩大搜索范围，到更大的网格中进行查找，直到查找到为止。
+2） 安装Oracle的准备工作
+关闭防火墙，以免影响数据库的正常安装。
+3） 安装Oralce的注意事项
+为了后期的开发和学习，我们将所有数据库默认账户的口令设置为统一口令的，方便管理和使用。
+在点击“安装”后，数据库相关参数设置完成，其安装工作正式开始，在完成安装时，不要急着去点击“确定”按钮，这时候，我们需要进行一个非常重要的操作——账户解锁。因为在Oracle中默认有一个叫做scott的账户，该账户中默认有4张表，并且存有相应的数据，所以，为了方便我们学习Oracle数据库，我们可以充分利用scott这个内置账户。但是奇怪的是，在安装Oracle数据库的时候，scott默认是锁住的，所以在使用该账户之前，我们就需要对其进行解锁操作。在安装完成界面中，点击“口令管理”进入到相应的口令管理界面，找到scott账户，将是否解锁一栏的去掉，即可完成解锁操作，后期就可以正常使用scott账户。我们运行SQLPlus（Oracle提供的命令行操作），会提示我们输入用户名，现在我们可以输入用户名scott，回车后，会提示输入口令，奇怪的是，当我们输入在安装时设置的统一口令时，提示登录拒绝，显然是密码错误，那么，在Oracle数据库中，scott的默认密码是tiger，所以使用tiger可以正常登录，但是提示我们scott的当前密码已经失效，让我们重新设置密码，建议还是设置为tiger。
+在Oracle中内置了很多账户，那么，我们来了解下一下几个比较重要的内置账户：
+   |-普通用户：scott/tiger
+   |-普通管理员：system/manager
+   |-超级管理员：sys/change_on_install
+4） 关于Oracle的服务
+    在Oracle安装完成之后，会在我们的系统中进行相关服务的注册，在所有注册的服务中，我们需要关注一下两个服务，在实际使用Oracle的过程中，这两个服务必须启动才能使Oracle正常使用。
+     |-第一个是OracleOraDb11g_home1TNSListener，监听服务，如果客户端想要连接数据库，此服务必须开启。
+     |-第二个是OracleServiceORCL，数据库的主服务。命名规则：OracleService + 数据库名称，此 服务必须启动。
+此后，我们可以通过命令行方式进入到SQLPlus的控制中心，进行命令的输入。
+1.3、SQLPlus
+SQLPlus是Oracle提供的一种命令行执行的工具软件，安装之后会自动在系统中进行注册。连接到数据库之后，就可以开始对数据库中的表进行操作了。
+1） 对SQLPlus的环境设置
+set linesize 长度;--设置每行显示的长度
+set pagesize 行数;--修改每页显示记录的长度。
+需要注意的是，上述连个参数的设置只在当前的命令行有效，命令行窗口重启或者开启了第二个窗口需要重新设置。
+2） SQLPlus常用操作
+在SQLPlus中输入ed a.sql，会弹出找不到文件的提示框，此时点击“是”，将创建一个a.sql文件，并弹出文本编辑页面，在这里可以输入相关的sql语句，编辑完成后保存，在命令行中通过 @ a.sql的方式执行命令，如果创建的文件后缀为“sql”，那么在执行的时候可以省略掉，即可以这么写， @ a。除了创建不存在的文件外，sqlplus中也可以通过指定本地存在的文件进行命令的执行，方式为 @ 文件路径。
+在SQLPlus中可以通过命令使用其他账户进行数据库的连接，如，当前连接的用户是scott，我们需要使用sys进行连接，则可以这么操作：conn sys/430583 as sysdba，这里需要说明的是，sys是超级管理员，当我们需要使用sys进行登录的时候，那么需要额外的加上as sysdba表示sys将以管理员的身份登录。这里有几点可以测试下
+|-当我们使用sys以sysdba的角色登录时，其密码可以随意输入，不一定是我们设置的统一口令（430583）。所以，我们得出结论，在管理员登录时，只对用户进行验证，而普通用户登录时，执行用户和密码验证。
+在sys账户下访问scott下的emp表时，会提示错误，因为在sys中是不存在emp表的，那么如果需要在sys下访问scott的表（也就是说需要在a用户下访问b用户下的表），该如何操作呢？首先，我们应该知道每个对象是属于一种模式（模式是对用户所创建的数据库对象的总称，包括表，视图，索引，同义词，序列，过程和程序包等）的，而每个账户对应一个模式，所以我们需要在sys下访问scott的表时，需要指明所访问的表是属于哪一个模式的，即，我们可以这样操作来实现上面的操作：select * from scott.emp;
+如果我们需要知道当前连接数据库的账户是谁，可以这样操作：show user;
+我们知道，一个数据库可以存储多张表，那么，如何查看指定数据库的所有表名称呢？select * from tab;
+在开发过程中，我们需要经常的查看某张表的表结构，这个操作可以这样实现：desc emp;
+在SQLPlus中，我们可以输入“/”来快速执行上一条语句。例如，在命令行中我们执行了一条这样的语句：select * from emp;但是我们需要再次执行该查询，就可以输入一个“/”就可快速执行。
+3） 常用数据类型
+    number(4)--&gt;表示数字，长度为4
+    varchar2(10)--&gt;表示的是字符串，只能容纳10个长度
+date--&gt;表示日期
+number(7,2)--&gt;表示数字，小数占2位，整数占5位，总共7位
+第二次
+1、SQL语句
+1.1 准备工作--熟悉scott账户下的四张表及表结构
+第一张表emp--&gt;雇员表，用于存储雇员信息
+empno number(4) 表示雇员的编号，唯一编号
+ename varchar2(10) 表示雇员的姓名
+job varchar2(9) 表示工作职位
+mgr number(4) 表示一个雇员的上司编号
+hiredate date 表示雇佣日期
+sal number(7,2) 表示月薪，工资
+comm number(7,2) 表示奖金
+deptno number(2) 表示部门编号
+第二张表dept--&gt;部门表，用于存储部门信息
+deptno number(2) 部门编号
+dname varchar2(14) 部门名称
+loc varchar2(13) 部门位置
+第三张表salgrade--&gt;工资等级表，用于存储工资等级
+grade number 等级名称
+losal number 此等级的最低工资
+hisal number 此等级的最高工资
+第四张表bonus--&gt;奖金表，用于存储一个雇员的工资及奖金
+ename varchar2(10) 雇员姓名
+job varchar2(9) 雇员工作
+sal number 雇员工资
+comm number 雇员奖金
+1.2、SQL简介
+什么是SQL?
+SQL（Structured Query Language，结构查询语言）是一个功能强大的数据语言。SQL通常用于与数据库的通讯。SQL是关系数据库管理系统的标准语言。SQL功能强大，概括起来，分为以下几组：
+|-DML--&gt;Data Manipulation Language，数据操纵语言，用于检索或者修改数据，即主要是对数据库表中的数据的操作。
+|-DDL--&gt;Data Definition Language,数据定义语言，用于定义数据的结构，如创建、修改或者删除数据库对象，即主要是对表的操作。
+|-DCL--&gt;Data Control Language,数据控制语言，用于定义数据库用户的权限，即主要对用户权限的操作。
+1.3、简单查询语句
+简单查询语句的语法格式是怎样的？
+select * |具体的列名 [as] [别名] from 表名称;
+需要说明的是，在实际开发中，最好不要使用*代替需要查询的所有列，最好养成显式书写需要查询的列名，方便后期的维护；在给查询的列名设置别名的时候，可以使用关键字as，当然不用也是可以的。
+拿emp表为例，我们现在需要查询出雇员的编号、姓名、工作三个列的信息的话，就需要在查询的时候明确指定查询的列名称，即
+select empno,ename,job from emp;
+如果需要指定查询的返回列的名称，即给查询列起别名，我们可以这样操作
+select empno 编号,ename 姓名,job 工作 from emp;--省略as关键字的写法
+或者
+select empno as 编号,ename as 姓名,job as 做工 from emp; --保留as关键字的写法
+如果现在需要我们查询出emp中所有的job，我们可能这么操作
+select job from emp;
+可能加上一个别名会比较好
+select job 工作 from emp;
+但是现在出现了一个问题，从查询的结果中可以看出，job的值是有重复的，这是为什么呢？因为我们知道一个job职位可能会对应多个雇员，比如，在一个公司的市场部会有多名市场人员，在这里我们使用select job from emp;查询的实际上是当前每个雇员对应的工作职位，有多少
+个雇员，就会对应的查询出多少个职位出来，所以就出现了重复值，为了消除这样的重复值，我们在这里可以使用关键字distinct，接下来我们继续完成上面的操作，即
+select distinct job from emp;
+所以，我们可以看到，使用distinct的语法是这样的：
+select distinct *|具体的列名 别名 from 表名称;
+但是在消除重复列的时候，需要强调的是，如果我们使用distinct同时查询多列时，则必须保证查询的所有列都存在重复数据才能消除掉。也就是说，当我们需要查询a,b,c三列时，如果a表存在重复值，但是b和c中没有重复值，当使用distinct时是看不到消除重复列的效果的。拿scott中的emp表为例，我们需要查询出雇员编号及雇员工作两个列的值，我们知道一个工作会对应多个雇员，所以，在这种操作中，雇员编号是没有重复值的，但是工作有重复值，所以，执行此次查询的结果将是得到每一个雇员对应的工作名称，显然，distinct没起到作用。
+现在我们得到了一个新的需求，要求我们按如下的方式进行查询：
+编号是：7369的雇员，姓名是：SMITH，工作是：CLERK
+那么，我们该如何解决呢？在这里，我们需要使用到Oracle 中的字符串连接（“||”）操作来实现。如果需要显示一些额外信息的话，我们需要使用单引号将要显示的信息包含起来。那么，上面的操作可以按照下面的方式进行，
+select '编号是' || empno || '的雇员，姓名是：' || ename || '，工作是：' || job from emp;
+下面我们再看一个新的应用。公司业绩很好，所以老板想加薪，所有员工的工资上调20%，该如何实现呢？难道在表中一个一个的修改工资列的值吗？很显然不是的，我们可以通过使用四则运算来完成加薪的操作。
+select ename,sal*1.2 newsal from emp;--newsal是为上调后的工资设置的列名
+四则运算，+、-、*、/，同样有优先顺序，先乘除后加减。
+1.4、限定查询（where子句）
+在前面我们都是将一张表的全部列或者指定列的所有数据查询出来，现在我们有新的需求了，需要在指定条件下查询出数据，比如，需要我们查询出部门号为20的所有雇员、查询出工资在3000以上的雇员信息......，这些所谓的查询限定条件就是通过where来指定的。我们先看看如何通过限定查询的方式进行相关操作。我们在前面知道了简单的查询语法是：
+select *|具体的列名 from 表名称;
+那么，限定查询的语法格式如下：
+select *|具体的列名 from 表名称 where 条件表达式;
+首先，我们现在要查询出工资在1500（不包括1500）之上的雇员信息
+select * from emp where sal&gt;1500;
+下面的操作是查询出可以得到奖金的雇员信息（也就是奖金列不为空的记录）
+select * from emp where comm is not null;
+很显然，查询没有奖金的操作就是
+select * from emp where comm is null;
+我们来点复杂的查询，查询出工资在1500之上，并且可以拿到奖金的雇员信息。这里的限定条件不再是一个了，当所有的限定条件需要同时满足时，我们采用and关键字将多个限定条件进行连接，表示所有的限定条件都需要满足，所以，该查询可以这么进行：
+select * from emp where sal&gt;1500 and comm is not null;
+现在的需求发生了变化，要求查询出工资在1500之上，或者可以领取到奖金的雇员信息。这里的限定条件也是两个，但是有所不同的是，我们不需要同时满足着两个条件，因为需求中写的是
+“或者”，所以在查询时，只需要满足两个条件中的一个就行。那么，我们使用关键字or来实现“或者”的功能。
+select * from emp where sal&gt;1500 or comm is not null;
+需求再次发生变化，查询出工资不大于1500（小于或等于1500），同时不可以领取奖金的雇员信息，可想这些雇员的工资一定不怎么高。之前我们使用not关键字对限定条件进行了取反，那么，这里就相当于对限定条件整体取反。我们分析下，工资不大于1500同时不可以领取奖金的反面含义就是工资大于1500同时可以领取奖金，所以，我们这样操作：
+select * from emp where sal&gt;1500 and comm is not null;
+这是原始需求取反后的查询语句，那么为了达到最终的查询效果，我们将限定条件整体取反，即
+select * from emp where not(sal&gt;1500 and comm is not null);
+在这里，我们通过括号将一系列限定条件包含起来表示一个整体的限定条件。
+我们在数学中学过这样的表达式：100&lt;a&lt;200，那么在数据库中如何实现呢？一样的，我们现在要查询出工资在1500之上，但是在3000之下的全部雇员信息，很显然，两个限定条件，同时要满足才行。
+select * from emp where sal&gt;1500 and sal&lt;3000;
+这里不要异想天开的写成select * from emp where 1500&lt;sal&lt;3000;（）试试吧，绝对会报错。 很简单，数据库软件不支持这样的写法，至少现在的数据库没有谁去支持这样的写法。
+在SQL语法中，提供了一种专门指定范围查询的过滤语句：between x and y，相当于a&gt;=x and a&lt;=y,也就是包含了等于的功能，其语法格式如下：
+select * from emp where sal between 1500 and 3000;
+现在我们使用这种范围查询的方式修改上面的语句如下：
+select * from emp where sal between 1500 and 3000;
+好了，我们现在开始使用数据库中非常重要的一种数据类型，日期型。
+查询出在1981年雇佣的全部雇员信息，看似很简单的一个查询操作，这样写吗？
+select * from emp where hiredate=1981;（）
+很显然，有错。hiredate是date类型的，1981看似是一个年份（日期），但是像这样使用，它仅仅是一个数字而已，类型都匹配，怎么进行相等判断呢？继续考虑。我们先这样操作，查询emp表的所有信息，
+select * from emp;
+从查询结果中，我们重点关注hiredate这一列的数据格式是怎么定义的，
+20-2月 -81，很显然，我们抽象的表示出来是这样的，
+一个月的第几天-几月 -年份的后两位
+所以，接下来我们就有思路了，我们就按照这样的日期格式进行限定条件的设置，该如何设置呢？考虑下，查询1981年雇佣的雇员，是不是这个意思，从1981年1月1日到1981年12月31日雇佣的就是我们需要的数据呢？所以，这样操作吧
+select * from emp where hiredate between '1-1月 -81' and '31-12月 -81';
+可以看到，上面的限定条件使用了单引号包含，我们暂且可以将一个日期看做是一个字符串。由上面的范例中我们得到结论：between...and ...除了可以进行数字范围的查询，还可以进行日期范围的查询。
+我们再来看下面的例子，查询出姓名是smith的雇员信息，嗯，很简单，这样操作
+select * from emp where ename='smith';
+看似没有问题，限定条件也给了，单引号也没有少，可是为什么查询不到记录呢？明明记得emp表中有一个叫做smith的雇员呀？难道被删掉了，好吧，我们不需要在这里耗费时间猜测语句自身的问题了，上面的语句在语法上没有任何问题，我们先看看emp表中有哪些雇员，
+select * from emp;
+可以看到，确实有一个叫做smith的雇员，但是不是smith，而是SMITH，所以，我们忽略了一个很重要的问题，Oracle是对大小写敏感的。所以，更改如下：
+select * from emp where ename='SMITH';
+现在看一个这样的例子，要求查询出雇员编号是7369,7499,7521的雇员信息。如果按照以前的做法，是这样操作的，
+select * from emp where empno=7369 or empno=7499 or empno=7521;
+执行一下吧，确实没任何问题，查询出指定雇员编号的所有信息。但是SQL语法提供一种更好的解决方法，使用in关键字完成上面的查询，如下：
+select * from emp where empno in(7369,7499,7521);
+总结下in的语法如下：
+select * from tablename where 列名 in (值1，值2，值3);
+select * from tablename where 列名 not in (值1，值2，值3);
+需要说明的是，in关键字不光可以用在数字上，也可以用在字符串的信息上。看下面的例子
+查询出姓名是SMITH、ALLEN、KING的雇员信息
+select * from emp where ename in('SMITH','ALLEN','KING');
+如果在指定的查询范围中附加了额外的内容，不会影响查询结果。
+模糊查询对于提高用户体验是非常好的，对于数据库的模糊查询，我们通过like关键字来实现。首先我们了解下like主要使用的两种通配符：
+|-“%”--&gt;可以匹配任意长度的内容，包括0个字符；
+|-“_”--&gt;可以匹配一个长度的内容。
+下面我们看这样一个需求，查询所有雇员姓名中第二个字母包含“M”的雇员信息
+select * from emp where ename like '_M%';
+说明下，前面的“_”匹配姓名中第一个字母（任意一个字母），“%”匹配M后面出现的0个或者多个字母。
+查询出雇员姓名中包含字母M的雇员信息。分析可知，字母M可以出现在姓名的任意位置，如何进行正确的匹配呢？
+select * from emp where ename like '%M%';
+这里还是使用%，匹配0个或者多个字母，即可以表示M出现在姓名的任意位置上。
+如果我们在使用like查询的时候没有指定查询的关键字，则表示查询内容，即
+select * from emp where ename like '%%';
+相当于我们前面看到的
+select * from emp;
+前面我们遇到了一个这样的需求，查询出在1981年雇佣的所有雇员信息，当时我们采取的是使用范围查询between ... and ...实现的，现在我们使用like同样可以实现
+select * from emp where hiredate like '%81%';
+查询工资中包含6的雇员信息
+select * from emp where sal like '%5%';
+在操作条件中还可以使用：&gt;、&gt;=、=、&lt;、&lt;=等计算符号
+对于不等于符号，有两种方式：&lt;&gt;、!=
+现在需要我们查询雇员编号不是7369的雇员信息
+select * from emp where empno&lt;&gt;7369;
+select * from emp where empno!=7369;
+1.5、对查询结果进行排序（order by子句）
+在查询的时候，我们常常需要对查询结果进行一种排序，以方便我们查看数据，比如以雇员编号排序，以雇员工资排序等。排序的语法是：
+select *|具体的列名称 from 表名称 where 条件表达式 order by 排序列1,排序列2 asc|desc;
+asc表示升序，默认排序方式，desc表示降序。
+现在要求所有的雇员信息按照工资由低到高的顺序排列
+select * from emp order by sal;
+在升级开发中，会遇到多列排序的问题，那么，此时，会给order by指定多个排序列。要求查询出10部门的所有雇员信息，查询的信息按照工资由高到低排序，如果工资相等，则按照雇佣日期由早到晚排序。
+select * from emp where deptno=10 order by sal desc,hiredate asc;
+需要注意的是，排序操作是放在整个SQL语句的最后执行。
+1.6、单行函数
+在众多的数据库系统中，每个数据库之间唯一不同的最大区别就在于函数的支持上，使用函数可以完成一系列的操作功能。单行函数语法如下：
+function_name(column|expression,[arg1,arg2...])
+参数说明：
+function_name：函数名称
+columne：数据库表的列名称
+expression：字符串或计算表达式
+arg1,arg2：在函数中使用参数
+单行函数的分类：
+字符函数：接收字符输入并且返回字符或数值
+数值函数：接收数值输入并返回数值
+日期函数：对日期型数据进行操作
+转换函数：从一种数据类型转换到另一种数据类型
+通用函数：nvl函数，decode函数
+字符函数：
+专门处理字符的，例如可以将大写字符变为小写，求出字符的长度。
+现在我们看一个例子，将小写字母转为大写字母
+select upper('smith') from dual;
+在实际中，我们会遇到这样的情况，用户需要查询smith雇员的信息，但是我们数据库表中存放的是SMITH，这时为了方便用户的使用我们将用户输入的雇员姓名字符串转为大写，
+select * from emp where ename=upper('smith');
+同样，我们也可以使用lower()函数将一个字符串变为小写字母表示，
+select lower('HELLO WORLD') from dual;
+那么，将字符串的首字母变为大写该如何实现呢？我们使用initcap()函数来完成上面的操作。
+select initcap('HELLO WOLRD') from dual;
+在前面的学习中我们知道，在scot账户下的emp表中的雇员姓名采用全大写显示，现在我们需要激昂姓名的首字母变为大写，该如何操作呢？
+select initcap(ename) from emp;
+我们在前面使用了字符串连接操作符“||”对字符串连接显示，比如：
+select '编号为' || empno || '的姓名是：' || ename from emp;
+那么，在字符函数中提供concat()函数实现连接操作。
+select concat('hello','world') from dual;
+上面的范例使用函数实现如下：
+select concat('编号为',empno,'的姓名是：',ename);?????????
+此种方式不如连接符“||”好使。
+在字符函数中可以进行字符串的截取、求出字符串的长度、进行指定内容的替换
+select substr('hello',1,3) 截取字符串，length('hello') 字符串长度,replace('hello','l','x') 字符串替换 from dual;
+通过上面范例的操作，我们需要注意几以下：
+Oralce中substr()函数的截取点是从0开始还是从1开始；针对这个问题，我们来操作看下，将上面的截取语句改为：
+select substr('hello',0,3) 截取字符串 from dual;
+由查询结果可以发现，结果一样，也就是说从0和从1的效果是完全一样，这归咎于Oracle的智能化。
+如果现在要求显示所有雇员的姓名及姓名的后三个字符，我们知道，每个雇员姓名的字符串长度可能不同，所以我们采取的措施是求出整个字符串的长度在减去2，我们这样操作，
+select ename,substr(ename,length(ename)-2) from emp;
+虽然功能实现了，但是有没有羽化的方案呢？当然是有的，我们分析下，当我们在截取字符串的时候，给定一个负数值是什么效果，对，就是倒着截取，我们采取这种方式优化如下：
+select ename,substr(ename,-3) from emp;
+数值函数：
+四舍五入：round()
+截断小数位：trunc()
+取余（取模）：mod()
+执行四舍五入操作,可以指定保留的小数位
+select round(789.536) from dual;
+select round(789.436) from dual;
+select round(789.436,2) from dual;
+可以直接对整数进行四舍五入的进位
+select round(789.536,-3) from dual;--1000
+select round(789.536,-2) from dual;--800
+trunc()函数与round()函数的不同在于，trunc不会保留任何的小数位，而且小数点也不会执行四舍五入的操作，也就是说在使用trunc()函数时，它会将数值从小数点截断，只保留整数部分。
+select trunc(789.536) from dual;--789
+当然使用trunc()函数也可以设置小数位的保留位数
+select trunc(789.536,2) from dual;--789.53
+select trunc(789.536,-2) from dual;--700
+使用mod()函数可以进行取余的操作
+select mod(10,3) from dual;--1
+日期函数：
+在Oracle中提供了很多余日期相关的函数，包括加减日期等。但是在日期进行加或者减结果的时候有一些规律：
+日期-数字=日期
+日期+数字=日期
+日期-日期=数字（天数的差值）
+显示部门10的孤雁进入公司的星期数，要想完成此查询，必须知道当前的日期，在Oralce中可以通过以下的操作求出当前日期，使用sysdate表示
+select sysdate from dual;
+如何求出星期数呢？使用公式：当前日期-雇佣日期=天数 / 7 = 星期数，所以
+select empno,ename,round((sysdate-hiredate)/7) from emp;
+在Oracle中提供了以下的日期函数支持：
+months_between()--&gt;求出给定日期范围的月数
+add_months()--&gt;在指定日期上加上指定的月数，求出之后的日期
+next_day()--&gt;下一个的今天是哪一个日期
+last_day()--&gt;求出给定日期的最后一天日期
+查询出所有雇员的编号，姓名，和入职的月数
+select empno,ename,round(months_between(sysdate,hiredate)) from emp;
+查询出当前日期加上4个月后的日期
+select add_months(sysdate,4) from dual;
+查询出下一个给定日期数
+select next_day(sysdate,'星期一') from dual;
+查询给定日期的最后一天，也就是给定日期的月份的最后一天
+select last_day(sysdate) from dual;
+转换函数：
+to_char()--&gt;转换成字符串
+to_number()--&gt;转换成数字
+to_date()--&gt;转换成日期
+我们先看看前面做的一个范例，查询所有雇员的雇员编号，姓名和雇佣时间
+select empno,ename,hiredate from emp;
+但是现在的要求是讲年、月、日进行拆分，此时我们就需要使用to_char()函数进行拆分，拆分的时候必须指定拆分的通配符：
+年--&gt;y，年是四位数字，所以使用yyyy表示
+月--&gt;m，月是两位数字，所以使用mm表示
+日--&gt;d，日是两位数字，所以使用dd表示
+select empno,ename,to_char(hiredate,'yyyy') year,to_char(hiredate,'mm') month,to_char(hiredate,'dd') day from emp;
+我们还可以使用to_char()进行日期显示的转换功能，Oracle中默认的日期格式是：19-4月 -87，而中国喜欢的格式是：1987-04-19
+select empno,ename,to_char(hiredate,'yyyy-mm-dd') from emp;
+从显示结果中我们可以看到，对于月份和日的显示中，如果不足10，就会自动补零，哪个0我们成为前导0，如果不希望显示前导0的话，则可以使用fm去掉
+select empno,ename,to_char(hiredate,'fmyyyy-mm-dd') from emp;
+当然，to_char()也可以用在数字上
+查询全部的雇员编号、姓名和工资
+select empno,ename,sal from emp;
+我们可以看到，当工资数比较大时，是不利于读的，那么，我们可以在数字中使用“，”每3位进行一个分隔，此时，就可以使用to_char()进行格式化。格式化时，9并不代表实际的数字9，而是一个占位符
+select empno,ename,to_char(sal,'99,999') from emp;
+还有一个问题，工资数表示的是美元还是人民币呢？如何解决显示区域的问题呢？我们可以使用下面的两种符号：
+L--&gt;表示Local的缩写，以本地的语言进行金额的显示
+$--&gt;表示美元
+select empno,ename,to_char(sal,'$99,999') from emp;
+to_number()是可以讲字符串变为数字的函数
+select to_number('123') + to_number('123') from dual;
+to_date()可以讲一个字符串变为date的数据
+select to_date('2012-09-12','yyyy-mm-dd') from dual;
+通用函数：
+现在又这样一个需求，求出每个雇员的年薪。我们知道求年薪的话应该加上奖金的，格式为(sal+comm)*12
+select empno,ename,(sal+comm)*12 from emp;
+查看结果，可以发现一个很奇怪的显现，竟然有的雇员年薪为空，这是如何引起的呢？我们分析下，首先可以查看下所有雇员的奖金列数据，发现只有部分雇员才可以领取奖金，没有领取奖金
+的雇员其comm列是空的，没有任何值（null），由此，上面的四则运算显然没结果。为了解决这个问题，我们需要用到一个通用函数nvl，将一个指定的null值变为指定的内容
+select empno,ename,(sal+nvl(comm,0))*12 from emp;
+decode()函数，此函数类似于if...elseif...else语句
+其语法格式为：
+decode(col/expression,search1,result1[search2,result2,......][,default])
+说明：col/expression--&gt;列名或表达式
+search1.search2......--&gt;为用于比较的条件
+result1、result2......--&gt;为返回值
+如果col/expression和search i 相比较，相同的话返回result i ，如果没有与col/expression相匹配的结果，则返回默认值default。
+select decode(1,1,'内容是1',2,'内容是2',3,'内容是3') from dual;
+那么，如何在对表查询时使用decode()函数呢？我们来定义一个需求，
+现在雇员的工作职位有：
+CLERK--&gt;业务员
+SALESMAN--&gt;销售人员
+MANAGER--&gt;经理
+ANALYST--&gt;分析员
+PRESIDENT--&gt;总裁
+要求我们查询出雇员的编号，姓名，雇佣日期及工作，将工作替换为上面的中文
+select empno 雇员编号,ename 雇员姓名,hiredate 雇佣日期,decode(job,'CLERK','业务员','SALESMAN','销售人员','MANAGER','经理','ANALYST','分析员','PRESIDENT','总裁') 职位 from emp;
+从查询结果可以看出，所有的职位都被相应的中文替换了。
+1.7、SQL语法练习
+现在我们再次通过相应的练习对scott账户下的四张表做进一步的熟悉。
+选择部门30中的所有员工。
+select * from emp where deptno=30;
+此查询包含一个限定条件
+列出所有业务员的姓名，编号和部门编号。
+select empno 编号,ename 姓名,deptno 部门编号 from emp where job='CLERK';
+此查询应用了别名，单个限定条件，需要注意的是Oracle是区分大小写的，所以我们要将业务员大写为“CLERK”才能查询出数据，或者使用upper()函数。
+select empno 编号,ename 姓名,deptno 部门编号 from emp where job=upper('clerk');
+找出佣金高于工资的雇员信息
+select * from emp where comm&gt;sal;
+此查询为单个限定条件的查询
+找出佣金高于工资的60%的雇员信息
+select * from emp where comm&gt;sal*0.6;
+此查询使用了比较运算符和四则运算符
+找出部门10中所有经理和部门20中所有业务员的详细信息。
+select * from emp where (deptno=10 and job='MANAGER') or (deptno=20 and job='CLERK');
+此查询使用了多限定查询，逻辑运算符and 和 or ，并且使用()将多个限定条件包含作为一个整体看待。
+看一个比较复杂的需求。找出部门10中所有经理，部门20中所有业务员，既不是经理又不是业务员但是工资大于或等于2000的所有雇员信息。
+select * from emp where (deptno=10 and job='MANAGER') or (deptno=20 and job='CLERK') or (sal&gt;=2000 and job not in('MANAGER','CLERK'));
+找出领取佣金的雇员的不用工作。这个需求包含的信息有，工作会重复复，所以我们需要使用关键字distinct消除重复的记录，能够领取佣金说明comm is not null
+select distinct job from emp where comm is not null;
+找出不能领取佣金或者领取的佣金低于100的雇员信息
+select * from emp where comm is null or comm&lt;100;
+找出每个月中倒数第三天雇佣的雇员信息，我们分析下，Oracle为我们提供了一个叫做last_day()的函数，它的功能是查询出指定日期的最后一天对应的日期，但是我们这里是要查询倒数第三天，如何处理？我们按照倒序的思想，将最后一天减去2不就得到了倒数第三天吗？
+select * from emp where last_day(hiredate)-2=hiredate;
+来一个很有趣的需求，找出早于12年前雇佣的雇员信息，我们将这个需求转变下，我们知道Oracle中有一个函数叫做months_between()，它的作用是查询出给定的日期的差值，这个差值是月份数，所以，我们这么考虑
+select * from emp where months_between(sysdate,hiredate)/12&gt;12;
+看一个字符函数的应用。以首字母大写的方式显示所有雇员的姓名
+select initcap(ename) from emp;
+显示雇员姓名长度正好是5的雇员姓名
+select ename from emp where length(ename)=5;
+显示雇员姓名中不含“R”的雇员姓名
+select ename from emp where ename not like '%R%';
+此查询使用了like语句做模糊查询，当like后指定的关键字为“%%”时，表示查询出所有数据
+显示所有雇员姓名的前三个字符
+select substr(ename,0,3) from emp;
+select substr(ename,1,3) from emp;
+此处应该强调的是，截取点的指定中，0和1的效果是一样的。
+显示所有雇员的姓名，并且用“a”替换所有的“A”
+select ename,replace(ename,'A','a') from emp;
+此处要强调的是replace()函数的参数中，第一个表示需要做替换操作的列名称，第二个参数是新的字符串，第三个参数表示的是原始的字符串，也就是需要替换的字符串。
+显示工龄为10或以上的雇员姓名和雇佣日期
+select ename,hiredate from emp where months_between(sysdate,hiredate)/12&gt;10;
+显示雇员的详细信息，并按照姓名排序
+select * from emp order by ename;
+显示雇员的姓名和雇佣时间，根据其工龄，将最老的雇员排在最前面
+select ename,hiredate from emp order by hiredate;
+显示所有雇员的姓名、工作和工资，按照工作降序排列，若工作相同则按照工资排序
+select ename,job,sal from emp order by job desc,sal;
+显示所有雇员的姓名、雇佣的年份，月份，按照雇佣日期所在月排序，如果月份相同则将最早的年份的雇员排在最前面。此需求首先要求出所有雇员的雇佣月份，使用to_char()函数求出月份
+select ename,to_char(hiredate,'mm') month,to_char(hiredate,'yyyy') year from emp order by month,year;
+显示在一个月为30天的情况下所有雇员的日薪，忽略余数。忽略余数使用round()函数完成
+select ename,round(sal/30) from emp;
+找出在每年2月份雇员的所有雇员信息
+select * from emp where to_char(hiredate,'mm')=2;
+此处还是使用了to_char()函数求出月份
+对于每个雇员，显示其到今天为止的总天数
+select ename,round(sysdate-hiredate) from emp;
+显示雇员姓名中包含“A”的所有雇员姓名
+select ename from emp where ename like '%A%';
+以年月日的方式显示所有雇员的工龄。年，求出总月数/12，此时会产生小数，但是我们不能再这里进行四舍五入，而是采用trunc()函数得到整数部分
+select ename,trunc(months_between(sysdate,hiredate)/12) year from emp;
+现在工龄的年得到了，下面求出月份，我们知道年除完之后的余数就是月，使用取余函数进行处理
+select ename ,trunc(months_between(sysdate,hiredate)/12) year,trunc(mod(months_between(sysdate,hiredate),12)) month from emp;
+得到月份后，如何求出天数呢？我们知道日期-日期得到的是天数（需要做取整处理），将总天数/30（假设每月为30天）得到的就是剩余的天数值
+select ename ,trunc(months_between(sysdate,hiredate)/12) year,trunc(mod(months_between(sysdate,hiredate),12)) month,trunc(mod(sysdate-hiredate,30)) day from emp;
+这样就完成了上面的查询操作。
+第三次
+1、Oracle
+1.1、多表查询
+1) 多表查询的基本语法
+前面的查询都是针对一张表的操作，如果在查询的时候涉及到多张表，那么就称为多表查询，夺标查询的语法如下：
+select *|具体的列名 from 表名称1,表名称2 where 条件表达式 order by 排序字段 asc|desc;
+下面看一个例子，对emp表和dept表进行查询
+select * from emp,dept;
+如此多的数据，我们要向知道当前的记录总数，如何操作呢？
+select count(*) from emp,dept;--56
+select count(*) from emp;--14
+select count(*) from emp;--4
+此处查询使用count(*|具体的列名)查询总记录数
+上面的三条查询语句分别得到了多表查询，单表查询的总记录数，很明显的看到，多表查询的记录数56并不等于单表查询的总记录数之和18，怎么回事呢？因为，在进行多表查询时，会产生笛卡尔积，如果表的数据越多，那么笛卡尔积就会越大。如果现在有5张表，每张表有10000条数据，查询5张表会产生10000的5次方条数据，所以在实际开发中多表查询不建议过多的使用。
+要向去掉笛卡尔积，可以使用关联来实现。现在我们知道emp表中有字段deptno，dept表中有字段deptno，emp.deptno=dept.deptno就是灌篮字段。在多表查询中加入where语句就可以消除笛卡尔积
+select * from emp,dept where emp.deptno=dept.deptno;
+此时查询的记录数为14条，但是如果表名过长的话，不方便我们使用，所以一般我们会为表名设置别名，
+select * from emp e,dept d where e.deptno=d.deptno;
+如果在进行多表查询时，最好为表名设置别名
+要求查询出雇员的编号、雇员姓名、部门编号、部门名称及部门位置
+select e.empno,e.ename,e.deptno,d.dname,d.loc from emp e,dept d where e.deptno=d.deptno;
+要求查询出每个雇员的姓名，工作，雇员的直接上级领导的姓名
+select e.ename,e.job,m.ename from emp e,emp m where e.mgr=m.empno;
+此处查询将emp表做自身的关联
+继续扩展之前的程序，要求将雇员素在部门名称同时列出
+select e.ename,e.job,m.ename,d.dname from emp e,emp m,dept d where e.mgr=m.empno and e.deptno=d.deptno;
+查询出每个雇员的姓名，工资，部门名称，工资等级，以及领导的姓名及工资所在公司的等级
+先确定工资等级表
+select * from salgrade;
+在查询出每个雇员的姓名，工资，部门名称和工资等级
+select e.ename,e.sal,d.dname,s.grade from emp e,dept d,salgrade s where e.deptno=d.deptno and e.sal between s.losal and s.hisal;
+查询其领导的姓名及工资等级
+select e.ename,e.sal,m.ename,decode(ms.grade,1,'第五等工资',2,'第四等工资',3,'第三等工资',4,'第二等工资',5,'第一等工资'),decode(s.grade,1,'第五等工资',2,'第四等工资',3,'第三等工资',4,'第二等工资',5,'第一等工资'),d.dname from emp e,emp m,dept d,salgrade s,salgrade ms where e.mgr=m.empno and m.sal between ms.losal and ms.hisal and e.deptno=d.deptno and e.sal between s.losal and s.hisal;
+2) 左、右连接
+现在我们先查询下dept表中的数据
+select * from dept;
+可以看到，dept表中包含了4条记录，现在我们将emp表和dept表关联查询，查询一下指定的字段
+select e.empno,e.ename,d.deptno,d.dname,d.loc from emp e,dept d where e.deptno=d.deptno;
+有查询结果可以看到，部门表中的部门号只出现了3个，因为在雇员表中没有指定40部门的雇员，但是我们现在需要查看两张表关联后的完整信息，该如何进行呢？
+select e.empno,e.ename,d.deptno,d.dname,d.loc from emp e,dept d where e.deptno(+)=d.deptno;
+现在的结果中没有指定雇员的部门信息也显示出来了。这里我们使用到了右连接。有如下规律：
+(+)在=左边表示右连接,查询时以=右边的表作为标准
+(+)在=右边表示左连接，查询时以=左边的表作为标准
+在前面我们有过如下操作：查询雇员的编号，姓名及其领导的编号、姓名
+select e.empno,e.ename,m.ename from emp e,emp m where e.mgr=m.empno;
+但是我们仔细观察会发现，雇员名称为KING的雇员信息没有显示出来，我们知道KING为president，没有领导，所以按照上面的方式是不能查询出来的，修改如下：
+select e.empno,e.ename,m.ename from emp e,emp m where e.mgr=m.empno(+);
+发现在加入做链接后KING出现了。
+3） SQL:1999语法对SQL的支持
+SQL:1999语法格式如下：
+select table1.column,table2.column from table1
+[cross join table2]|
+[natural join table2]|
+[join table2 using(column_name)]|
+[join table2 on(table1.column_name=table2.column_name)]|
+[left|right|full outer join table2 on(table1.column_name=table2.column_name)];
+交叉连接（cross join）：产生笛卡尔积
+select * from emp cross join dept;--56
+自然连接（natural join）：自动进行关联字段的匹配
+select * from emp natural join dept;
+相当于
+select * from emp,dept where emp.deptno=dept.deptno;
+using子句：直接关联的操作列
+select * from emp e join dept d using(deptno) where deptno=30;
+on子句，用户自己编写连接的条件
+select * from emp e join dept d on(e.deptno=d.deptno) where d.deptno=30;
+左连接（左外连接）、右连接（右外连接）：left join,right join
+select e.ename,d.deptno,d.dname,d.loc from emp e right outer join dept d on(e.deptno=d.deptno);
+1.2、组函数及分组统计
+什么是分组？
+举例吧，把所有男生分为一组，把所有女生分为一组。
+如果想要求出每一组的平均身高，评价呢年龄等，就需要使用分组函数。
+1) 组函数
+在SQL中常用的组函数有以下几个：
+count()--&gt;求出全部的记录数
+max()--&gt;求出一组数据中的最大值
+min()--&gt;求出一组数据中的最小值
+avg()--&gt;求出平均值
+sum()--&gt;求和
+count()函数：
+现在我们需要查询出emp中有多少个雇员
+select count(*) from emp;--14
+max()、min()，求最大最小值，一般是针对数字的应用
+求出所有雇员的最低工资
+select min(sal) from emp;
+求出所有雇员的最高工资
+select max(sal) from emp;
+sum()、avg()，求和，求平均值
+求出部门20中的总工资
+select sum(sal) from emp where deptno=20;
+求出所有雇员的平均工资
+select avg(sal) from emp;
+2） 分组统计
+要想使用分组统计，则首先应该固定其语法，使用group by进行分组，此时SQL语法格式如下：
+select *|具体的列
+from 表名称1
+where 条件表达式
+group by 分组条件
+order by 排序字段 asc|desc
+求出每个部门的雇员数量，这里需要按照部门编号划分，及按照deptno分组
+select deptno,count(empno) from emp group by deptno;
+求出每个部门的平均工资
+select deptno,avg(sal)
+from emp
+group by deptno;
+现在，我们观察下面的一行代码：
+select deptno,count(empno) from emp;
+以上代码不能正确执行，报错为：不是单组分组函数，为什么呢？
+如果程序中使用了分组函数，则有两种可以使用的情况：
+1-程序中存在了group by，并指定了分组条件，这样可以将分组条件一起查询出来。
+2-如果不使用分组的话，则只能单独的使用分组函数
+在使用分组函数的时候，不能出现分组函数和分组条件之外的字段。
+看下面的代码：
+select deptno,empno,count(empno) from emp group by deptno;
+程序会报错，提示empno不是group by表达式，因为在这里，我们使用了组函数count(empno),group by deptno,根据先前的规则，empno的出现是不合法的。
+按照部门分组，并显示部门的名称，及每个部门的员工数
+select d.dname,count(e.ename) from dept d,emp e where d.deptno=e.deptno group by d.dname;
+要求显示出平均工资大于2000的部门编号和平均工资
+select deptno,avg(sal) from emp where avg(sal)&gt;2000 group by deptno;
+程序报错，提示avg(sal)&gt;2000处不允许使用分组函数。因为分组函数只能在分组中使用，不允许出现在where语句之中，那么如果现在假设要指定分组的条件，则只能通过第二种条件的指令，having，此时SQL语法格式为：
+select * | 具体的列名
+from 表名称
+where 条件表达式
+group by 分组条件
+having 分组条件
+order by 排序字段 asc|desc
+所以，我们使用having完成上面的操作
+select deptno,avg(sal) from emp group by deptno having avg(sal)&gt;2000;
+下面我们看一个这样的需求：显示非销售人员工作名称以及从事同一工作的雇员的月工资的总和，并且要满足从事同一工作的雇员的月工资合计大于5000，输出结果按照月工资的合计升序排列
+·-首先我们查询出全部的非销售人员，限定条件job&lt;&gt;'SALESMAN'
+select * from emp where job&lt;&gt;'SALESMAN';
+·-按照工作名称分组，并且求出每组的工资总和
+select job,sum(sal) from emp
+where job&lt;&gt;'SALESMAN'
+group by job;
+·-对分组的调价进行限制，工资总和大于5000
+select job,sum(sal) from emp
+where job&lt;&gt;'SALESMAN'
+group by job
+having sum(sal)&gt;5000;
+·-对查询结果按照月工资的合计升序排列
+select job,sum(sal) from emp
+where job&lt;&gt;'SALESMAN'
+group by job
+having sum(sal)&gt;5000
+order by sum(sal) asc;
+下面我们总结下分组的简单原则：
+--只要一列上存在重复的内容才有可能考虑到分组
+使用分组时的注意点：
+--分组函数可以嵌套使用，但是在组函数嵌套使用的时候不能再出现分组条件的查询语句
+例如，我们要求求出平均工资最高的部门工资
+select deptno,max(avg(sal)) from emp
+group by deptno;
+程序会报错，提示deptno不是单组分组函数
+修改代码如下：
+select max(avg(sal)) from emp
+group by deptno;
+1.3、子查询
+子查询：在一个查询的内部还包括另外一个查询，则此查询称为子查询，子查询的格式如下：
+select * | 具体的列名称
+from 表名称
+where 条件表达式(
+select * | 具体的列名称
+from 表名称
+where 条件表达式(
+...
+)
+group by 分组条件
+having 分组条件
+order by 排序字段 asc|desc
+)
+group by 分组条件
+having 分组条件
+order by 排序字段 asc|desc
+要求查询出比7654工资要高的全部雇员信息
+·-首先要知道7654雇员的工资是多少
+select sal from emp where empno=7654;
+·-上面查询的结果作为最后查询的子查询结果，只要是其他的工资大于上面的查询结果，则表示符合条件。
+select * from emp where sal&gt;(select sal from emp where empno=7654);
+应该要强调的是，所有的子查询语句必须在“()”中编写。
+子查询在操作上分为三类：
+单列子查询：返回的结果是某列的一个内容，出现的几率最高
+单行子查询：返回多个列，有可能是一条完整的记录
+多行子查询：返回多条记录
+要求查询出工资比7654高，同时与7788从事相同工作的全部雇员信息
+·-查询出7654的工资
+select sal from emp where empno=7654;
+·-查询出7788的工作名称
+select job from emp where empno=7788;
+·-总和查找
+select * from emp where sal&gt;(select sal from emp where empno=7654) and job=(select job from emp where empno=7788);
+要求查询出工资最低的雇员姓名，工作，工资
+·-求出最低工资
+select min(sal) from emp;
+·-以最低工资为条件进一步查询
+select ename,job,sal from emp
+where sal=(select min(sal) from emp);
+要求查询出：部门名称，部门的员工数，部门的平均工资，部门的最低收入的雇员姓名，此时，程序需要两张表关联：dept、emp
+·-如果要想求出每个部门的员工数，平均工资，要使用分组统计，这里我们按照deptno进行分组
+select deptno,count(empno),avg(sal) from emp
+group by deptno;
+·-但是我们要查询的是部门的名称，所以这里需要与dept表进行关联
+select d.dname,ed.c,ed.a
+from dept d,
+(select deptno,count(empno) c,avg(sal) a from emp
+group by deptno) ed
+where d.deptno=ed.deptno;
+·-求出最低收入的雇员姓名
+select d.dname,ed.c,ed.a,e.ename
+from dept d,(select deptno,count(empno) c,avg(sal) a,min(sal) min from emp
+group by deptno) ed,emp e
+where d.deptno=ed.deptno and e.sal=ed.min;
+但是此程序中有一个问题，如果一个部门中同时存在两个给你工资最低的雇员，则程序会出现错误。
+在子查询中，存在以下三种查询的操作符号：
+in、any、all
+in操作符的作用是指定一个查询的范围
+求出每个部门的最低工资的雇员信息。
+分析：每个部门的最低工资，返回值肯定是多个，所以此时可以使用in指定一个操作范围。
+select * from emp
+where sal in(select min(sal) from emp group by deptno);
+any操作符的一般用法：=any（与in操作符的功能完全一样）、&gt;any（比里面最小的值要大）、&lt;any（比里面最大的值要小）
+select * from emp
+where sal=any(select min(sal) from emp group by deptno);
+all操作符的一般用法：&gt;all（比最大值要大）、&lt;all（比最小值要小）
+select * from emp
+where sal&gt;all(select min(sal) from emp group by deptno);
+对于子查询来讲，还可以进行多列子查询，一个子查询中同时返回多个查询的列。
+select * from emp
+where (sal,nvl(comm,-1)) in(select sal,nvl(comm,-1) from emp where deptno=20);
+1.4、数据库更新操作
+数据库的主要操作分为两种：
+--数据库的查询操作：select
+--数据库的更新操作：insert、update、delete
+此时，为了保存原始的emp表的信息，在进行增加、修改、删除操作之前，先将此表复制一份
+create table myemp as select * from emp;
+1） 添加数据
+添加数据的语法是：
+insert into 表名称[(字段名1,字段名2,......)] values(值1,值2,......);
+为myemp表添加一条新的记录，按照标准的做法完成
+insert into myemp(empno,ename,job,mgr,hiredate,sal,comm,deptno) values(7899,'张三','清洁工',7369,'14-2月 -1995',9000,300,40);
+在添加数据时，需要强调的是：对于数字，不用加单引号，但是字符串必须加上单引号。可以使用简略写法，当我们想全部的阻断插入数据时，可以不用指定需要插入数据的字段名，但是，我们并不推荐这种写法，因为这样写的坏处在于，当我们向部分字段插入数据时，需要和表的字段顺序一一对一个才能插入成功，而使用标准写法时，只需要指定的字段名和value中的值一一对应就可以完成插入操作。
+插入部分数据，现在要求插入一个新的雇员，但是此雇员暂时没有领导，也没有奖金，也就是说，在插入数据的时候，mgr和comm字段的值要置空。
+第一种做法：不明确写出要插入的字段名 ，没有数据的字段写成null
+insert into myemp values(8889,'王五','清洁工',null,'14-2月 -1982',9000,null,40);
+第二种做法：明确写出要插入的字段名
+insert into myemp(empno,ename,job,hiredate,sal,deptno) values(8889,'王五','清洁工','14-2月 -1982',9000,40);
+在上面的插入操作中，我们应该发现了这么一个问题，插入的日期都是按照Oracle默认的日期格式进行书写的，但是，现在有一个“2009-01-19”这样格式的日期，该如何插入到数据库表中呢？我们英爱还记得在前面学习单行函数的时候，介绍了一个叫做to_date()的函数，该函数的功能是将一个字符串类型的数据变为date类型的数据。
+insert into myemp(empno,ename,job,hiredate,sal,deptno) values(8888,'赵六','保洁工',to_date('2009-01-19','yyyy-mm-dd'),9000,40);
+2） 修改数据
+在SQL语法中使用update语句就可以完成数据的修改功能，此语句的语法格式如下：
+修改全部：update 表名称 set 要修改的字段=新值,要修改的字段=新值,......;
+修改局部：update 表名称 set 要修改的字段=新值,要修改的字段=新值,...... where 修改条件;
+但是，从一般的开发角度上讲，我们都在修改数据时加上修改条件
+现在将myemp表中的所有雇员的奖金修改为1000--&gt;修改全部
+update myemp set comm=1000;
+将编号为7899的雇员的工资修改为5000--&gt;指定了更新条件
+update myemp set sal=5000 where empno=7899;
+将编号为7899的雇员的领导取消
+update myemp set mgr=null where empno=7899;
+注意点：在进行数据库更新的操作时，一定要写上更新的条件，拒绝批量更新。
+将7369、8899、7788的领导及奖金取消
+update myemp set mgr=null,comm=null where empno in(7369,7788,8899);
+3） 删除数据
+在SQL语法中可以使用delete命令删除记录，语法格式如下：
+删除全部：delete from 表名称;
+删除局部：delete from 表名称 where 删除条件;
+删除编号是7899的雇员信息
+delete from myemp where empno=7899;
+删除编号是8889,7889,8888的雇员信息
+delete from myemp where empno in(8889,7889,8888);
+删除掉全部领取奖金的雇员
+delete from myemp where comm is not null;
+删除表的全部内容，此时不需要指定删除条件
+delete from myemp;
+在实际开发中不建议使用全部删除，在执行删除命令的时候都要指定删除条件。
+1.5、事务处理
+创建一个只包含10部门雇员信息的临时表
+create table emp10 as select * from emp where deptno=10;
+删除emp10中7782的雇员信息
+delete from emp10 where empno=7782;
+当我们再次查询emp10表的数据时，该数据确实删除了，接下来，我们做如下操作，再次开启一个sqlplus窗口，再次查询emp10的数据，我们发现雇员编号为7782的雇员信息仍然存在，这是为什么？
+这就是Oracle中事务处理的概念了。
+事务处理：所谓事务处理就是保证数据的完整性，所有的操作要么同时成功，要么同时失败。
+在Oracle中对于每一个连接到数据库的窗口（sqlplus、sqlplusw）连接之后实际上都会与数据库建立一个session，即：每一个连接到数据库上的用户表示创建了一个session。
+一个session对数据库所做的修改，不会立刻反映到数据库的真实数据之上，是允许回滚的，当一个session提交所有的操作之后，数据库才真正的做出了修改。
+在数据库的操作中提供了以下两个主要命令完成事物的处理：
+--提交事物：commit
+--回滚事物：rollback
+如果数据已经被提交了则肯定无法回滚，所以，回滚只有在事物未被提交时才有效。
+在Oracle中关于事物的处理上夜壶存在一种死锁的概念。
+一个session如果更新了数据库中的记录，其他session是无法立刻更新的，要等待对方提交之后才允许更新。
+下面我们来测试下Oracle的事务处理是如何进行的。
+首先，我们在窗口1中查询出emp10的数据
+select * from emp10;
+现在做一个更新的操作，将编号为7934的雇员的工资更改为3000
+update emp10 set sal=3000 where empno=7934;
+现在我们再次查询emp10的数据，发现，编号为7934的雇员工资确实更改为3000来 ，但是我们应该知道，对于这个更新操作，我们是没有提交的，我们现在再打开一个窗口，查询emp10的数据，发现编号为7934的雇员工资还是1300，这就验证了我们所说的“事物未提交”，接下来，我们在窗口2中进行一个更新操作，将7839的奖金设置为10000
+update emp10 set comm=10000 where empno=7839;
+下面我们在窗口1中提交事物
+在窗口2中再次查询emp10的数据，更新成功。
+在窗口2中提交事物
+同样在窗口1中查询emp10的数据，更新成功。
+1.6、查询练习
+列出至少有一个员工的所有部门
+select deptno ,count(empno) from emp
+group by deptno;
+此查询使用了组函数，分组，注意，如果不加分组，该程序会报错
+列出部门人数大于1的所有部门编号
+select deptno,count(empno) from emp
+group by deptno having count(empno)&gt;1;
+这里没使用where设置查询限定条件，因为where子句中时不能出现函数的。
+通过部门表，查询出部门的信息
+select d.*,ed.cou from dept d,(select deptno,count(empno) cou from emp
+group by deptno) ed
+where d.deptno=ed.deptno;
+列出工资比“SMITH”多的所有雇员。
+--求出SMITH的工资
+select sal from emp where ename='SMITH';
+--将上面的结果作为查询条件，只要工资比上面的结果大的就是符合条件的
+select * from emp where sal&gt;(select sal from emp where ename='SMITH');
+列出所有员工的姓名和其直接上司的姓名
+--此程序属于自身关联查询，为了得到KING，我们使用左连接查询，以等号左边的表为标准
+select e.ename,m.ename from emp e,emp m
+where e.mgr=m.empno(+);
+列出雇佣日期早于其直接上级的所有雇员的编号、姓名和部门名称
+--自身关联，查找mgr=empno的同时还要比较hiredate，我们先查询编号和姓名
+select e.empno,e.ename
+from emp e,emp m
+where e.mgr=m.empno and e.hiredate&lt;m.hiredate;
+--如果要加入部门名称，我们需要加入dept表，做表关联查询
+select e.empno,e.ename,d.dname
+from emp e,emp m,dept d
+where e.mgr=m.empno and e.hiredate&lt;m.hiredate and e.deptno=d.deptno;
+列出部门名称和这些部门的雇员信息，同时列出那些没有雇员的部门
+--左右关联问题，以=右边的表为标准
+select d.deptno,d.dname,e.empno,e.ename
+from dept d,emp e
+where d.deptno=e.deptno(+);
+列出所有“CLERK”的姓名和其部门名称，部门的人数
+--找出所有CLERK的姓名和部门编号
+select ename,deptno from emp
+where job='CLERK';
+--要想查询部门名称，则必须使用dept表
+select e.ename,d.dname from emp e,dept d
+where job='CLERK' and e.deptno=d.deptno;
+--部门人数要用到分组完成，一旦使用分组，肯定是group by
+select e.ename,d.dname,ed.cou
+from emp e,dept d,(select deptno, count(empno) cou from emp group by deptno) ed
+where job='CLERK' and e.deptno=d.deptno and ed.deptno=e.deptno;
+列出最低工资大于1500的各种工作以及从事此工作的全部雇员人数
+--按工作分组，分组条件是最低工资大于1500
+select job,min(sal) from emp
+group by job having min(sal)&gt;1500;
+--工作就出来了，之后再求全部的雇佣人数
+select e.job,count(e.empno)
+from emp e
+where e.job in(
+select job from emp
+group by job having min(sal)&gt;1500
+)
+group by e.job;
+列出在部门“SALES”工作的员工姓名，假定不知道销售部的部门编号
+--通过dept表查询出销售部的部门编号
+select deptno from dept where dname='SALES';
+--将上面的查询结果作为下一步查询的条件
+select ename from emp
+where deptno=(
+select deptno from dept where dname='SALES'
+);
+列出工资高于公司平均工资的所愿雇员，所在部门，上级领导，公司的工资等级
+--求出公司的平均工资
+select avg(sal) from emp;
+--列出工资高于平均工资的雇员信息
+select * from emp where sal&gt;(select avg(sal) from emp);
+--与部门表关联，查出所在部门的信息
+select e.*,d.dname,d.loc from emp e,dept d
+where sal&gt;(select avg(sal) from emp) and e.deptno=d.deptno;
+--要想查出上级领导，需要和自身进行关联查询
+select e.empno,e.ename,m.ename,m.empno,d.deptno,d.dname,d.loc
+from emp e,dept d,emp m
+where e.sal&gt;(select avg(sal) from emp)
+and e.deptno=d.deptno
+and e.mgr=m.empno(+);
+--与工资等级表关联，查出工资等级
+select e.empno,e.ename,s.grade,m.ename,m.empno,d.deptno,d.dname,d.loc
+from emp e,dept d,emp m,salgrade s
+where e.sal&gt;(select avg(sal) from emp)
+and e.deptno=d.deptno
+and e.mgr=m.empno(+)
+and e.sal between s.losal and s.hisal;
+列出与scott从事相同工作的所有雇员及部门名称
+--找到scott的工作
+select job from emp where ename='SCOTT';
+--找到和上面查询工作相同的雇员
+select * from emp where job=(select job from emp where ename='SCOTT');
+--使用dept表查询出所在部门名称
+select e.*,d.dname from emp e,dept d
+where job=(select job from emp where ename='SCOTT')
+and ename!='SCOTT'
+and d.deptno=e.deptno;
+列出工资等于部门30中雇员的工资的所有雇员姓名和工资
+--查出部门30中雇员的工资
+select sal from emp where deptno=30;
+--找出工资等于上面结果的雇员姓名
+select ename,sal from emp
+where sal in(select sal from emp where deptno=30)
+and deptno!=30;
+列出工资高于在30部门工作的所有雇员的工资的雇员姓名和工资，部门名称
+--在之前的程序上进行修改，使用&gt;all，比最大的还要大
+select ename,sal
+from emp where sal&gt;all(
+select sal from emp where deptno=30
+)
+and deptno!=30;
+--使用dept表，查询出部门名称
+select e.ename,e.sal,d.dname from emp e,dept d
+where sal&gt;all(
+select sal from emp where deptno=30
+)
+and e.deptno!=30
+and e.deptno=d.deptno;
+列出在每个部门工作的雇员数量，平均工资和平均工龄
+--求出每个部门的雇员数量，按照部门名称分组
+select d.dname,count(e.empno)
+from emp e,dept d
+where e.deptno=d.deptno
+group by d.dname;
+--求出每个部门的平均工资和工龄
+select d.dname,count(e.empno),avg(e.sal),avg(months_between(sysdate,hiredate)/12) 年
+from emp e,dept d
+where e.deptno=d.deptno
+group by d.dname;
+列出所有雇员的姓名、部门名称和工资
+--直接两张表关联
+select e.ename,e.sal,d.dname
+from emp e,dept d
+where e.deptno=d.deptno;
+列出所有部门的详细信息和部门的人数
+--列出每个部门的雇员人数
+select deptno,count(empno) cou
+from emp
+group by deptno;
+--把以上的查询作为一张临时表
+select d.*,ed.cou from dept d,
+(select deptno dto,count(empno) cou from emp group by deptno ) ed
+where d.deptno=ed.dto;
+查询结果中没包含40部门，修改如下
+select d.*,nvl(ed.cou,0) from dept d,
+(select deptno dto,count(empno) cou from emp group by deptno ) ed
+where d.deptno=ed.dto(+);
+列出各种工作的最低工资及从事此工作的雇员姓名
+--按照工作分组，使用min()求出最低工资
+select job,min(sal) from emp group by job;
+--按照工资查询出雇员的信息
+select * from emp
+where sal in(select min(sal) from emp group by job);
+列出各个部门的MANAGER的最低工资
+select deptno,min(sal)
+from emp
+where job='MANAGER'
+group by deptno;
+列出所有雇员的年薪，按照年薪从低到高排序
+select ename,(sal+nvl(comm,0))*12 yearsal from emp order by yearsal asc;
+查询某个雇员的上级主管，并求出这些主管中的薪水超过3000的
+select distinct m.* from emp e,emp m
+where e.mgr=m.empno and m.sal&gt;3000;
+求出部门名称中带“S”的部门雇员的工资合计和部门人数
+--查询部门表的部门名称，使用模糊查询，来确定部门的编号
+select deptno from dept where dname like '%S%';
+--查询出符合上述条件的雇员工资合计和部门人数
+select deptno,sum(sal),count(empno) from emp
+where deptno in(select deptno from dept where dname like '%S%')
+group by deptno;
+第四次
+1、Oracle
+1.1、 创建和管理表
+1） 常用的数据类型
+varchar\varchar2--&gt;表示的是一个字符串，有长度限制，255,
+number--&gt;number(n):表示一个整数，数字的长度是n，可以使用int
+number(m,n):表示一个小数，数字小数长度为n，整数长度为m-n，可以使用float
+date--&gt;表示日期的类型，日期要按照标准的日期格式进行存放
+clob--&gt;大对象，表示大文本数据，一般可以存放4G的文本
+blob--&gt;大对象，表示二进制数据，最大可以存放4G，如：电影，歌曲，图片
+2） 表的建立
+表的建立还是按照标准的语法进行，但是在表的建立时有时候会指定约束，那么此处先给出一个建立表的简单语法。
+create table 表名称(
+字段名称1 字段类型 [default 默认值],
+字段名称2 字段类型 [default 默认值],
+....
+字段名称n 字段类型 [default 默认值]
+)
+在前面我们使用了一种这样的语法来创建表：
+create table 表名称 as (子查询)--将子查询的结果作为一张表
+如果现在子查询写的是：select * from emp;表示将表结构和表的内容一起复制
+如果现在子查询写的是：select * from emp where 1=2;加入了一个永远都不会成立的条件，则此时表示我们复制的只是表的结构，不复制表的内容
+复制表结构：
+create table temp as(select * from emp where 1=2);
+3） 表的删除
+表的删除语法如下：
+drop table 表名称;
+4） 表的修改
+在SQL语法操作中，提供了alter指令，通过alter指令就可以增加新的列
+为emp表添加一个address列
+alter table emp add(address varchar2(200) default'暂无地址');
+修改emp表中的ename，将长度改为50
+alter table emp modify(ename varchar2(50));
+5） 为表重命名
+在Oracle中提供了rename命令，可以为表重新进行命名，但是此语句只能在Oracle中使用。语法格式如下：
+rename 旧的表名称 to 新的表名称;
+6） 截断表
+如果现在我们需要清空一张表的数据，但是同时不需要回滚，可以立刻释放资源就需要使用截断表的语法：
+truncate table 表名称;
+思考下面的问题：现在有一张国家表，里面只有一个国家名称的字段，内容如下：“中国、美国、巴西、荷兰“，现在要求通过查询实现对战功能：
+中国-&gt;美国
+中国-&gt;巴西
+中国-&gt;荷兰
+美国-&gt;中国
+美国-&gt;巴西
+美国-&gt;荷兰
+......
+分析：本程序只能使用笛卡尔积完成
+首先，建立一张表
+create table national(
+name varchar2(30)
+)
+向表中增加测试数据
+insert into national(name) values('中国');
+insert into national(name) values('美国');
+insert into national(name) values('巴西');
+insert into national(name) values('荷兰');
+查询的时候表自己和自己关联
+select n1.name,n2.name from national n1,national n2 where n1.name&lt;&gt;n2.name;
+1.2、约束
+在数据库表的开发中，余数是必不可少的支持。使用约束可以更好的保证数据库中的数据完整性。
+数据库中的约束分类：
+--在实际中，约束主要分为以下五种：
+···主键约束primary key：主键表示是一个唯一的标识，本身是不能为空的
+|-例如：身份证号是唯一的，不可重复，不可为空
+···唯一约束unique：在一个表中只允许建立一个主键约束，而其他列如果不希望出现重复值的话，则可以使用唯一约束。
+···检查约束：检查一个列的内容是否合法
+|-例如：年龄。只能在0~150之间
+|-例如：性别，只能是男、女、中性
+···非空约束：姓名这样的字段里面的内容就不能为空
+···外键约束：在两张表中进行约束操作。
+1） 主键约束（primary key）
+主键约束一般都是使用在id上，而且本身已经默认了内容不能为空，主键约束可以再建表的时候指定
+现在我们建立一张person表，在pid上增加主键约束
+drop table person;
+create table person(
+pid varchar2(18) primary key,
+name varchar2(200),
+age number(3),
+birthday date,
+sex varchar2(3) default '男'
+)
+现在我们向表中插入数据
+insert into person(pid,name,age,birthday,sex) values('1111111111111111','张三',30,to_date('1976-08-09','yyyy-mm-dd'),'女');
+insert into person(pid,name,age,birthday,sex) values('1111111111111111','李四',30,to_date('1976-08-04','yyyy-mm-dd'),'男');
+当插入第二条语句时，会提示：违反唯一约束，那么我们将pid的值设置为null
+insert into person(pid,name,age,birthday,sex) values(null,'李四',30,to_date('1976-08-04','yyyy-mm-dd'),'男');
+同样会提示错误：无法将 NULL 插入 ("SCOTT"."PERSON"."PID")，以上的约束是系统自动分配好的约束名称，也可以通过constraint指定一个约束的名字，
+将person表的pid指定名称
+drop table person;
+create table person(
+pid varchar2(18),
+name varchar2(200),
+age number(3),
+birthday date,
+sex varchar2(3) default '男',
+constraint person_pid_pk primary key(pid)
+)
+2） 非空约束（not null）
+使用非空约束，表示一个字段的内容不允许为空，即：插入数据的时候必须插入内容
+drop table person;
+create table person(
+pid varchar2(18),
+name varchar2(200) not null,
+age number(3) not null,
+birthday date,
+sex varchar2(3) default '男',
+constraint person_pid_pk primary key(pid)
+)
+3） 唯一约束（unique）
+表示一个字段中的内容是唯一的，其他列不允许重复。
+假设：现在姓名不允许出现重名的情况
+drop table person;
+create table person(
+pid varchar2(18),
+name varchar2(200) unique not null,
+age number(3) not null,
+birthday date,
+sex varchar2(3) default '男',
+constraint person_pid_pk primary key(pid)
+)
+4） 检查约束（check）
+使用检查约束来判断一个列中插入的内容是否合法，例如，年龄的取值范围，性别的取值范围
+drop table person;
+create table person(
+pid varchar2(18),
+name varchar2(200) unique not null,
+age number(3) not null check(age between 0 and 150),
+birthday date,
+sex varchar2(3) default '男' check(sex in('男','女','中')),
+constraint person_pid_pk primary key(pid)
+)
+5） 主-外键约束（foreign key）
+之前的约束都是针对一张表的，那么主-外键约束是针对两张表的约束。为什么需要主-外键约束呢？
+要求完成一个程序，一本书只属于一个人
+书本身应该是一张表，一本书中必然有一个字段表示属于某个人的
+drop table person;
+drop table book;
+create table person(
+pid varchar2(18),
+name varchar2(200) not null,
+age number(3) not null,
+birthday date,
+sex varchar2(3) default '男',
+constraint person_pid_pk primary key(pid),
+constraint person_name_uk unique(name),
+constraint person_age_ck check(age between 0 and 150),
+constraint person_sex_ck check(sex in('男','女','中'))
+);
+create table book(
+bid number primary key not null,
+bname varchar2(20),
+bprice number(5,2),
+pid varchar2(18)
+);
+insert into person(pid,name,age,birthday,sex) values('1111111111111111','张三',30,to_date('1976-08-09','yyyy-mm-dd'),'女');
+insert into book(bid,bname,bprice,pid) values(1,'JAVA SE',89.9,'0000000000000');
+在插入第二条数据前，我们看看pid字段的值，很明显，在我们的person表中不存在这样的person，那么， 这样的数据时不应该插入到数据库中的，为了解决这样的问题，我们使用主-外键关联，关联之后字表的数据要跟随父表的数据内内容。
+drop table person;
+drop table book;
+create table person(
+pid varchar2(18),
+name varchar2(200) not null,
+age number(3) not null,
+birthday date,
+sex varchar2(3) default '男',
+constraint person_pid_pk primary key(pid),
+constraint person_name_uk unique(name),
+constraint person_age_ck check(age between 0 and 150),
+constraint person_sex_ck check(sex in('男','女','中'))
+);
+create table book(
+bid number primary key not null,
+bname varchar2(20),
+bprice number(5,2),
+pid varchar2(18),
+constraint person_book_pid_fk foreign key(pid) references person(pid)
+);
+现在我们再次执行数据的插入操作，此时系统提示：违反完整约束条件 (SCOTT.PERSON_BOOK_PID_FK) - 未找到父项关键字，根据上面的分析没我们修改如下：
+insert into book(bid,bname,bprice,pid) values(1,'JAVA SE',89.9,'1111111111111111');
+此时插入数据成功。
+在使用主-外键关联的时候有几点需要注意：
+|-在子表中设置的外键在父表中必须是主键
+|-删除时应该先删除子表，再删除父表
+在主-外键关联中也可以使用级联删除
+以现有数据库中的数据为例
+delete from person where pid='1111111111111111';
+要删除person表中编号为1111111111111111的人员，但是这个人在book表中存在一本书的记录。提示错误：违反完整约束条件 (SCOTT.PERSON_BOOK_PID_FK) - 已找到子记录，那么，如果想删除成功必须先删除book表中pid对应的记录，再删除此人的信息
+如果我们希望一个表中的数据在删除时，可以自动删除掉其对应的子表记录，则可以使用级联删除来实现。
+drop table person;
+drop table book;
+create table person(
+pid varchar2(18),
+name varchar2(200) not null,
+age number(3) not null,
+birthday date,
+sex varchar2(3) default '男',
+constraint person_pid_pk primary key(pid),
+constraint person_name_uk unique(name),
+constraint person_age_ck check(age between 0 and 150),
+constraint person_sex_ck check(sex in('男','女','中'))
+);
+create table book(
+bid number primary key not null,
+bname varchar2(20),
+bprice number(5,2),
+pid varchar2(18),
+constraint person_book_pid_fk foreign key(pid) references person(pid) on delete cascade
+);
+6） 修改约束
+如果一张表已经建立完成，则可以为其添加约束
+关于约束类型的命名，一定要统一：
+--primary key--&gt;主键字段_pk
+--unique--&gt;字段_uk
+--check--&gt;字段_ck
+--foreign key--&gt;父字段_子字段_fk
+为person添加一个约束
+alter table person add constraint person_pid_pk primary key(pid);
+将person的主键约束删除掉该怎么操作呢？
+alter table person drop constraint person_pid_pk;
+1.3、rownum
+rownum：表示行号，实际上这是一个列的列名，但是这个列我们称为伪列，此列尅在每张表中出现。
+例如，在我们查询雇员表的时候，加上rownum这个列名称
+select rownum,empno,ename,job,sal,hiredate from emp;
+从执行的效果来看，rownum本身采用自动编号的形式出现。
+我们扩展下rownum的应用，现在我们只想显示前5条雇员信息，该如何实现呢？
+select rownum,empno,ename,job,sal,hiredate from emp where rownum&lt;=5;
+既然可以查询前5条数据，那么，我们现在要求提高了，查询中间的5条数据
+select rownum,empno,ename,job,sal,hiredate from emp where rownum between 5 and 10;
+看似没有问题的语句却查不出数据来，到底哪里出错了呢？
+如果现在要想进行中间的截取操作，则只能采用子查询，例如现在假设每页显示5条，第二页应该显示6~10条，那么对于数据库操作来讲，它在查询的时候应该首先查询出1~10条，之后再在查询的结果中截取出后5条。
+select * from (select rownum m,empno,ename,job,sal,hiredate from emp where rownum&lt;=10) temp where temp.m&gt;5;
+如果现在要求输出最后的4条呢？
+select * from (select rownum m,empno,ename,job,sal,hiredate from emp where rownum&lt;=15) temp where temp.m&gt;10;
+1.4、集合操作
+在Oracle中提供了三种类型集合的操作，并（union）、交（intersect）、差（minus）
+|-union：将多个查询的结果组合到一个查询结果中，没有重复的内容
+|-union all：将多个查询结果组合到一个查询之中，但是包含了重复值
+|-intersect：返回多个查询结果中相同的部分
+|-minus：返回两个查询结果的差集
+为了更好的观察查询结果，我们将复制emp表，将20部门的雇员信息取出来
+create table emp20 as select * from emp where deptno=20;
+1） 验证union
+返回两个集合的所有内容，不包含重负的内容
+select * from emp
+union
+select * from emp20;
+2） 验证union all
+返回两个集合的所有内容，包含重复内容
+select * from emp
+union all
+select * from emp20;
+3） 验证intersect
+返回多个查询结果中相同的部分
+select * from emp
+intersect
+select * from emp20;
+因为两张表中只有20部门的雇员信息是重复的，所有实际上返回的相同内容就是表emp20的内容
+4） 验证minus
+返回两个查询结果的差集
+select * from emp
+minus
+select * from emp20;
+1.5、交表、约束、查询综合练习
+题目背景：
+有某个学生运动会比赛信息的数据库，保存了如下的表：
+|-运动员sporter（运动员编号sporterid，运动员姓名name，运动员性别sex，所属系号department）
+|-项目item（项目编号itemid，项目名称itemname，项目比赛地点location）
+|-成绩grade（运动员编号sporterid，项目编号itemid，积分mark）
+功能要求
+1） 建表
+--定义各个表的主码外码约束
+--运动员的姓名和所属系别不能为空值
+--积分要么为空值，要么为6、4、2、0，分别代表第一、第二、第三和其他名次的积分
+create table sporter(
+sporterid number(4) primary key not null,
+name varchar2(50) not null,
+sex varchar2(3) not null,
+department varchar2(30) not null,
+constraint sporter_sex_ck check(sex in('男','女'))
+);
+create table item(
+itemid varchar2(4) primary key not null,
+itemname varchar2(50) not null,
+location varchar2(50) not null
+);
+create table grade(
+sporterid number(4),
+itemid varchar2(4),
+mark number(2),
+constraint sporter_grade_sporterid_fk foreign key(sporterid) references sporter(sporterid) on delete cascade,
+constraint sporter_item_itemid_fk foreign key(itemid) references item(itemid) on delete cascade,
+constraint grade_mark_ck check(mark in(6,4,2,0))
+);
+2） 数据
+运动员sporter
+insert into sporter(sporterid,name,sex,department) values(1001,'李明','男','计算机系');
+insert into sporter(sporterid,name,sex,department) values(1002,'张三','男','数学系');
+insert into sporter(sporterid,name,sex,department) values(1003,'李四','男','计算机系');
+insert into sporter(sporterid,name,sex,department) values(1004,'王二','男','物理系');
+insert into sporter(sporterid,name,sex,department) values(1005,'李娜','女','心理系');
+insert into sporter(sporterid,name,sex,department) values(1006,'孙俪','女','数学系');
+项目item
+insert into item(itemid,itemname,location) values('x001','男子五千米','一操场');
+insert into item(itemid,itemname,location) values('x002','男子标枪','一操场');
+insert into item(itemid,itemname,location) values('x003','男子跳远','二操场');
+insert into item(itemid,itemname,location) values('x004','女子跳高','二操场');
+insert into item(itemid,itemname,location) values('x005','女子三千米','三操场');
+积分grade
+insert into grade(sporterid,itemid,mark) values(1001,'x001',6);
+insert into grade(sporterid,itemid,mark) values(1002,'x001',4);
+insert into grade(sporterid,itemid,mark) values(1003,'x001',2);
+insert into grade(sporterid,itemid,mark) values(1004,'x001',0);
+insert into grade(sporterid,itemid,mark) values(1001,'x003',4);
+insert into grade(sporterid,itemid,mark) values(1002,'x003',6);
+insert into grade(sporterid,itemid,mark) values(1004,'x003',2);
+insert into grade(sporterid,itemid,mark) values(1005,'x004',6);
+insert into grade(sporterid,itemid,mark) values(1006,'x004',4);
+3） 要求
+求出目前总积分最高的系名，及其积分
+--所有的系名都在sporter表中，而积分在grade表中，所以sporter和grade进行关联查询
+select s.department,sum(g.mark) sum
+from sporter s,grade g
+where s.sporterid=g.sporterid
+group by s.department
+order by sum desc;
+--使用rownum最方便
+select * from(
+select s.department,sum(g.mark) sum
+from sporter s,grade g
+where s.sporterid=g.sporterid
+group by s.department
+order by sum desc)
+where rownum=1;
+第五次
+1、Oracle数据库
+1.1、视图
+视图的功能：一个视图实际上就是封装了一条复杂的查询语句
+创建视图的语法如下：
+create view 视图名称 as 子查询
+|-实际上此时的子查询就表示一条非常复杂的查询语句
+建立一个视图：此视图包含了全部的20部门的雇员信息（雇员编号，姓名，工作，雇佣日期）
+create view empv20 as select empno,ename,job,hiredate from emp where deptno=20;
+视图创建完成之后，就可以像查找表那样直接对视图进行查询的操作了。
+select * from empv20;
+此时，我们通过视图查询出20部门的雇员信息，也就是，可以使用视图包装的查询语句完成我们的操作。但是，我们思考下，现在这个视图中同样只包含了4个字段的信息，如果，现在希望多包含一个字段呢？
+create view empv20 as select empno,ename,job,sal,hiredate from emp where deptno=20;
+此时，系统会报错，名称已有现有对象使用。也就是说，该名称的视图已经存在了，所以，在创建视图的时候是不允许重名的，那么，我们只能先删除掉这个视图然后进行新视图的创建。该如何删除视图呢？
+drop view 视图名称;
+所以，类似于删除表的操作，我们将上面创建的视图empv20删除
+drop view empv20;
+删除成功后，重新执行创建视图的语句
+create view empv20 as select empno,ename,job,sal,hiredate from emp where deptno=20;
+但是，我们应该发现，如果所有的代码都这样去写肯定很麻烦，因为如果要想对视图进行修改操作，则肯定先要删除掉视图，再进行新视图的创建才能达到目的，所以在Oracle中为了方便用户修改视图，提供了一种替换的命令，此时完整的视图创建语法如下：
+create or replace 视图名称 as 子查询;
+按照上面的语法格式，我们在更改视图的时候就不需要先执行删除操作了，系统会为用户自动进行删除及重建的功能。
+create or replace view empv20 as select empno,ename,job,sal,hiredate from emp where deptno=20;
+此时，系统不会提示任何错误，表示该视图删除及创建成功。
+我们说视图实际上是封装了一个非常复杂的查询语句。下面我们使用视图来封装一个非常复杂的查询。此查询返回部门名称、部门人数、平均工资以及最低工资的雇员姓名。首先看看以前的写法
+select d.dname,ed.c,ed.a,e.ename
+from dept d,
+(
+select count(empno) c,deptno,avg(sal) a,min(sal) min from emp e
+group by deptno
+) ed,emp e
+where d.deptno=ed.deptno and e.sal=ed.min;
+如果在开发中每次都写如此之长的SQL语句，则肯定很不方便，所以此时就可以通过建立师视图简化操作，方便用户做查询。
+create or replace view myempv as
+select d.dname,ed.c,ed.a,e.ename
+from dept d,
+(
+select count(empno) c,deptno,avg(sal) a,min(sal) min from emp e
+group by deptno
+) ed,emp e
+where d.deptno=ed.deptno and e.sal=ed.min;
+在以后的操作中只需要查询该视图就可以得到结果，而不需要再次执行那么长的SQL语句。
+创建一个只包含20部门的雇员视图
+create or replace view mepv20
+as
+select * from emp where deptno=20;
+视图创建成功。下面进行视图的更新操作，我们应该记住，在视图中是不应该包含真实数据的，而且在此程序中，创建的视图实际上是存在创建条件的，此条件是deptno=20.如果现在将视图中的7369的部门编号修改为30呢？
+update empv20 set deptno=30 where empno=7369;
+更新成功，现在我们查询该视图，
+select * from mepv20;
+发现在视图中已经没有7369这个雇员了。那么，在我们的原始表emp中呢？
+select * from emp;
+发现在emp表中的编号为7369的雇员的部门编号已经修改为30，我们思考下，这样的更新操作合适吗？很明显，是不合适的，我们在创建视图的时候是有条件的，一旦修改之后，该条件被破坏。所以在创建视图的时候SQL中提供了两个很重要的参数：
+|-with check option：不能更新视图的创建条件
+下面我们在视图创建中使用此参数
+create or replace view empv20
+as
+select * from emp where deptno=20
+with check option;
+我们再对创建的视图进行更新操作
+update mepv20 set deptno=30 where empno=7566;
+此时，系统报错，提示：视图 with check option where 子句违规
+很明显，创建条件不能更新，那么其他字段呢，例如：现在将7566的雇员姓名修改为“约翰”
+update empv20 set ename='约翰' where empno=7566;
+更新成功，也就是说在使用了上述的with约束后，在更新视图时，除了创建条件不能更新其他字段均可以更新。
+但是，我们说视图本身的作用还是用来查询的，所以不应该允许修改，所以此时可以使用第二个参数：
+|-with read only：创建的视图只读，即只能读取操作
+创建只读视图
+create or replace view empv20
+as
+select * from emp where deptno=20
+with read only;
+再次执行更新操作，更新雇员的姓名
+update empv20 set ename='约翰' where empno=7566;
+提示错误：无法对只读视图进行DML操作。
+1.2、序列
+在很多数据库系统中都存在一个自动增长的列，如果现在要想在Oracle中完成自动增长的功能，则只能依靠序列完成，所有的自动增长操作，需要用户手工完成处理。
+序列的创建格式：
+create sequence sequence
+[increment by n][start with n]
+[{maxvalue n | nomaxvalue}]
+[{minvalue n | nominvalue}]
+[cycle | nocycle]
+[{cache n | nocache}];
+创建一个myseq的序列，验证自动增长的操作
+create sequence myseq;
+序列创建完成之后，所有的自动增长应该由用户自己处理，在序列中提供了以下两种操作：
+|-nextVal：取得序列的下一个内容
+|-currVal：取得序列的当前内容
+现在我们先建立一张用于验证序列的表
+create table testseq(
+next number,
+curr number
+);
+下面向表中添加数据，添加数据的时候需要手工使用序列
+使用序列插入数据
+insert into testseq(next,curr) values(myseq.nextval,myseq.currval);
+将以上的插入语句执行5次
+我们查询下testseq表，看看序列的变化
+select * from testseq;
+从查询结果中我们发现，nextval的内容始终在进行自动增长的操作，而curr使用取出当前操作的序列结果，也就是说，现在的这种序列，每次增长的幅度是1，那么也可以修改序列的增长幅度。
+可以使用以下的一个参数：
+|-每次增长长度：increment by 长度
+重新建立序列
+drop sequence myseq;
+create sequence myseq increment by 2;
+此时，序列已经正常的创建，创建之后来测试下，序列的操作，重新创建testseq表
+drop table testseq;
+create table testseq(
+next number,
+curr number
+);
+重新进行数据的插入操作，插入5次
+insert into testseq(next,curr) values(myseq.nextval,myseq.currval);
+再次查询testseq表，观察序列的变化
+select * from testseq;
+从序列的结果来看，每次取得都是奇数。
+默认情况下，序列从1开始的，那么可以使用start with来指定其开始的位置
+drop sequence myseq;
+create sequence myseq increment by 2 start with 10;
+这里指定序列开始点为10，以后直接从10开始进行序列的计算。
+下面我们重新创建下该序列，让其取值固定在1、3、5、7、9，并循环序列
+drop sequence myseq;
+create sequence myseq
+maxvalue 10
+increment by 2 start with 1
+cache 2 cycle;
+重新建立testseq表，插入数据，测试最终的结果，可以发现序列的内容是循环出现的，但是我们说在实践中，序列使用最多的语法是：create sequence 序列名称。其他选项使用默认值。
+1.3、同义词
+在前面我们使用过这样的查询语句：
+select sysdate from dual;
+我们知道dual是一张虚拟表，那么虽然是虚拟表，可是此表到底是在哪里定义的呢？
+通过测试，我们发现在sys账户下存在dual表。现在问题出现了，既然dual表是sys账户下的，那么根据我们前面的知识，如果想要在scott用户中使用dual表时，正确的做法是：
+select sysdate from sys.dual;
+但是我们在scott账户下是这样写的
+select sysdate from dual;
+这是为什么呢？此时，实际上就是同义词的作用。什么是同义词？同义词可以让其他用户通过一个名称方便的访问”用户名.表名称“。
+创建同义词的语法：
+create synonym 同义词名称 for 用户名.表名称;
+下面我们将scott表的emp定义emp的同义词：
+create sysnonym emp for scott.emp;
+如果要删除一个同义词，可以使用如下的语法格式：
+drop sysnonym 同义词名称;
+所以，删除上面创建的同义词：
+drop sysnonym emp;
+但是，此种特性只适用于Oracle数据库。
+1.4、用户管理
+在Oracle中可以对用户进行建立和授权的操作。
+创建用户的语法是：
+create user 用户名 identified by 密码;
+假设现在要创建一个test用户，密码为123
+create user test identified by 123;
+创建用户成功过后，是否可以登录呢？显然是不行的，在登录请安必须为新创建的用户授予相关的权限才能执行相应的操作。
+为用户授权的格式如下：
+grant 权限1,权限2,...... to 用户名;
+所以，为了新创建的用户test能够连接数据库，我们需要为它授权
+grant create session to test;
+之后我们就能使用test正常登陆了。
+那么，我们开始常见一张表吧。
+可是，我们发现，系统又提示权限不足。很明显的知道，当前用户test没有创建表的权限，既然如此，我们就为它授予创建表的权限。在此之前，我们给出一个这样的结论：对于一个新创建的用户，所有的权限均要分别赋予，该用户才能进行相应的操作。如果现在假设要想把多个权限一次性赋予一个用户，则可以讲这些权限先定义成一组角色的集合。
+在Oracle中提供了两个主要角色：connect、resource，可以直接把这啷个角色赋予test用户。
+grant connect,resource to test;
+突然，test用户密码忘记了，那么如何修改一个用户的密码呢？当然该操作只有超级管理员才有权限
+alter user 用户名 identified by 密码;
+将test的用户密码修改为hello
+alter user test identified by hello;
+在一般的系统中存在这样的情况，在用户第一次登陆的时候可以修改密码，所以要想完成此功能，可以手工让一个密码失效，格式如下：
+alter user 用户名 password expire;
+现在我们可以设置test的当前密码失效
+alter user test password expire;
+如果系统中某个用户需要被锁住，该如何操作呢？
+alter user 用户名 account lock;
+现在由于某些原因，我们需要将test用户锁住
+alter user test account lock;
+那么，test用户就不能连接数据库了。
+如果要解锁test呢？
+alter user 用户名 account unlock;
+好了，现在我们解锁test
+alter user test account unlock;
+那么，test用户就能正常连接数据库了。
+现在我们需要使用test用户来访问scott用户下的emp表
+select * from scott.emp;
+按照前面的知识，该查询时没有问题的，但是系统提示错误说：scott.emp表不存在。怎么回事？
+再想想前面的一句话，”我们需要为新创建的用户分别授予相应的权限来执行相应的操作“，很明显，test没有访问其他用户下表的权限，所以这么操作
+grant select,delete on scott.emp to test;
+我们将查询和删除emp表的权限授予给test用户
+既然可以授予权限，那么也可以回收权限，回收权限使用revoke语法。，语法格式如下：
+revoke 权限名 on 用户表名称 from 用户;
+如果我们不希望test用户查询和删除scott的emp表，
+revoke select,delete on scott.emp from test;
+1.5、数据库的备份和恢复
+数据库在运行的期间都是需要不断的进行备份的，万一假设系统崩溃了，可以从备份中恢复数据。
+Oracle在安装完成之后可以使用两个命名进行数据库的备份和恢复：
+|-数据库备份：exp
+|-数据库恢复：imp
+1.6、嵌套表
+嵌套表：在一个表中还包含另外一个子表
+例如：现在有一种情况，一个部门可能承接多个项目，如果此时，按照最原始的方法设计，那么定义两张表，department表，project表
+create table department(
+deptno number(2) primary key not null,
+dname varchar2(50) not null
+);
+create table project(
+proid number(4) primary key not null,
+proname varchar2(50) not null,
+deptno number(2),
+constraint department_project_deptno foreign key(deptno) references department(deptno) on delete cascade
+);
+这是我们最常见的思路，而且本身也属于一个正确的做法，但是在Oracle中引入了嵌套表的概念，可以直接将项目表的类型作为一个department表的字段类型，达到嵌套的目的。
+但是，要想完成一个嵌套表的制作，则首先要保证一点：因为数据库在创建数据表的时候都要指定字段的类型，所以嵌套表本身也需要同样指定类型，那么这种类型就需要单独的定义：
+create type project_ty as object(
+proid number(4),
+proname varchar2(50),
+prodate date
+);
+/
+类型创建成功之后，并不意味着此类型可以直接使用，因为此类型是一个完整的类型，所以要为此类型指定一个名称
+create type project_nt as table of project_ty;
+/
+以上的操作表示以后直接使用project_nt表示project_ty类型，就类似于varchar2表示字符串是一样的，此时可以使用此类型创建department表
+create table department(
+deptno number(2) primary key not null,
+dname varchar2(50) not null,
+projects project_nt
+)nested table projects store as project_nt_tab_temp;
+对于插入语句来讲，需要指定每个project_ty的类型
+insert into department(deptno,dname,projects)
+values(
+1,'技术部',
+project_nt(
+project_ty(1001,'ERP',sysdate),
+project_ty(1002,'CRM',sysdate),
+project_ty(1003,'OA',sysdate)
+)
+);
+此时，查询嵌套表，可以返回多个项目
+select * from department;
+如果这个时候，我们需要查看一个部门的全部项目的话，则需要查询嵌套表
+select * from table
+(select projects from department where deptno=1);
+如果现在我们需要更新项目编号为1001的项目名称，将此项目名称更新为“测试项目”
+update table (select projects from department where deptno=1) pro
+set value(pro)=project_ty(1001,'测试项目',to_date('1998-09-21','yyyy-mm-dd')) where pro.proid=1001;
+1.7、可变数组
+可变数组属于嵌套表的升级版，在可变数组中，实际上就是将内部的嵌套表的内容的长度进行了限制。
+例如，一个部门有多个工人，如果按照可变数组的做法，肯定首先要做出一个工人的类型。
+create type worker_info as object(
+id number(4),
+name varchar2(50),
+sex varchar2(6)
+);
+/
+下面再定义数组类型
+create type worker_info_list as varray(10) of worker_info;
+/
+定义部门表，一个部门中可能存在多个工人
+drop table department;
+create table department(
+deptno number(2) primary key not null,
+dname varchar2(50) not null,
+workers worker_info_list
+);
+插入测试数据
+insert into department(deptno,dname,workers)
+values(20,'后勤部',
+worker_info_list(
+worker_info(1,'张三','男'),
+worker_info(2,'李四','男'),
+worker_info(3,'王五','男')
+)
+);
+查询全部
+select * from department;
+除了以上的所有内容之外，对于数据库的开发中，像过程之类的基本不用了，因为现在的很多地方都使用程序完成功能。
+而且，对于高级开发部分：游标、触发器、包、函数。基本上很少去直接调用。
+1.8、数据库设计范式
+数据库设计范式实际上非常的重要，但是从实际的开发来看，如果真的全部按照范式去做，则这个程序没法写，包括查询语句也会变得复杂。
+在Oracle中的scott用户的全部表，实际上就已经很好的体现了一张设计思路，雇员-部门的关系。
+1） 第一范式
+例如，现在假设有如下的数据库创建脚本
+create table person(
+pid number(4) primary key not null,
+name varchar2(50),
+info varchar(200)
+);
+插入以下测试数据
+insert into person(pid,name,info) values(1111,'张三','1983年11月23日出生，现在的住址是：北京市西城区。。。。。');
+实际上对于人员来看，由以下几部分组成：
+|-生日：1983年1月23日
+|-省市：北京
+|-地区：西城区
+|-详细的信息：。。。。。
+每个字段不可再分，所以，以上的数据库创建脚本修改如下：
+create table person(
+pid number(4) primary key not null,
+name varchar2(50),
+birthday date,
+area varchar2(200),
+subarea varchar2(200),
+address varchar2(200)
+);
+这种设计看上去每个字段是不可再分的，但是我们应该会注意到，在一些网站的注册中，会要求用户分别输入“姓”和“名”，所以，可将上面的设计修改如下：
+create table person(
+pid number(4) primary key not null,
+姓 varchar2(50),
+名 varchar2(50),
+birthday date,
+area varchar2(200),
+subarea varchar2(200),
+address varchar2(200)
+);
+所以，在设计表字段的时候，最好保证每个字段均不能再分。
+2） 第二范式
+第一范式的要求非常简单，保证每个字段有意义。但是如果所有的操作都使用第一范式，那么会存在问题：
+现在建立一张学生选课表：学号、姓名、年龄、课程名称、成绩、学分
+create table selectcourse(
+stuno varchar2(50),
+stuname varchar2(50),
+stuage number,
+cname varchar2(50),
+grade number,
+credit number
+);
+以上的脚本符合第一范式的要求，但是如果按照第一范式设计的话，会存在问题：
+insert into selectcourse values('s001','张三',21,'JAVA',89,0.3);
+insert into selectcourse values('s001','李四',20,'JAVA',78,0.3);
+insert into selectcourse values('s001','王五',23,'JAVA',80,0.3);
+insert into selectcourse values('s001',赵六',22,'JAVA',90,0.3);
+从以上的数据库脚本上可以发现，所有的课程信息冗余了，而且还存在以下问题：
+|-如果一门课程没有一个学生选择，则此而成就从学校彻底消失了
+|-课程中本身也应该包含一个课程的编号，但是如果按照以上的设计，则课程编号肯定重复
+|-如果要更改课程信息，则要更改许多条记录
+我们使用第二范式修改数据库脚本：
+|-学生是一个实体--学生表
+create table student(
+stuno varchar2(50) primary key not null,
+stuname varchar2(50),
+stuage number
+);
+|-课程也应该是一个实体--课程表
+create table course(
+cid number(5) primary key not null,
+cname varchar2(50),
+credit number
+);
+|-学生选课信息也是一个实体--学生选课表
+create table selectcourse(
+stuno varchar2(50),
+cid number(5),
+grade number,
+加入外键关联，因为学生没了，成绩就没了，因为课程没了，成绩就没了
+);
+以上设计解决了以下问题：
+|-学生不选课的时候，课程信息不会消失
+|-更新课程的时候直接更新课程表即可
+|-所有的关联关系在关系表中体现。
+3） 第三范式
+在实际开发中，第三范式的使用是最多的。
+例如，现在要求设计一张学生表，包含学号、姓名、年龄、所在院校、学院地址、学院电话，此时肯定不能使用第一范式，但是现在如果使用的是第二范式呢？
+create table student(
+stuno varchar2(50) primary key not null,
+stuname varchar2(50),
+stuage number
+);
+create table collage(
+cid number(4) primary key not null,
+cname varchar2(50) not not null,
+caddress varchar2(200) not nul,
+ctel varchar2(200) not null
+);
+create table studentcollage(
+stuno varchar2(50),
+cid number(4),
+设置主-外键关系
+);
+按照上面的设计，一个学生可以同时在多个学院同时上课，多个学院会同时有同一个学生，此时，最好的做法是：一个学院包含多个学生，一个学生属于一个学院，实际上，此设计就完全类似于部门和雇员表的设计结构。
+create table collage(
+cid number(4) primary key not null,
+cname varchar2(50) not not null,
+caddress varchar2(200) not nul,
+ctel varchar2(200) not null
+);
+create table student(
+stuno varchar2(50) primary key not null,
+stuname varchar2(50),
+stuage number,
+cid number(4),
+建立主-外键关系
+);
+该设计是一个很明确的一对多的关系设计。
+数据库的唯一原则：
+|-数据库表的关联查询越少越好，SQL语句的复杂度越低越好。
+1.9、数据库设计工具
+在实际中数据库也有自己的设计工具，比较常用的就是Sybase的PowerDesigner开发工具，此工具可以方便的做各种设计，启动之后，可以使用此工具，进行数据库的建模设计。
+启动PowerDesigner后，选择新建，Physical Data Model，选择Oracle数据库
+下面使用PowerDesigner工具将Oracle中的dept和emp表进行还原
+创建表--在工具中进行主-外键的操作--得到关系之后，就可以通过Powerdesigner工具进行数据库脚本的创建了。
+1.10、数据库设计分析
+1） 要求
+设计要求，要求设计一个网上购物程序（使用Powerdesigner建立模型并编写测试数据），有以下的需求
+|-管理员可以再后台添加商品，每个商品属于一个商品组
+|-可以对管理员进行分组，对每一组进行分别授权，即一个管理员组可以有多个管理员，一个管理员组有多个权限，一个管理员可以再多个组
+|-用户可以自己购买商品，购买商品时要在订单表中添加信息，一个用户可以同时购买多个商品，用户可以选择自己所在的地区进行商品的派送
+|-用户可以根据自己的购买积分，对商品进行折扣
+2） 实现
+根据第一个要求，一个商品属于一个商品组，则此时应该建立一个“一对多”的关系
+根据第二个要求，可以对管理员进行分组，需要管理员表、管理员组表、权限表、管理员-管理员组表、管理员组-权限表
+管理员和商品表也要存在关系
+需要一个用户表，与其产生关系的有地区表、子地区表、订单表、订单详情表、积分表
+正常情况下，一份订单肯定会按照以上的格式显示，那么请问，这样一来要查询多少张表？
+|-用户表（用户姓名、用户电话、用户地址）
+|-地区表-子地区表（用户地区）
+|-订单表、订单详情表（商品总价、订单日期、邮政编码）
+本查询需要同时查询6张表。本程序中的所有代码都是按照标准范式完成的，所以此时出现了以上的问题。
+在开发中减少多表查询的方法可以通过冗余数据完成。</pre>
+<p> </p>
+<pre name="code" >Oracle 笔记
+1
+韩顺平老师 oracle教程笔记
+1.Oracle认证，与其它数据库比较，安装 Oracle安装会自动的生成sys用户和system用户: （1）sys用户是超级用户，具有最高权限，具有sysdba角色，有create database的权限，该用户默认的密码是change_on_install （2）system用户是管理操作员，权限也很大。具有sysoper角色，没有create database的权限，默认的密码是manager （3）一般讲，对数据库维护，使用system用户登录就可以拉 也就是说sys和system这两个用户最大的区别是在于有没有create database的权限。
+2.Oracle的基本使用--基本命令
+sql*plus的常用命令
+连接命令 1.conn[ect] 用法：conn 用户名/密码@网络服务名[as sysdba/sysoper]当用特权用户身份连接时，必须带上as sysdba或是as sysoper 2.disc[onnect] 说明: 该命令用来断开与当前数据库的连接 3.psssw[ord] 说明: 该命令用于修改用户的密码，如果要想修改其它用户的密码，需要用sys/system登录。 4.show user 说明: 显示当前用户名 5.exit 说明: 该命令会断开与数据库的连接，同时会退出sql*plus 文件操作命令 1.start和@ 说明: 运行sql脚本 案例: sql&gt;@ d:\a.sql或是sql&gt;start d:\a.sql 2.edit 说明: 该命令可以编辑指定的sql脚本 案例: sql&gt;edit d:\a.sql,这样会把d:\a.sql这个文件打开 3.spool 说明: 该命令可以将sql*plus屏幕上的内容输出到指定文件中去。 案例: sql&gt;spool d:\b.sql 并输入 sql&gt;spool off 交互式命令 1.&amp; 说明：可以替代变量，而该变量在执行时，需要用户输入。 select * from emp where job='&amp;job'； 2.edit 说明：该命令可以编辑指定的sql脚本 案例：SQL&gt;edit d:\a.sql 3.spool 说明：该命令可以将sql*plus屏幕上的内容输出到指定文件中去。 spool d:\b.sql 并输入 spool off 显示和设置环境变量 概述：可以用来控制输出的各种格式，set show如果希望永久的保存相关的设置，可以去修改glogin.sql脚本
+Oracle 笔记
+2
+1.linesize 说明：设置显示行的宽度，默认是80个字符 show linesize set linesize 90 2.pagesize说明：设置每页显示的行数目，默认是14 用法和linesize一样 至于其它环境参数的使用也是大同小异
+3.oracle用户管理
+oracle用户的管理 创建用户 概述：在oracle中要创建一个新的用户使用create user语句，一般是具有dba(数据库管理员)的权限才能使用。 create user 用户名 identified by 密码; (oracle有个毛病，密码必须以字母开头，如果以字母开头，它不会创建用户) 给用户修改密码 概述：如果给自己修改密码可以直接使用 password 用户名 如果给别人修改密码则需要具有dba的权限，或是拥有alter user的系统权限 SQL&gt; alter user 用户名 identified by 新密码 删除用户 概述：一般以dba的身份去删除某个用户，如果用其它用户去删除用户则需要具有drop user的权限。 比如 drop user 用户名 【cascade】 在删除用户时，注意： 如果要删除的用户，已经创建了表，那么就需要在删除的时候带一个参数cascade; 用户管理综合案例 概述：创建的新用户是没有任何权限的，甚至连登陆的数据库的权限都没有，需要为其指定相应的权限。给一个用户赋权限使用命令grant，回收权限使用命令revoke。 为了给讲清楚用户的管理，这里我给大家举一个案例。 SQL&gt; conn xiaoming/m12; ERROR: ORA-01045: user XIAOMING lacks CREATE SESSION privilege; logon denied 警告: 您不再连接到 ORACLE。 SQL&gt; show user; USER 为 "" SQL&gt; conn system/p; 已连接。 SQL&gt; grant connect to xiaoming; 授权成功。 SQL&gt; conn xiaoming/m12; 已连接。 SQL&gt; 注意：grant connect to xiaoming;在这里，准确的讲，connect不是权限，而是角色。
+现在说下对象权限，现在要做这么件事情： * 希望xiaoming用户可以去查询emp表 * 希望xiaoming用户可以去查询scott的emp表
+Oracle 笔记
+3
+grant select on emp to xiaoming * 希望xiaoming用户可以去修改scott的emp表 grant update on emp to xiaoming * 希望xiaoming用户可以去修改/删除，查询，添加scott的emp表 grant all on emp to xiaoming * scott希望收回xiaoming对emp表的查询权限 revoke select on emp from xiaoming //对权限的维护。 * 希望xiaoming用户可以去查询scott的emp表/还希望xiaoming可以把这个权限继续给别人。 --如果是对象权限，就加入 with grant option grant select on emp to xiaoming with grant option 我的操作过程： SQL&gt; conn scott/tiger; 已连接。 SQL&gt; grant select on scott.emp to xiaoming with grant option; 授权成功。 SQL&gt; conn system/p; 已连接。 SQL&gt; create user xiaohong identified by m123; 用户已创建。 SQL&gt; grant connect to xiaohong; 授权成功。 SQL&gt; conn xiaoming/m12; 已连接。 SQL&gt; grant select on scott.emp to xiaohong; 授权成功。 --如果是系统权限。 system给xiaoming权限时： grant connect to xiaoming with admin option 问题：如果scott把xiaoming对emp表的查询权限回收，那么xiaohong会怎样？ 答案：被回收。 下面是我的操作过程： SQL&gt; conn scott/tiger; 已连接。 SQL&gt; revoke select on emp from xiaoming; 撤销成功。 SQL&gt; conn xiaohong/m123; 已连接。 SQL&gt; select * from scott.emp; select * from scott.emp 第 1 行出现错误: ORA-00942: 表或视图不存在 结果显示：小红受到诛连了。。 使用profile管理用户口令 概述：profile是口令限制，资源限制的命令集合，当建立数据库的，oracle会自动建立名称为default的profile。当建立用户没
+Oracle 笔记
+4
+有指定profile选项，那么oracle就会将default分配给用户。 1.账户锁定 概述：指定该账户(用户)登陆时最多可以输入密码的次数，也可以指定用户锁定的时间(天)一般用dba的身份去执行该命令。 例子：指定scott这个用户最多只能尝试3次登陆，锁定时间为2天，让我们看看怎么实现。 创建profile文件 SQL&gt; create profile lock_account limit failed_login_attempts 3 password_lock_time 2; SQL&gt; alter user scott profile lock_account; 2.给账户(用户)解锁 SQL&gt; alter user tea account unlock; 3.终止口令 为了让用户定期修改密码可以使用终止口令的指令来完成，同样这个命令也需要dba的身份来操作。 例子：给前面创建的用户tea创建一个profile文件，要求该用户每隔10天要修改自己的登陆密码，宽限期为2天。看看怎么做。 SQL&gt; create profile myprofile limit password_life_time 10 password_grace_time 2; SQL&gt; alter user tea profile myprofile; 口令历史 概述：如果希望用户在修改密码时，不能使用以前使用过的密码，可使用口令历史，这样oracle就会将口令修改的信息存放到数据字典中，这样当用户修改密码时，oracle就会对新旧密码进行比较，当发现新旧密码一样时，就提示用户重新输入密码。 例子： 1）建立profile SQL&gt;create profile password_history limit password_life_time 10 password_grace_time 2 password_reuse_time 10 password_reuse_time //指定口令可重用时间即10天后就可以重用 2）分配给某个用户
+删除profile 概述：当不需要某个profile文件时，可以删除该文件。 SQL&gt; drop profile password_history 【casade】 注意：文件删除后，用这个文件去约束的那些用户通通也都被释放了。。 加了casade，就会把级联的相关东西也给删除掉
+4.oracle表的管理(数据类型，表创建删除，数据CRUD操作)
+期望目标
+? 1.掌握oracle表的管理（创建/维护）
+? 2.掌握对oracle表的各种查询技巧
+? 3.学会创建新的oracle数据库 oracle的表的管理 表名和列的命名规则
+? 必须以字母开头
+? 长度不能超过30个字符
+? 不能使用oracle的保留字
+? 只能使用如下字符 A-Z，a-z，0-9，$,#等
+oracle支持的数据类型? 字符类 char 定长 最大2000个字符。
+Oracle 笔记
+5
+例子：char(10) ‘小韩’前四个字符放‘小韩’，后添6个空格补全 如‘小韩 ’ varchar2(20) 变长 最大4000个字符。 例子：varchar2（10） ‘小韩’ oracle分配四个字符。这样可以节省空间。 clob(character large object) 字符型大对象 最大4G char 查询的速度极快浪费空间，查询比较多的数据用。 varchar 节省空间 数字型 number范围 -10的38次方 到 10的38次方 可以表示整数，也可以表示小数 number(5,2) 表示一位小数有5位有效数，2位小数 范围：-999.99到999.99 number(5) 表示一个5位整数 范围99999到-99999 日期类型 date 包含年月日和时分秒 oracle默认格式 1-1月-1999 timestamp 这是oracle9i对date数据类型的扩展。可以精确到毫秒。 ? 图片 blob 二进制数据 可以存放图片/声音 4G 一般来讲，在真实项目中是不会把图片和声音真的往数据库里存放，一般存放图片、视频的路径，如果安全需要比较高的话，则放入数据库。 怎样创建表 建表 --学生表 create table student ( ---表名 xh number(4), --学号 xm varchar2(20), --姓名 sex char(2), --性别 birthday date, --出生日期 sal number(7,2) --奖学金 ); --班级表 CREATE TABLE class( classId NUMBER(2), cName VARCHAR2(40) ); 修改表 ? 添加一个字段 SQL&gt;ALTER TABLE student add (classId NUMBER(2)); ? 修改一个字段的长度 SQL&gt;ALTER TABLE student MODIFY (xm VARCHAR2(30)); ? 修改字段的类型/或是名字（不能有数据） 不建议做 SQL&gt;ALTER TABLE student modify (xm CHAR(30)); ? 删除一个字段 不建议做(删了之后，顺序就变了。加就没问题，应为是加在后面) SQL&gt;ALTER TABLE student DROP COLUMN sal;
+Oracle 笔记
+6
+? 修改表的名字 很少有这种需求 SQL&gt;RENAME student TO stu; ? 删除表 SQL&gt;DROP TABLE student; 添加数据 所有字段都插入数据 INSERT INTO student VALUES ('A001', '张三', '男', '01-5月-05', 10); oracle中默认的日期格式‘dd-mon-yy’ dd日子（天） mon 月份 yy 2位的年 ‘09-6月-99’ 1999年6月9日 修改日期的默认格式（临时修改，数据库重启后仍为默认；如要修改需要修改注册表） ALTER SESSION SET NLS_DATE_FORMAT ='yyyy-mm-dd'; 修改后，可以用我们熟悉的格式添加日期类型： INSERT INTO student VALUES ('A002', 'MIKE', '男', '1905-05-06', 10); 插入部分字段 INSERT INTO student(xh, xm, sex) VALUES ('A003', 'JOHN', '女'); 插入空值 INSERT INTO student(xh, xm, sex, birthday) VALUES ('A004', 'MARTIN', '男', null); 问题来了，如果你要查询student表里birthday为null的记录，怎么写sql呢？ 错误写法：select * from student where birthday = null; 正确写法：select * from student where birthday is null; 如果要查询birthday不为null,则应该这样写： select * from student where birthday is not null; 修改数据 ? 修改一个字段 UPDATE student SET sex = '女' WHERE xh = 'A001'; ? 修改多个字段 UPDATE student SET sex = '男', birthday = '1984-04-01' WHERE xh = 'A001'; 修改含有null值的数据 不要用 = null 而是用 is null； SELECT * FROM student WHERE birthday IS null; ? 删除数据 DELETE FROM student; 删除所有记录，表结构还在，写日志，可以恢复的，速度慢。 Delete 的数据可以恢复。 savepoint a; --创建保存点 DELETE FROM student; rollback to a; --恢复到保存点 一个有经验的DBA，在确保完成无误的情况下要定期创建还原点。 DROP TABLE student; --删除表的结构和数据； delete from student WHERE xh = 'A001'; --删除一条记录； truncate TABLE student; --删除表中的所有记录，表结构还在，不写日志，无法找回删除的记录，速度快。
+5.oracle表查询(1)
+在我们讲解的过程中我们利用scott用户存在的几张表（emp，dept）为大家演示如何使用select语句，select语句在软件编程中非常有用，希望大家好好的掌握。
+Oracle 笔记
+7
+emp 雇员表 clerk 普员工 salesman 销售 manager 经理 analyst 分析师 president 总裁 mgr 上级的编号 hiredate 入职时间 sal 月工资 comm 奖金 deptno 部门 dept部门表 deptno 部门编号 accounting 财务部 research 研发部 operations 业务部 loc 部门所在地点 salgrade 工资级别 grade 级别 losal 最低工资 hisal 最高工资 简单的查询语句 ? 查看表结构 DESC emp; ? 查询所有列 SELECT * FROM dept; 切忌动不动就用select * SET TIMING ON; 打开显示操作时间的开关，在下面显示查询时间。 CREATE TABLE users(userId VARCHAR2(10), uName VARCHAR2 (20), uPassw VARCHAR2(30)); INSERT INTO users VALUES('a0001', '啊啊啊啊', 'aaaaaaaaaaaaaaaaaaaaaaa'); --从自己复制，加大数据量 大概几万行就可以了 可以用来测试sql语句执行效率 INSERT INTO users (userId,UNAME,UPASSW) SELECT * FROM users; SELECT COUNT (*) FROM users;统计行数 ? 查询指定列 SELECT ename, sal, job, deptno FROM emp; ? 如何取消重复行DISTINCT SELECT DISTINCT deptno, job FROM emp; ?查询SMITH所在部门，工作，薪水 SELECT deptno,job,sal FROM emp WHERE ename = 'SMITH'; 注意：oracle对内容的大小写是区分的，所以ename='SMITH'和ename='smith'是不同的
+Oracle 笔记
+8
+? 使用算术表达式 nvl null 问题：如何显示每个雇员的年工资？ SELECT sal*13+nvl(comm, 0)*13 "年薪" , ename, comm FROM emp; ? 使用列的别名 SELECT ename "姓名", sal*12 AS "年收入" FROM emp; ? 如何处理null值 使用nvl函数来处理 ? 如何连接字符串（||） SELECT ename || ' is a ' || job FROM emp; ? 使用where子句 问题：如何显示工资高于3000的 员工？ SELECT * FROM emp WHERE sal &gt; 3000; 问题：如何查找1982.1.1后入职的员工？ SELECT ename,hiredate FROM emp WHERE hiredate &gt;'1-1月-1982'; 问题：如何显示工资在2000到3000的员工？ SELECT ename,sal FROM emp WHERE sal &gt;=2000 AND sal &lt;= 3000; ? 如何使用like操作符 %：表示0到多个字符 _：表示任意单个字符 问题：如何显示首字符为S的员工姓名和工资？ SELECT ename,sal FROM emp WHERE ename like 'S%'; 如何显示第三个字符为大写O的所有员工的姓名和工资？ SELECT ename,sal FROM emp WHERE ename like '__O%'; ? 在where条件中使用in 问题：如何显示empno为7844, 7839,123,456 的雇员情况？ SELECT * FROM emp WHERE empno in (7844, 7839,123,456); ? 使用is null的操作符 问题：如何显示没有上级的雇员的情况？ 错误写法：select * from emp where mgr = ''; 正确写法：SELECT * FROM emp WHERE mgr is null;
+6.oracle表查询(2)
+? 使用逻辑操作符号 问题：查询工资高于500或者是岗位为MANAGER的雇员，同时还要满足他们的姓名首字母为大写的J？ SELECT * FROM emp WHERE (sal &gt;500 or job = 'MANAGER') and ename LIKE 'J%'; ? 使用order by 字句 默认asc 问题：如何按照工资的从低到高的顺序显示雇员的信息？ SELECT * FROM emp ORDER by sal; 问题：按照部门号升序而雇员的工资降序排列 SELECT * FROM emp ORDER by deptno, sal DESC; ? 使用列的别名排序 问题：按年薪排序 select ename, (sal+nvl(comm,0))*12 "年薪" from emp order by "年薪" asc; 别名需要使用“”号圈中,英文不需要“”号
+Oracle 笔记
+9
+? 分页查询 等学了子查询再说吧。。。。。。。。 Clear 清屏命令 oracle表复杂查询 ? 说明 在实际应用中经常需要执行复杂的数据统计，经常需要显示多张表的数据，现在我们给大家介绍较为复杂的select语句 数据分组 ——max，min， avg， sum， count 问题：如何显示所有员工中最高工资和最低工资？ SELECT MAX(sal),min(sal) FROM emp e; 最高工资那个人是谁？ 错误写法：select ename, sal from emp where sal=max(sal); 正确写法：select ename, sal from emp where sal=(select max(sal) from emp); 注意：select ename, max(sal) from emp;这语句执行的时候会报错，说ORA-00937：非单组分组函数。因为max是分组函数，而ename不是分组函数....... 但是select min(sal), max(sal) from emp;这句是可以执行的。因为min和max都是分组函数，就是说：如果列里面有一个分组函数，其它的都必须是分组函数，否则就出错。这是语法规定的 问题：如何显示所有员工的平均工资和工资总和？ 问题：如何计算总共有多少员工问题：如何 扩展要求： 查询最高工资员工的名字，工作岗位 SELECT ename, job, sal FROM emp e where sal = (SELECT MAX(sal) FROM emp); 显示工资高于平均工资的员工信息 SELECT * FROM emp e where sal &gt; (SELECT AVG(sal) FROM emp); ? group by 和 having子句 group by用于对查询的结果分组统计， having子句用于限制分组显示结果。 问题：如何显示每个部门的平均工资和最高工资？ SELECT AVG(sal), MAX(sal), deptno FROM emp GROUP by deptno; （注意：这里暗藏了一点，如果你要分组查询的话，分组的字段deptno一定要出现在查询的列表里面，否则会报错。因为分组的字段都不出现的话，就没办法分组了） 问题：显示每个部门的每种岗位的平均工资和最低工资？ SELECT min(sal), AVG(sal), deptno, job FROM emp GROUP by deptno, job; 问题：显示平均工资低于2000的部门号和它的平均工资？ SELECT AVG(sal), MAX(sal), deptno FROM emp GROUP by deptno having AVG(sal) &lt; 2000; ? 对数据分组的总结 1 分组函数只能出现在选择列表、having、order by子句中(不能出现在where中) 2 如果在select语句中同时包含有group by, having, order by 那么它们的顺序是group by, having, order by 3 在选择列中如果有列、表达式和分组函数，那么这些列和表达式必须有一个出现在group by 子句中，否则就会出错。 如SELECT deptno, AVG(sal), MAX(sal) FROM emp GROUP by deptno HAVING AVG(sal) &lt; 2000; 这里deptno就一定要出现在group by 中 多表查询 ? 说明 多表查询是指基于两个和两个以上的表或是视图的查询。在实际应用中，查询单个表可能不能满足你的需求，（如显示sales部门位置和其员工的姓名），这种情况下需要使用到（dept表和emp表）
+Oracle 笔记
+10
+问题：显示雇员名，雇员工资及所在部门的名字【笛卡尔集】？ 规定：多表查询的条件是 至少不能少于 表的个数-1 才能排除笛卡尔集 （如果有N张表联合查询，必须得有N-1个条件，才能避免笛卡尔集合） SELECT e.ename, e.sal, d.dname FROM emp e, dept d WHERE e.deptno = d.deptno; 问题：显示部门号为10的部门名、员工名和工资？ SELECT d.dname, e.ename, e.sal FROM emp e, dept d WHERE e.deptno = d.deptno and e.deptno = 10; 问题：显示各个员工的姓名，工资及工资的级别？ 先看salgrade的表结构和记录 SQL&gt;select * from salgrade; GRADE LOSAL HISAL ------------- ------------- ------------ 1 700 1200 2 1201 1400 3 1401 2000 4 2001 3000 5 3001 9999 SELECT e.ename, e.sal, s.grade FROM emp e, salgrade s WHERE e.sal BETWEEN s.losal AND s.hisal; 扩展要求： 问题：显示雇员名，雇员工资及所在部门的名字，并按部门排序？ SELECT e.ename, e.sal, d.dname FROM emp e, dept d WHERE e.deptno = d.deptno ORDER by e.deptno; （注意：如果用group by，一定要把e.deptno放到查询列里面） ? 自连接 自连接是指在同一张表的连接查询 问题：显示某个员工的上级领导的姓名？ 比如显示员工‘FORD’的上级 SELECT worker.ename, boss.ename FROM emp worker,emp boss WHERE worker.mgr = boss.empno AND worker.ename = 'FORD'; 子查询 ? 什么是子查询 子查询是指嵌入在其他sql语句中的select语句，也叫嵌套查询。 ? 单行子查询 单行子查询是指只返回一行数据的子查询语句 请思考：显示与SMITH同部门的所有员工？ 思路： 1 查询出SMITH的部门号 select deptno from emp WHERE ename = 'SMITH'; 2 显示 SELECT * FROM emp WHERE deptno = (select deptno from emp WHERE ename = 'SMITH'); 数据库在执行sql 是从左到右扫描的， 如果有括号的话，括号里面的先被优先执行。 ? 多行子查询 多行子查询指返回多行数据的子查询 请思考：如何查询和部门10的工作相同的雇员的名字、岗位、工资、部门号 SELECT DISTINCT job FROM emp WHERE deptno = 10; SELECT * FROM emp WHERE job IN (SELECT DISTINCT job FROM emp WHERE deptno = 10); （注意：不能用job=..，因为等号=是一对一的） ? 在多行子查询中使用all操作符
+Oracle 笔记
+11
+问题：如何显示工资比部门30的所有员工的工资高的员工的姓名、工资和部门号？ SELECT ename, sal, deptno FROM emp WHERE sal &gt; all (SELECT sal FROM emp WHERE deptno = 30); 扩展要求： 大家想想还有没有别的查询方法。 SELECT ename, sal, deptno FROM emp WHERE sal &gt; (SELECT MAX(sal) FROM emp WHERE deptno = 30); 执行效率上， 函数高得多 ? 在多行子查询中使用any操作符 问题：如何显示工资比部门30的任意一个员工的工资高的员工姓名、工资和部门号？ SELECT ename, sal, deptno FROM emp WHERE sal &gt; ANY (SELECT sal FROM emp WHERE deptno = 30); 扩展要求： 大家想想还有没有别的查询方法。 SELECT ename, sal, deptno FROM emp WHERE sal &gt; (SELECT min(sal) FROM emp WHERE deptno = 30); ? 多列子查询 单行子查询是指子查询只返回单列、单行数据，多行子查询是指返回单列多行数据，都是针对单列而言的，而多列子查询是指查询返回多个列数据的子查询语句。 请思考如何查询与SMITH的部门和岗位完全相同的所有雇员。 SELECT deptno, job FROM emp WHERE ename = 'SMITH'; SELECT * FROM emp WHERE (deptno, job) = (SELECT deptno, job FROM emp WHERE ename = 'SMITH'); ? 在from子句中使用子查询 请思考：如何显示高于自己部门平均工资的员工的信息 思路： 1. 查出各个部门的平均工资和部门号 SELECT deptno, AVG(sal) mysal FROM emp GROUP by deptno; 2. 把上面的查询结果看做是一张子表 SELECT e.ename, e.deptno, e.sal, ds.mysal FROM emp e, (SELECT deptno, AVG(sal) mysal FROM emp GROUP by deptno) ds WHERE e.deptno = ds.deptno AND e.sal &gt; ds.mysal; 如何衡量一个程序员的水平？ 网络处理能力， 数据库， 程序代码的优化程序的效率要很高 小总结： 在这里需要说明的当在from子句中使用子查询时，该子查询会被作为一个视图来对待，因此叫做内嵌视图，当在from子句中使用子查询时，必须给子查询指定别名。 注意：别名不能用as，如：SELECT e.ename, e.deptno, e.sal, ds.mysal FROM emp e, (SELECT deptno, AVG(sal) mysal FROM emp GROUP by deptno) as ds WHERE e.deptno = ds.deptno AND e.sal &gt; ds.mysal; 在ds前不能加as，否则会报错 （给表取别名的时候，不能加as；但是给列取别名，是可以加as的） ? 分页查询 按雇员的id号升序取出 oracle的分页一共有三种方式 1.根据rowid来分 select * from t_xiaoxi where rowid in (select rid from (select rownum rn, rid from(select rowid rid, cid from t_xiaoxi order by cid desc) where rownum&lt;10000) where rn&gt;9980) order by cid desc; 执行时间0.03秒 2.按分析函数来分 select * from (select t.*, row_number() over(order by cid desc) rk from t_xiaoxi t) where rk&lt;10000 and rk&gt;9980; 执行时间1.01秒 3.按rownum来分
+Oracle 笔记
+12
+select * from (select t.*,rownum rn from(select * from t_xiaoxi order by cid desc)t where rownum&lt;10000) where rn&gt;9980; 执行时间0.1秒 其中t_xiaoxi为表名称，cid为表的关键字段，取按cid降序排序后的第9981-9999条记录，t_xiaoxi表有70000多条记录。 个人感觉1的效率最好，3次之，2最差。 //测试通过的分页查询okokok select * from (select a1.*, rownum rn from(select ename,job from emp) a1 where rownum&lt;=10)where rn&gt;=5; 下面最主要介绍第三种：按rownum来分 1. rownum 分页 SELECT * FROM emp; 2. 显示rownum[oracle分配的] SELECT e.*, ROWNUM rn FROM (SELECT * FROM emp) e; rn相当于Oracle分配的行的ID号 3.挑选出6—10条记录 先查出1-10条记录 SELECT e.*, ROWNUM rn FROM (SELECT * FROM emp) e WHERE ROWNUM &lt;= 10; 如果后面加上rownum&gt;=6是不行的， 4. 然后查出6-10条记录 SELECT * FROM (SELECT e.*, ROWNUM rn FROM (SELECT * FROM emp) e WHERE ROWNUM &lt;= 10) WHERE rn &gt;= 6; 5. 几个查询变化 a. 指定查询列，只需要修改最里层的子查询 只查询雇员的编号和工资 SELECT * FROM (SELECT e.*, ROWNUM rn FROM (SELECT ename, sal FROM emp) e WHERE ROWNUM &lt;= 10) WHERE rn &gt;= 6; b. 排序查询，只需要修改最里层的子查询 工资排序后查询6-10条数据 SELECT * FROM (SELECT e.*, ROWNUM rn FROM (SELECT ename, sal FROM emp ORDER by sal) e WHERE ROWNUM &lt;= 10) WHERE rn &gt;= 6; ? 用查询结果创建新表 这个命令是一种快捷的建表方式 CREATE TABLE mytable (id, name, sal, job, deptno) as SELECT empno, ename, sal, job, deptno FROM emp; 创建好之后，desc mytable；和select * from mytable;看看结果如何？ 合并查询 ? 合并查询 有时在实际应用中，为了合并多个select语句的结果，可以使用集合操作符号union，union all，intersect，minus 多用于数据量比较大的数据局库，运行速度快。 1). union 该操作符用于取得两个结果集的并集。当使用该操作符时，会自动去掉结果集中重复行。 SELECT ename, sal, job FROM emp WHERE sal &gt;2500 UNION SELECT ename, sal, job FROM emp WHERE job = 'MANAGER'; 2).union all 该操作符与union相似，但是它不会取消重复行，而且不会排序。 SELECT ename, sal, job FROM emp WHERE sal &gt;2500 UNION ALL SELECT ename, sal, job FROM emp WHERE job = 'MANAGER';
+Oracle 笔记
+13
+该操作符用于取得两个结果集的并集。当使用该操作符时，会自动去掉结果集中重复行。 3). intersect 使用该操作符用于取得两个结果集的交集。 SELECT ename, sal, job FROM emp WHERE sal &gt;2500 INTERSECT SELECT ename, sal, job FROM emp WHERE job = 'MANAGER'; 4). minus 使用改操作符用于取得两个结果集的差集，他只会显示存在第一个集合中，而不存在第二个集合中的数据。 SELECT ename, sal, job FROM emp WHERE sal &gt;2500 MINUS SELECT ename, sal, job FROM emp WHERE job = 'MANAGER'; （MINUS就是减法的意思） 创建数据库有两种方法： 1). 通过oracle提供的向导工具。√ database Configuration Assistant 【数据库配置助手】 2).我们可以用手工步骤直接创建。
+7.java操作oracle 内容介绍 1.上节回顾 2.java程序如何操作oracle √ 3.如何在oracle中操作数据 4.oracle事务处理 5.sql函数的使用 √ 期望目标 1.掌握oracle表对数据操作技巧 2.掌握在java程序中操作oracle 3.理解oracle事物概念 4.掌握oracle各种sql函数 java连接oracle ? 介绍 前面我们一直在plsql中操作oracle，那么如何在java 程序中操作数据库呢？ 下面我们举例说明，写一个java，分页显示emp表的用户信息。
+package com.sp;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+//演示 如何使用 jdbc_odbc桥连接方式
+public class TestOracle {
+public static void main(String[] args) {
+try {
+// 1.加载驱动
+Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
+Oracle 笔记
+14
+// 2.得到连接
+Connection ct = DriverManager.getConnection(
+"jdbc.odbc:testConnectOracle", "scott",
+"tiger");
+// 从下面开始，和SQL Server一模一样
+Statement sm = ct.createStatement();
+ResultSet rs = sm.executeQuery("select * from emp");
+while (rs.next()) {
+//用户名
+System.out.println("用户名： "+rs.getString(2));
+//默认是从1开始编号的
+}
+} catch (Exception e) {
+e.printStackTrace();
+}
+}
+}
+在得到连接那里，要去配置数据源，点击控制面板--&gt;系统和安全--&gt;管理工具--&gt;数据源(ODBC), 打开后点添加,如图： 可以看到，有个Oracle in OraDb10g_home1的驱动，它是Oracle安装完后自动加上去的。 选中 后，点完成，再填如下信息,如图： 这样配好后基本就可以了，但为了安全起见，建议大家测试一下，点击 Test Connection按钮， 测试通过后点ok,然后数据源就生成了，如图： 然后把数据源名称写进jdbc.odbc:???里。 这里要注意：jdbcodbc能不能远程连接呢？不能远程连接，也就是你这样写的话就意味着java程 序和oracle数据库应该是在同一台机器上，因为这里没有指定IP地址，肯定默认就是本地。 如 果要远程连，就用jdbc,jdbc是可以远程连的。 运行TestOracle.java,控制台输出....................... 可惜我没运行成功，说 java.sql.SQLException: No suitable driver found for jdbc.odbc:testConnectOracle at java.sql.DriverManager.getConnection(Unknown Source) at java.sql.DriverManager.getConnection(Unknown Source) at com.sp.TestOracle.main(TestOracle.java:18) 不知道为什么。。。 接下来讲解用JDBC的方式连接Oracle
+package com.sp;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+//使用 jdbc连接oracle
+public class TestOracle2 {
+public static void main(String[] args) {
+try {
+// 1.加载驱动
+Oracle 笔记
+15
+Class.forName("oracle.jdbc.driver.OracleDriver");
+// 2.得到连接
+Connection ct = DriverManager.getConnection
+("jdbc:oracle:thin:@127.0.0.1:1521:orcl", "scott", "tiger");
+// 从下面开始，和SQL Server一模一样
+Statement sm = ct.createStatement();
+ResultSet rs = sm.executeQuery("select * from emp");
+while (rs.next()) {
+//用户名
+System.out.println("用户名： "+rs.getString(2));
+//默认是从1开始编号的
+}
+} catch (Exception e) {
+e.printStackTrace();
+}
+}
+} 记得要把驱动包引入，classes12.jar 运行，。。。。 再次可惜，我还是没运行成功，错误是： java.sql.SQLException: Io 异常: The Network Adapter could not establish the connection at oracle.jdbc.dbaccess.DBError.throwSqlException(DBError.java:134) at oracle.jdbc.dbaccess.DBError.throwSqlException(DBError.java:179) at oracle.jdbc.dbaccess.DBError.throwSqlException(DBError.java:334) at oracle.jdbc.driver.OracleConnection.&lt;init&gt;(OracleConnection.java:418) at oracle.jdbc.driver.OracleDriver.getConnectionInstance (OracleDriver.java:521) at oracle.jdbc.driver.OracleDriver.connect(OracleDriver.java:325) at java.sql.DriverManager.getConnection(Unknown Source) at java.sql.DriverManager.getConnection(Unknown Source) at com.sp.TestOracle2.main(TestOracle2.java:18) 我也不知道为什么。。。 幽怨了。。 接下来建个web project，来测试oracle的分页，挺麻烦，不记录了。。 在oracle中操作数据 - 使用特定格式插入日期值 ? 使用 to_date函数 请大家思考： 如何插入列带有日期的表，并按照年-月-日的格式插入？ insert into emp values (9998, 'xiaohong', 'MANAGER', 7782, to_date('1988-12- 12', 'yyyy-mm-dd'), 78.9, 55.33, 10); 注意： insert into emp values (9998, 'xiaohong', 'MANAGER', 7782, '12-12月-1988', 78.9, 55.33, 10); 这句语句是可以成功运行的 使用子查询插入数据 ? 介绍 当使用valus子句时，一次只能插入一行数据，当使用子查询插入数据时，一条inset语句可以插
+Oracle 笔记
+16
+入大量的数据。当处理行迁移或者装载外部表的数据到数据库时，可以使用子查询来插入数据。 把emp表中10号部门的数据导入到新表中 create table kkk(myId number(4), myName varchar2(50), myDept number(5)); insert into kkk (myId, myName, myDept) select empno, ename, deptno from emp where deptno = 10; ? 介绍 使用update语句更新数据时，既可以使用表达式或者数值直接修改数据，也可以使用子查询修改 数据。 问题：希望员工SCOTT的岗位、工资、补助与SMITH员工一样。 update emp set(job, sal, comm)=(select job, sal, comm from emp where ename='SMITH') where ename='SCOTT';
+8.oracle中事务处理
+? 什么是事务 事务用于保证数据的一致性，它由一组相关的dml语句组成，该组的dml(数据操作语言，增删改，没有查询)语句要么全部成功，要么全部失败。 如：网上转账就是典型的要用事务来处理，用于保证数据的一致性。 dml 数据操作语言 银行转账、QQ申请、车票购买 ? 事务和锁 当执行事务操作时（dml语句），oracle会在被作用的表上加锁，防止其它用户修改表的结构。这里对我们的用户来来讲是非常重要的。 .....其它进程排序，知道1号进程完成，锁打开，2号进程进入。依次进行，如果有进程级别较高的，可以插队。 ? 提交事务 当执行用commit语句可以提交事务。当执行了commit语句之后，会确认事务的变化、结束事务。删除保存点、释放锁，当使用commit语句结束事务之后，其它会话将可以查看到事务变化后的新数据。 保存点就是为回退做的。保存点的个数没有限制 ? 回退事务 在介绍回退事务前，我们先介绍一下保存点（savepoint）的概念和作用。保存点是事务中的一点。用于取消部分事务，当结束事务时，会自动的删除该事务所定义的所有保存点。当执行rollback时，通过指定保存点可以回退到指定的点，这里我们作图说明。 ? 事务的几个重要操作 1.设置保存点 savepoint a 2.取消部分事务 rollback to a 3.取消全部事务 rollback 注意：这个回退事务，必须是没有commit前使用的；如果事务提交了，那么无论你刚才做了多少个保存点，都统统没有。 如果没有手动执行commit,而是exit了，那么会自动提交 ? java程序中如何使用事务 在java操作数据库时，为了保证数据的一致性，比如账户操作（1）从一个账户中减掉10$（2）在另一个账户上加入10$,我们看看如何使用事务？
+package com.sp;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+Oracle 笔记
+17
+import java.sql.Statement;
+public class TestTrans {
+public static void main(String[] args) {
+try {
+// 1.加载驱动
+Class.forName("oracle.jdbc.driver.OracleDriver");
+// 2.得到连接
+Connection ct = DriverManager.getConnection(
+"jdbc:oracle:thin:@127.0.0.1:1521:orcl", "scott", "tiger");
+Statement sm = ct.createStatement();
+// 从scott的sal中减去100
+sm.executeUpdate("update emp set sal=sal-100 where ename='SCOTT'");
+int i = 7 / 0;
+// 给smith的sal加上100
+sm.executeUpdate("update emp set sal=sal+100 where ename='SMITH'");
+// 关闭打开的资源
+sm.close();
+ct.close();
+} catch (Exception e) {
+e.printStackTrace();
+}
+}
+}
+运行，会出现异常，查看数据库，SCOTT的sal减了100，但是SMITH的sal却不变，很可怕。。。 我们怎样才能保证，这两个操作要么同时成功，要么同时失败呢？
+package com.sp;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+public class TestTrans {
+public static void main(String[] args) {
+Connection ct = null;
+try {
+// 1.加载驱动
+Class.forName("oracle.jdbc.driver.OracleDriver");
+// 2.得到连接
+ct = DriverManager.getConnection(
+"jdbc:oracle:thin:@127.0.0.1:1521:orcl", "scott", "tiger");
+// 加入事务处理
+ct.setAutoCommit(false);// 设置不能默认提交
+Statement sm = ct.createStatement();
+// 从scott的sal中减去100
+sm.executeUpdate("update emp set sal=sal-100 where ename='SCOTT'");
+int i = 7 / 0;
+Oracle 笔记
+18
+// 给smith的sal加上100
+sm.executeUpdate("update emp set sal=sal+100 where ename='SMITH'");
+// 提交事务
+ct.commit();
+// 关闭打开的资源
+sm.close();
+ct.close();
+} catch (Exception e) {
+// 如果发生异常，就回滚
+try {
+ct.rollback();
+} catch (SQLException e1) {
+e1.printStackTrace();
+}
+e.printStackTrace();
+}
+}
+}
+再运行一下，会出现异常，查看数据库，数据没变化。。 ? 只读事务 只读事务是指只允许执行查询的操作，而不允许执行任何其它dml操作的事务，使用只读事务可以确保用户只能取得某时间点的数据。假定机票代售点每天18点开始统计今天的销售情况，这时可以使用只读事务。在设置了只读事务后，尽管其它会话可能会提交新的事务，但是只读事务将不会取得最新数据的变化，从而可以保证取得特定时间点的数据信息。 ? 设置只读事务 set transaction read only;
+9.oracle的函数
+sql函数的使用 字符函数? 介绍 字符函数是oracle中最常用的函数，我们来看看有哪些字符函数： ? lower(char)：将字符串转化为小写的格式。 ? upper(char)：将字符串转化为大写的格式。 ? length(char)：返回字符串的长度。 ? substr(char,m,n)：取字符串的子串 n代表取n个的意思，不是代表取到第n个 ? replace(char1,search_string,replace_string) ? instr(char1,char2,[,n[,m]])取子串在字符串的位置 问题：将所有员工的名字按小写的方式显示 SQL&gt; select lower(ename) from emp; 问题：将所有员工的名字按大写的方式显示。 SQL&gt; select upper(ename) from emp; 问题：显示正好为5个字符的员工的姓名。 SQL&gt; select * from emp where length(ename)=5; 问题：显示所有员工姓名的前三个字符。
+Oracle 笔记
+19
+SQL&gt; select substr(ename,1,3) from emp; 问题：以首字母大写,后面小写的方式显示所有员工的姓名。 SQL&gt; select upper(substr(ename,1,1)) || lower(substr(ename,2,length(ename)-1)) from emp; 问题：以首字母小写,后面大写的方式显示所有员工的姓名。 SQL&gt; select lower(substr(ename,1,1)) || upper(substr(ename,2,length(ename)-1)) from emp; 问题：显示所有员工的姓名，用“我是老虎”替换所有“A” SQL&gt; select replace(ename,'A', '我是老虎') from emp; 数学函数? 介绍 数学函数的输入参数和返回值的数据类型都是数字类型的。数学函数包括cos，cosh，exp，ln, log，sin，sinh，sqrt，tan，tanh，acos，asin，atan，round，我们讲最常用的： ? round(n,[m]) 该函数用于执行四舍五入，如果省掉m，则四舍五入到整数，如果m是正数，则四舍五入到小数点的m位后。如果m是负数，则四舍五入到小数点的m位前。 ? trunc(n,[m]) 该函数用于截取数字。如果省掉m，就截去小数部分，如果m是正数就截取到小数点的m位后，如果m是负数，则截取到小数点的前m位。 ? mod(m,n) ? floor(n) 返回小于或是等于n的最大整数 ? ceil(n) 返回大于或是等于n的最小整数 对数字的处理，在财务系统或银行系统中用的最多，不同的处理方法，对财务报表有不同的结果。 问题：显示在一个月为30天的情况下，所有员工的日薪金，忽略余数。 SQL&gt; select trunc(sal/30), ename from emp; or SQL&gt; select floor(sal/30), ename from emp; 在做oracle测试的时候，可以使用dual表 select mod(10,2) from dual;结果是0 select mod(10,3) from dual;结果是1 其它的数学函数，有兴趣的同学可以自己去看看： abs(n)： 返回数字n的绝对值 select abs(-13) from dual; acos(n)： 返回数字的反余弦值 asin(n)： 返回数字的反正弦值 atan(n)： 返回数字的反正切值 cos(n)： exp(n)： 返回e的n次幂 log(m,n)： 返回对数值 power(m,n)： 返回m的n次幂 日期函数? 介绍 日期函数用于处理date类型的数据。 默认情况下日期格式是dd-mon-yy 即12-7月-78 (1)sysdate: 该函数返回系统时间 (2)add_months(d,n) (3)last_day(d)：返回指定日期所在月份的最后一天 问题：查找已经入职8个月多的员工 SQL&gt; select * from emp where sysdate&gt;=add_months(hiredate,8); 问题：显示满10年服务年限的员工的姓名和受雇日期。
+Oracle 笔记
+20
+SQL&gt; select ename, hiredate from emp where sysdate&gt;=add_months(hiredate,12*10); 问题：对于每个员工，显示其加入公司的天数。 SQL&gt; select floor(sysdate-hiredate) "入职天数",ename from emp; or SQL&gt; select trunc(sysdate-hiredate) "入职天数",ename from emp; 问题：找出各月倒数第3天受雇的所有员工。 SQL&gt; select hiredate,ename from emp where last_day(hiredate)-2=hiredate; 转换函数 ? 介绍√ 转换函数用于将数据类型从一种转为另外一种。在某些情况下，oracle server允许值的数据类型和实际的不一样，这时oracle server会隐含的转化数据类型 比如： create table t1(id int); insert into t1 values('10');--&gt;这样oracle会自动的将'10' --&gt;10 create table t2 (id varchar2(10)); insert into t2 values(1); --&gt;这样oracle就会自动的将1 --&gt;'1'； 我们要说的是尽管oracle可以进行隐含的数据类型的转换，但是它并不适应所有的情况，为了提高程序的可靠性，我们应该使用转换函数进行转换。 ? to_char 你可以使用select ename, hiredate, sal from emp where deptno = 10;显示信息，可是，在某些情况下，这个并不能满足你的需求。 问题：日期是否可以显示 时/分/秒 SQL&gt; select ename, to_char(hiredate, 'yyyy-mm-dd hh24:mi:ss') from emp; 问题：薪水是否可以显示指定的货币符号 SQL&gt; yy：两位数字的年份 2004--&gt;04 yyyy：四位数字的年份 2004年 mm：两位数字的月份 8月--&gt;08 dd：两位数字的天 30号--&gt;30 hh24： 8点--&gt;20 hh12：8点--&gt;08 mi、ss--&gt;显示分钟\秒 9：显示数字，并忽略前面0 0：显示数字，如位数不足，则用0补齐 .：在指定位置显示小数点 ,：在指定位置显示逗号 $：在数字前加美元 L：在数字前面加本地货币符号 C：在数字前面加国际货币符号 G：在指定位置显示组分隔符、 D：在指定位置显示小数点符号(.) 问题：显示薪水的时候，把本地货币单位加在前面 SQL&gt; select ename, to_char(hiredate, 'yyyy-mm-dd hh24:mi:ss'), to_char(sal,'L99999.99') from emp; 问题：显示1980年入职的所有员工 SQL&gt; select * from emp where to_char(hiredate, 'yyyy')=1980;
+Oracle 笔记
+21
+问题：显示所有12月份入职的员工 SQL&gt; select * from emp where to_char(hiredate, 'mm')=12; ? to_date 函数to_date用于将字符串转换成date类型的数据。 问题：能否按照中国人习惯的方式年—月—日添加日期。 系统函数 ? sys_context 1）terminal：当前会话客户所对应的终端的标示符 2）lanuage: 语言 3）db_name： 当前数据库名称 4）nls_date_format： 当前会话客户所对应的日期格式 5）session_user： 当前会话客户所对应的数据库用户名 6）current_schema： 当前会话客户所对应的默认方案名 7）host： 返回数据库所在主机的名称 通过该函数，可以查询一些重要信息，比如你正在使用哪个数据库？ select sys_context('USERENV','db_name') from dual; 注意：USERENV是固定的，不能改的，db_name可以换成其它,比如select sys_context('USERENV','lanuage') from dual;又比如select sys_context('USERENV','current_schema') from dual;
+10.数据库管理，表的逻辑备份与恢复
+内容介绍 1.上节回顾 2.数据库管理员 3.数据库（表）的逻辑备份与恢复 √ 4.数据字典和动态性能视图 √ 5.管理表空间和数据文件 √ 期望目标 1.了解oracle管理员的基本职责 2.掌握备份和恢复数据库/表的方法 3.理解表空间、数据字典、性能视图 数据库管理员 ? 介绍 每个oracle数据库应该至少有一个数据库管理员（dba），对于一个小的数据库，一个dba就够了，但是对于一个大的数据库可能需要多个dba分担不同的管理职责。那么一个数据库管理员的主要工作是什么呢： ? 职责 1.安装和升级oracle数据库 2.建库，表空间，表，视图，索引? 3.制定并实施备份和恢复计划 4.数据库权限管理，调优，故障排除 5.对于高级dba，要求能参与项目开发，会编写sql语句、存储过程、触发器、规则、约束、包 ? 管理数据库的用户主要是sys和system （sys好像是董事长，system好像是总经理，董事长比总经理大，但是通常是总经理干事） 在前面我们已经提到这两个用户，区别主要是： 1.最重要的区别，存储的数据的重要性不同
+Oracle 笔记
+22
+sys：所有oracle的数据字典的基表和视图都存放在sys用户中，这些基表和视图对于oracle的运行是至关重要的，由数据库自己维护，任何用户都不能手动更改。sys用户拥有dba，sysdba，sysoper角色或权限，是oracle权限最高的用户。 system：用于存放次一级的内部数据，如oracle的一些特性或工具的管理信息。system用户拥有dba，sysdba角色或系统权限。 看图： sysdba可以建数据库，sysope不能建数据库 2. 其次的区别，权限的不同。 sys用户必须以as sysdba或as sysoper形式登录。不能以normal方式登录数据库 system如果正常登录，它其实就是一个普通的dba用户，但是如果以as sysdba登录，其结果实际上它是作为sys用户登录的，从登录信息里面我们可以看出来。 sysdba和sysoper权限区别图，看图： sysdba&gt;sysoper&gt;dba 可以看到：只要是sysoper拥有的权限，sysdba都有；蓝色是它们区别的地方。（它们的最大区别是：sysdba可以创建数据库，sysoper不可以创建数据库） ? dba权限的用户 dba用户是指具有dba角色的数据库用户。特权用户可以执行启动实例，关闭实例等特殊操作，而dba用户只有在启动数据库后才能执行各种管理工作。 （相当于说dba连startup和shutdown这两个权限都没有） 两个主要的用户，三个重要权限，他们的区别和联系，大家要弄清楚 管理初始化参数 ? 管理初始化参数（调优的一个重要知识点，凭什么可以对数据库进行调优呢？是因为它可以对数据库的一些参数进行修改修正） 初始化参数用于设置实例或是数据库的特征。oracle9i提供了200多个初始化参数，并且每个初始化参数都有默认值。 ? 显示初始化参数 (1) show parameter命令 ? 如何修改参数 需要说明的如果你希望修改这些初始化的参数，可以到文件D:\oracle\admin\myoral\pfile\init.ora文件中去修改比如要修改实例的名字 数据库（表）的逻辑备份与恢复 介绍 ? 介绍 逻辑备份是指使用工具export将数据对象的结构和数据导出到文件的过程，逻辑恢复是指当数据库对象被误操作而损坏后使用工具import利用备份的文件把数据对象导入到数据库的过程。 物理备份即可在数据库open的状态下进行也可在关闭数据库后进行，但是逻辑备份和恢复只能在open的状态下进行。 看图： ? 导出 导出具体的分为：导出表，导出方案，导出数据库三种方式。 导出使用exp命令来完成的，该命令常用的选项有： userid： 用于指定执行导出操作的用户名，口令，连接字符串 tables： 用于指定执行导出操作的表 owner： 用于指定执行导出操作的方案 full=y： 用于指定执行导出操作的数据库 inctype： 用于指定执行导出操作的增量类型 rows： 用于指定执行导出操作是否要导出表中的数据 file： 用于指定导出文件名
+Oracle 笔记
+23
+? 导出表 1.导出自己的表 exp userid=scott/tiger@myoral tables=(emp,dept) file=d:\e1.dmp 2.导出其它方案的表 如果用户要导出其它方案的表，则需要dba的权限或是exp_full_database的权限，比如system就可以导出scott的表 E:\oracle\ora92\bin&gt;exp userid=system/manager@myoral tables=(scott.emp) file=d:\e2.emp 特别说明：在导入和导出的时候，要到oracle目录的bin目录下。 3. 导出表的结构 exp userid=scott/tiger@accp tables=(emp) file=d:\e3.dmp rows=n 4. 使用直接导出方式 exp userid=scott/tiger@accp tables=(emp) file=d:\e4.dmp direct=y 这种方式比默认的常规方式速度要快，当数据量大时，可以考虑使用这样的方法。 这时需要数据库的字符集要与客户端字符集完全一致，否则会报错... ? 导出方案 导出方案是指使用export工具导出一个方案或是多个方案中的所有对象（表，索引，约束...）和数据。并存放到文件中。 1. 导出自己的方案 exp userid=scott/tiger@myorcl owner=scott file=d:\scott.dmp 2. 导出其它方案 如果用户要导出其它方案，则需要dba的权限或是exp_full_database的权限，比如system用户就可以导出任何方案 exp userid=system/manager@myorcl owner=(system,scott) file=d:\system.dmp ? 导出数据库 导出数据库是指利用export导出所有数据库中的对象及数据，要求该用户具有dba的权限或者是exp_full_database权限 增量备份（好处是第一次备份后，第二次备份就快很多了） exp userid=system/manager@myorcl full=y inctype=complete file=d:\all.dmp 导入 ? 介绍 导入就是使用工具import将文件中的对象和数据导入到数据库中，但是导入要使用的文件必须是export所导出的文件。与导出相似，导入也分为导入表，导入方案，导入数据库三种方式。 imp常用的选项有 userid： 用于指定执行导入操作的用户名，口令，连接字符串 tables： 用于指定执行导入操作的表 formuser： 用于指定源用户 touser： 用于指定目标用户 file： 用于指定导入文件名 full=y： 用于指定执行导入整个文件 inctype： 用于指定执行导入操作的增量类型 rows： 指定是否要导入表行（数据） ignore： 如果表存在，则只导入数据 ? 导入表 1. 导入自己的表 imp userid=scott/tiger@myorcl tables=(emp) file=d:\xx.dmp 2. 导入表到其它用户 要求该用户具有dba的权限，或是imp_full_database imp userid=system/tiger@myorcl tables=(emp) file=d:\xx.dmp touser=scott 3. 导入表的结构
+Oracle 笔记
+24
+只导入表的结构而不导入数据 imp userid=scott/tiger@myorcl tables=(emp) file=d:\xx.dmp rows=n 4. 导入数据 如果对象（如比表）已经存在可以只导入表的数据 imp userid=scott/tiger@myorcl tables=(emp) file=d:\xx.dmp ignore=y ? 导入方案 导入方案是指使用import工具将文件中的对象和数据导入到一个或是多个方案中。如果要导入其它方案，要求该用户具有dba的权限，或者imp_full_database 1． 导入自身的方案 imp userid=scott/tiger file=d:\xxx.dmp 2． 导入其它方案 要求该用户具有dba的权限 imp userid=system/manager file=d:\xxx.dmp fromuser=system touser=scott ? 导入数据库 在默认情况下，当导入数据库时，会导入所有对象结构和数据，案例如下： imp userid=system/manager full=y file=d:\xxx.dmp
+11.数据字典和动态性能视图 介绍：数据字典是什么 数据字典是oracle数据库中最重要的组成部分，它提供了数据库的一些系统信息。 动态性能视图记载了例程启动后的相关信息。 ? 数据字典 数据字典记录了数据库的系统信息，它是只读表和视图的集合，数据字典的所有者为sys用户。 用户只能在数据字典上执行查询操作（select语句），而其维护和修改是由系统自动完成的。 这里我们谈谈数据字典的组成：数据字典包括数据字典基表和数据字典视图，其中基表存储数据库的基本信息，普通用户不能直接访问数据字典的基表。数据字典视图是基于数据字典基表所建立的视图，普通用户可以通过查询数据字典视图取得系统信息。数据字典视图主要包括user_xxx，all_xxx，dba_xxx三种类型。 ? user_tables； 用于显示当前用户所拥有的所有表，它只返回用户所对应方案的所有表 比如：select table_name from user_tables; ? all_tables； 用于显示当前用户可以访问的所有表，它不仅会返回当前用户方案的所有表，还会返回当前用户可以访问的其它方案的表： 比如：select table_name from all_tables; ? dba_tables； 它会显示所有方案拥有的数据库表。但是查询这种数据库字典视图，要求用户必须是dba角色或是有select any table系统权限。 例如：当用system用户查询数据字典视图dba_tables时，会返回system，sys，scott...方案所对应的数据库表。 ? 用户名，权限，角色 在建立用户时，oracle会把用户的信息存放到数据字典中，当给用户授予权限或是角色时，oracle会将权限和角色的信息存放到数据字典。 通过查询dba_users可以显示所有数据库用户的详细信息； 通过查询数据字典视图dba_sys_privs，可以显示用户所具有的系统权限； 通过查询数据字典视图dba_tab_privs，可以显示用户具有的对象权限； 通过查询数据字典dba_col_privs可以显示用户具有的列权限； 通过查询数据库字典视图dba_role_privs可以显示用户所具有的角色。
+Oracle 笔记
+25
+这里给大家再讲讲角色和权限的关系。 例如：要查看scott具有的角色，可查询dba_role_privs； SQL&gt; select * from dba_role_privs where grantee='SCOTT'; //查询orale中所有的系统权限，一般是dba select * from system_privilege_map order by name; //查询oracle中所有对象权限，一般是dba select distinct privilege from dba_tab_privs; //查询oracle中所有的角色，一般是dba select * from dba_roles; //查询数据库的表空间 select tablespace_name from dba_tablespaces; 问题1：如何查询一个角色包括的权限？ a.一个角色包含的系统权限 select * from dba_sys_privs where grantee='角色名' 另外也可以这样查看： select * from role_sys_privs where role='角色名' b.一个角色包含的对象权限 select * from dba_tab_privs where grantee='角色名' 问题2：oracle究竟有多少种角色？ SQL&gt; select * from dba_roles; 问题3：如何查看某个用户，具有什么样的角色？ select * from dba_role_privs where grantee='用户名' ? 显示当前用户可以访问的所有数据字典视图。 select * from dict where comments like '%grant%'; ? 显示当前数据库的全称 select * from global_name; ? 其它说明 数据字典记录有oracle数据库的所有系统信息。通过查询数据字典可以取得以下系统信息：比如 1.对象定义情况 2.对象占用空间大小 3.列信息 4.约束信息 ... 但是因为这些个信息，可以通过pl/sql developer工具查询得到，所以这里我就飘过。 ? 动态性能视图 动态性能视图用于记录当前例程的活动信息，当启动oracle server时，系统会建立动态性能视图；当停止oracle server时，系统会删除动态性能视图。oracle的所有动态性能视图都是以v_$开始的，并且oracle为每个动态性能视图都提供了相应的同义词，并且其同义词是以V$开始的，例如v_$datafile的同义词为v$datafile;动态性能视图的所有者为sys，一般情况下，由dba或是特权用户来查询动态性能视图。 因为这个在实际中用的较少，所以飞过。
+12.数据库管理 -- 管理表空间和数据文件 ? 介绍 表空间是数据库的逻辑组成部分。从物理上讲，数据库数据存放在数据文件中；从逻辑上讲，数据库则是存放在表空间中，表空间由一个或多个数据文件组成。
+Oracle 笔记
+26
+数据库的逻辑结构 ? 介绍 oracle中逻辑结构包括表空间、段、区和块。 说明一下数据库由表空间构成，而表空间又是由段构成，而段又是由区构成，而区又是由oracle块构成的这样的一种结构，可以提高数据库的效率。 为了让大家明白，我们画图说明逻辑关系：看图： 表空间 ? 介绍 表空间用于从逻辑上组织数据库的数据。数据库逻辑上是由一个或是多个表空间组成的。通过表空间可以达到以下作用： 1. 控制数据库占用的磁盘空间 2. dba可以将不同数据类型部署到不同的位置，这样有利于提高i/o性能，同时利于备份和恢复等管理操作。 ? 建立表空间 建立表空间是使用crate tablespace命令完成的，需要注意的是，一般情况下，建立表空间是特权用户或是dba来执行的，如果用其它用户来创建表空间，则用户必须要具有create tablespace的系统权限。 ? 建立数据表空间 在建立数据库后，为便于管理表，最好建立自己的表空间 create tablespace data01 datafile 'd:\test\dada01.dbf' size 20m uniform size 128k; 说明：执行完上述命令后，会建立名称为data01的表空间，并为该表空间建立名称为data01.dbf的数据文件，区的大小为128k ? 使用数据表空间 create table mypart(deptno number(4), dname varchar2(14), loc varchar2(13)) tablespace data01; ? 改变表空间的状态 当建立表空间时，表空间处于联机的（online）状态，此时该表空间是可以访问的，并且该表空间是可以读写的，即可以查询该表空间的数据，而且还可以在表空间执行各种语句。但是在进行系统维护或是数据维护时，可能需要改变表空间的状态。一般情况下，由特权用户或是dba来操作。 1. 使表空间脱机 alter tablespace 表空间名 offline; 2. 使表空间联机 alter tablespace 表空间名 online; 3. 只读表空间 当建立表空间时，表空间可以读写，如果不希望在该表空间上执行update，delete，insert操作，那么可以将表空间修改为只读 alter tablespace 表空间名 read only; (修改为可写是 alter tablespace 表空间名 read write;) ? 改变表空间的状态 我们给大家举一个实例，说明只读特性： 1. 知道表空间名，显示该表空间包括的所有表 select * from all_tables where tablespace_name=’表空间名’; 2. 知道表名，查看该表属于那个表空间 select tablespace_name, table_name from user_tables where table_name=’emp’; 通过2.我们可以知道scott.emp是在system这个表空间上，现在我们可以将system改为只读的但是我们不会成功，因为system是系统表空间，如果是普通表空间，那么我们就可以将其设为只读的，给大家做一个演示，可以加强理解。 3. 4. 使表空间可读写 alter tablespace 表空间名 read write; ? 删除表空间
+Oracle 笔记
+27
+一般情况下，由特权用户或是dba来操作，如果是其它用户操作，那么要求用户具有drop tablespace系统权限。 drop tablespace ‘表空间’ including contents and datafiles; 说明：including contents表示删除表空间时，删除该空间的所有数据库对象，而datafiles表示将数据库文件也删除。 ? 扩展表空间 表空间是由数据文件组成的，表空间的大小实际上就是数据文件相加后的大小。那么我们可以想象，假定表employee存放到data01表空间上，初始大小就是2M，当数据满2M空间后，如果在向employee表插入数据，这样就会显示空间不足的错误。 案例说明： 1. 建立一个表空间 sp01 2. 在该表空间上建立一个普通表 mydment 其结构和dept一样 3. 向该表中加入数据 insert into mydment select * from dept; 4. 当一定时候就会出现无法扩展的问题，怎么办？ 5. 就扩展该表空间，为其增加更多的存储空间。有三种方法： 1. 增加数据文件 SQL&gt; alter tablespace sp01 add datafile ‘d:\test\sp01.dbf’ size 20m; 2. 增加数据文件的大小 SQL&gt; alter tablespace 表空间名 ‘d:\test\sp01.dbf’ resize 20m; 这里需要注意的是数据文件的大小不要超过500m。 3. 设置文件的自动增长。 SQL&gt; alter tablespace 表空间名 ‘d:\test\sp01.dbf’ autoextend on next 10m maxsize 500m; ? 移动数据文件 有时，如果你的数据文件所在的磁盘损坏时，该数据文件将不能再使用，为了能够重新使用，需要将这些文件的副本移动到其它的磁盘，然后恢复。 下面以移动数据文件sp01.dbf为例来说明： 1. 确定数据文件所在的表空间 select tablespace_name from dba_data_files where file_name=’d:\test\sp01.dbf’; 2. 使表空间脱机 确保数据文件的一致性，将表空间转变为offline的状态。 alter tablespace sp01(表空间名) offline; 3. 使用命令移动数据文件到指定的目标位置 host move d:\test\sp01.dbf c:\test\sp01.dbf 4. 执行alter tablespace命令 在物理上移动了数据后，还必须执行alter tablespace命令对数据库文件进行逻辑修改： alter tablespace sp01 rename datafile ‘d:\test\sp01.dbf’ to ‘c:\test\sp01.dbf’; 5. 使得表空间联机 在移动了数据文件后，为了使用户可以访问该表空间，必须将其转变为online状态。 alter tablespace sp01(表空间名) online; ? 显示表空间信息 查询数据字典视图dba_tablespaces，显示表空间的信息： select tablespace_name from dba_tablespaces; ? 显示表空间所包含的数据文件 查询数据字典视图dba_data_files,可显示表空间所包含的数据文件，如下： select file_name, bytes from dba_data_files where tablespce_name=’表空间’; ? 表空间小结 1. 了解表空间和数据文件的作用
+Oracle 笔记
+28
+2. 掌握常用表空间，undo表空间和临时表空间的建立方法 3. 了解表空间的各个状态(online, offline, read write, read only)的作用，及如何改变表空间的状态的方法。 4. 了解移动数据文件的原因，及使用alter tablespace 和alter datatable命令移动数据文件的方法。 ? 其它表空间 除了最常用的数据表空间外，还有其它类型表空间： 1. 索引表空间 2. undo表空间 3. 临时表空间 4. 非标准块的表空间 这几种表空间，大家伙可以自己参考书籍研究，这里我就不讲。 ? 其它说明 关于表空间的组成部分 段/区/块，我们在后面给大家讲解。
+13.约束 玩转oracle实战教程(第五天) 期望目标 1.掌握维护oracle数据完整性的技巧 2.理解索引概念，会建立索引 3.管理oracle的权限和角色 维护数据的完整性 ? 介绍 数据的完整性用于确保数据库数据遵从一定的商业和逻辑规则，在oracle中，数据完整性可以使用约束、触发器、应用程序（过程、函数）三种方法来实现，在这三种方法中，因为约束易于维护，并且具有最好的性能，所以作为维护数据完整性的首选。 约束 ? 约束 约束用于确保数据库数据满足特定的商业规则。在oracle中，约束包括：not null、 unique， primary key， foreign key，和check五种。 使用 ? not null（非空） 如果在列上定义了not null，那么当插入数据时，必须为列提供数据。 ? unique（唯一） 当定义了唯一约束后，该列值是不能重复的，但是可以为null。 ? primary key（主键） 用于唯一的标示表行的数据，当定义主键约束后，该列不但不能重复而且不能为null。 需要说明的是：一张表最多只能有一个主键，但是可以有多个unqiue约束。 ? foreign key（外键） 用于定义主表和从表之间的关系。外键约束要定义在从表上，主表则必须具有主键约束或是unique约束，当定义外键约束后，要求外键列数据必须在主表的主键列存在或是为null。 ? check 用于强制行数据必须满足的条件，假定在sal列上定义了check约束，并要求sal列值在1000-2000之间如果不在1000-2000之间就会提示出错。 ? 商店售货系统表设计案例 现有一个商店的数据库，记录客户及其购物情况，由下面三个表组成：商品goods（商品号goodsId，商品名 goodsName，单价 unitprice，商品类别category，供应商provider）； 客户customer（客户号customerId，姓名name，住在address，电邮email，性别sex，身份证cardId）；
+Oracle 笔记
+29
+购买purchase（客户号customerId，商品号goodsId，购买数量nums）； 请用SQL语言完成下列功能： 1. 建表，在定义中要求声明： (1). 每个表的主外键； (2). 客户的姓名不能为空值； (3). 单价必须大于0，购买数量必须在1到30之间； (4). 电邮不能够重复； (5). 客户的性别必须是 男 或者 女，默认是男； SQL&gt; create table goods(goodsId char(8) primary key, --主键 goodsName varchar2(30)， unitprice number(10,2) check(unitprice&gt;0), category varchar2(8), provider varchar2(30) ); SQL&gt; create table customer( customerId char(8) primary key, --主键 name varchar2(50) not null, --不为空 address varchar2(50), email varchar2(50) unique, sex char(2) default '男' check(sex in ('男'，'女'))， -- 一个char能存半个汉字，两位char能存一个汉字 cardId char(18) ); SQL&gt; create table purchase( customerId char(8) references customer(customerId), goodsId char(8) references goods(goodsId), nums number(10) check (nums between 1 and 30) ); 表是默认建在SYSTEM表空间的 维护 ? 商店售货系统表设计案例（2） 如果在建表时忘记建立必要的约束，则可以在建表后使用alter table命令为表增加约束。但是要注意：增加not null约束时，需要使用modify选项，而增加其它四种约束使用add选项。 1. 增加商品名也不能为空 SQL&gt; alter table goods modify goodsName not null; 2. 增加身份证也不能重复 SQL&gt; alter table customer add constraint xxxxxx unique(cardId); 3. 增加客户的住址只能是’海淀’,’朝阳’,’东城’,’西城’,’通州’,’崇文’,’昌平’； SQL&gt; alter table customer add constraint yyyyyy check (address in (’海淀’,’朝阳’,’东城’,’西城’,’通州’,’崇文’,’昌平’)); ? 删除约束 当不再需要某个约束时，可以删除。 alter table 表名 drop constraint 约束名称； 特别说明一下： 在删除主键约束的时候，可能有错误，比如： alter table 表名 drop primary key； 这是因为如果在两张表存在主从关系，那么在删除主表的主键约束时，必须带上cascade选项 如像：
+Oracle 笔记
+30
+alter table 表名 drop primary key cascade; ? 显示约束信息 1.显示约束信息 通过查询数据字典视图user_constraints，可以显示当前用户所有的约束的信息。 select constraint_name, constraint_type, status, validated from user_constraints where table_name = '表名'; 2.显示约束列 通过查询数据字典视图user_cons_columns，可以显示约束所对应的表列信息。 select column_name, position from user_cons_columns where constraint_name = '约束名'; 3.当然也有更容易的方法，直接用pl/sql developer查看即可。简单演示一下下... 表级定义 列级定义 ? 列级定义 列级定义是在定义列的同时定义约束。 如果在department表定义主键约束 create table department4(dept_id number(12) constraint pk_department primary key, name varchar2(12), loc varchar2(12)); ? 表级定义 表级定义是指在定义了所有列后，再定义约束。这里需要注意： not null约束只能在列级上定义。 以在建立employee2表时定义主键约束和外键约束为例： create table employee2(emp_id number(4), name varchar2(15), dept_id number(2), constraint pk_employee primary key (emp_id), constraint fk_department foreign key (dept_id) references department4(dept_id));
+14.Oracle索引、权限
+管理索引-原理介绍 ? 介绍 索引是用于加速数据存取的数据对象。合理的使用索引可以大大降低i/o次数，从而提高数据访问性能。索引有很多种我们主要介绍常用的几种： 为什么添加了索引后，会加快查询速度呢？ 创建索引 ? 单列索引 单列索引是基于单个列所建立的索引，比如： create index 索引名 on 表名(列名); ? 复合索引 复合索引是基于两列或是多列的索引。在同一张表上可以有多个索引，但是要求列的组合必须不同，比如： create index emp_idx1 on emp (ename, job); create index emp_idx1 on emp (job, ename); 使用原则 ? 使用原则 1. 在大表上建立索引才有意义 2. 在where子句或是连接条件上经常引用的列上建立索引 3. 索引的层次不要超过4层 这里能不能给学生演示这个效果呢？ 如何构建一个大表呢？
+Oracle 笔记
+31
+索引的缺点 ? 索引缺点分析 索引有一些先天不足： 1. 建立索引，系统要占用大约为表1.2倍的硬盘和内存空间来保存索引。 2. 更新数据的时候，系统必须要有额外的时间来同时对索引进行更新，以维持数据和索引的一致性。 实践表明，不恰当的索引不但于事无补，反而会降低系统性能。因为大量的索引在进行插入、修改和删除操作时比没有索引花费更多的系统时间。 比如在如下字段建立索引应该是不恰当的： 1. 很少或从不引用的字段； 2. 逻辑型的字段，如男或女（是或否）等。 综上所述，提高查询效率是以消耗一定的系统资源为代价的，索引不能盲目的建立，这是考验一个DBA是否优秀的很重要的指标。 其它索引 ? 介绍 按照数据存储方式，可以分为B*树、反向索引、位图索引； 按照索引列的个数分类，可以分为单列索引、复合索引； 按照索引列值的唯一性，可以分为唯一索引和非唯一索引。 此外还有函数索引，全局索引，分区索引... 对于索引我还要说： 在不同的情况，我们会在不同的列上建立索引，甚至建立不同种类的索引，请记住，技术是死的，人是活的。比如： B*树索引建立在重复值很少的列上，而位图索引则建立在重复值很多、不同值相对固定的列上。 显示索引信息 ? 显示表的所有索引 在同一张表上可以有多个索引，通过查询数据字典视图dba_indexs和user_indexs，可以显示索引信息。其中dba_indexs用于显示数据库所有的索引信息，而user_indexs用于显示当前用户的索引信息： select index_name, index_type from user_indexes where table_name = '表名'; ? 显示索引列 通过查询数据字典视图user_ind_columns,可以显示索引对应的列的信息 select table_name, column_name from user_ind_columns where index_name = 'IND_ENAME'; ? 你也可以通过pl/sql developer工具查看索引信息 管理权限和角色 介绍 ? 介绍 这一部分我们主要看看oracle中如何管理权限和角色，权限和角色的区别在那里。 当刚刚建立用户时，用户没有任何权限，也不能执行任何操作。如果要执行某种特定的数据库操作，则必须为其授予系统的权限；如果用户要访问其它方案的对象，则必须为其授予对象的权限。为了简化权限的管理，可以使用角色。这里我们会详细的介绍。看图： 权限 ? 权限 权限是指执行特定类型sql命令或是访问其它方案对象的权利，包括系统权限和对象权限两种。 系统权限 ? 系统权限介绍 系统权限是指执行特定类型sql命令的权利。它用于控制用户可以执行的一个或是一组数据库操作。比如当用户具有create table权限时，可以在其方案中建表，当用户具有create any table权限时，可以在任何方案中建表。oracle提供了100多种系统权限。
+Oracle 笔记
+32
+常用的有： create session 连接数据库 create table 建表 create view 建视图 create public synonym 建同义词 create procedure 建过程、函数、包 create trigger 建触发器 create cluster 建簇 ? 显示系统权限 oracle提供了100多种系统权限，而且oracle的版本越高，提供的系统权限就越多，我们可以查询数据字典视图system_privilege_map，可以显示所有系统权限。 select * from system_privilege_map order by name; ? 授予系统权限 一般情况，授予系统权限是由dba完成的，如果用其他用户来授予系统权限，则要求该用户必须具有grant any privilege的系统权限。在授予系统权限时，可以带有with admin option选项，这样，被授予权限的用户或是角色还可以将该系统权限授予其它的用户或是角色。为了让大家快速理解，我们举例说明： 1.创建两个用户ken，tom。初始阶段他们没有任何权限，如果登录就会给出错误的信息。 create user ken identfied by ken; 2 给用户ken授权 1). grant create session, create table to ken with admin option; 2). grant create view to ken; 3 给用户tom授权 我们可以通过ken给tom授权，因为with admin option是加上的。当然也可以通过dba给tom授权，我们就用ken给tom授权： 1. grant create session, create table to tom; 2. grant create view to ken; --ok吗？不ok ? 回收系统权限 一般情况下，回收系统权限是dba来完成的，如果其它的用户来回收系统权限，要求该用户必须具有相应系统权限及转授系统权限的选项（with admin option）。回收系统权限使用revoke来完成。 当回收了系统权限后，用户就不能执行相应的操作了，但是请注意，系统权限级联收回的问题?[不是级联回收！] system ---------&gt;ken ----------&gt;tom (create session)(create session)( create session) 用system执行如下操作： revoke create session from ken; --请思考tom还能登录吗？ 答案：能，可以登录 对象权限 ? 对象权限介绍 指访问其它方案对象的权利，用户可以直接访问自己方案的对象，但是如果要访问别的方案的对象，则必须具有对象的权限。 比如smith用户要访问scott.emp表（scott：方案，emp：表） 常用的有： alter 修改 delete 删除 select 查询 insert 添加 update 修改 index 索引 references 引用 execute 执行 ? 显示对象权限 通过数据字段视图可以显示用户或是角色所具有的对象权限。视图为dba_tab_privs SQL&gt; conn system/manager; SQL&gt; select distinct privilege from dba_tab_privs; SQL&gt; select grantor, owner, table_name, privilege from dba_tab_privs where grantee = 'BLAKE';
+Oracle 笔记
+33
+1.授予对象权限 在oracle9i前，授予对象权限是由对象的所有者来完成的，如果用其它的用户来操作，则需要用户具有相应的（with grant option）权限，从oracle9i开始，dba用户（sys，system）可以将任何对象上的对象权限授予其它用户。授予对象权限是用grant命令来完成的。 对象权限可以授予用户，角色，和public。在授予权限时，如果带有with grant option选项，则可以将该权限转授给其它用户。但是要注意with grant option选项不能被授予角色。 1.monkey用户要操作scott.emp表，则必须授予相应的对象权限 1). 希望monkey可以查询scott.emp表的数据，怎样操作？ grant select on emp to monkey; 2). 希望monkey可以修改scott.emp的表数据，怎样操作？ grant update on emp to monkey; 3). 希望monkey可以删除scott.emp的表数据，怎样操作？ grant delete on emp to monkey; 4). 有没有更加简单的方法，一次把所有权限赋给monkey？ grant all on emp to monkey; 2.能否对monkey访问权限更加精细控制。（授予列权限） 1). 希望monkey只可以修改scott.emp的表的sal字段，怎样操作？ grant update on emp(sal) to monkey 2).希望monkey只可以查询scott.emp的表的ename，sal数据，怎样操作？ grant select on emp(ename,sal) to monkey ... 3.授予alter权限 如果black用户要修改scott.emp表的结构，则必须授予alter对象权限 SQL&gt; conn scott/tiger SQL&gt; grant alter on emp to blake; 当然也可以用system，sys来完成这件事。 4.授予execute权限 如果用户想要执行其它方案的包/过程/函数，则须有execute权限。 比如为了让ken可以执行包dbms_transaction，可以授予execute权限。 SQL&gt; conn system/manager SQL&gt; grant execute on dbms_transaction to ken; 5.授予index权限 如果想在别的方案的表上建立索引，则必须具有index对象权限。 如果为了让black可以在scott.emp表上建立索引，就给其index的对象权限 SQL&gt; conn scott/tiger SQL&gt; grant index on scott.emp to blake; 6.使用with grant option选项 该选项用于转授对象权限。但是该选项只能被授予用户，而不能授予角色 SQL&gt; conn scott/tiger; SQL&gt; grant select on emp to blake with grant option; SQL&gt; conn black/shunping SQL&gt; grant select on scott.emp to jones; ? 回收对象权限 在oracle9i中，收回对象的权限可以由对象的所有者来完成，也可以用dba用户（sys，system）来完成。 这里要说明的是：收回对象权限后，用户就不能执行相应的sql命令，但是要注意的是对象的权限是否会被级联收回？【级
+Oracle 笔记
+34
+联回收】 如：scott-------------&gt;blake--------------&gt;jones select on emp select on emp select on emp SQL&gt; conn scott/tiger@accp SQL&gt; revoke select on emp from blake 请大家思考，jones能否查询scott.emp表数据。 答案：查不了了（和系统权限不一样，刚好相反）
+15.角色
+? 介绍 角色就是相关权限的命令集合，使用角色的主要目的就是为了简化权限的管理，假定有用户a，b，c为了让他们都拥有权限 1. 连接数据库 2. 在scott.emp表上select，insert，update。 如果采用直接授权操作，则需要进行12次授权。 因为要进行12次授权操作，所以比较麻烦喔！怎么办？ 如果我们采用角色就可以简化： 首先将creat session，select on scott.emp，insert on scott.emp， update on scott.emp授予角色，然后将该角色授予a，b，c用户，这样就可以三次授权搞定。 角色分为预定义和自定义角色两类： ? 预定义角色 预定义角色是指oracle所提供的角色，每种角色都用于执行一些特定的管理任务，下面我们介绍常用的预定义角色connect，resource，dba 1.connect角色 connect角色具有一般应用开发人员需要的大部分权限，当建立了一个用户后，多数情况下，只要给用户授予connect和resource角色就够了，那么connect角色具有哪些系统权限呢？ alter session create cluster create database link create session create table create view create sequence 2.resource角色 resource角色具有应用开发人员所需要的其它权限，比如建立存储过程，触发器等。这里需要注意的是resource角色隐含了unlimited tablespace系统权限。 resource角色包含以下系统权限： create cluster create indextype create table create sequence create type create procedure create trigger 3.dba角色
+Oracle 笔记
+35
+dba角色具有所有的系统权限，及with admin option选项，默认的dba用户为sys和system，它们可以将任何系统权限授予其他用户。但是要注意的是dba角色不具备sysdba和sysoper的特权（启动和关闭数据库）。 ? 自定义角色 顾名思义就是自己定义的角色，根据自己的需要来定义。一般是dba来建立，如果用别的用户来建立，则需要具有create role的系统权限。在建立角色时可以指定验证方式（不验证，数据库验证等）。 1.建立角色（不验证） 如果角色是公用的角色，可以采用不验证的方式建立角色。 create role 角色名 not identified; 2.建立角色（数据库验证） 采用这样的方式时，角色名、口令存放在数据库中。当激活该角色时，必须提供口令。在建立这种角色时，需要为其提供口令。 create role 角色名 identified by 密码; 角色授权 当建立角色时，角色没有任何权限，为了使得角色完成特定任务，必须为其授予相应的系统权限和对象权限。 1.给角色授权 给角色授予权限和给用户授权没有太多区别，但是要注意，系统权限的unlimited tablespace和对象权限的with grant option选项是不能授予角色的。 SQL&gt; conn system/manager; SQL&gt; grant create session to 角色名 with admin option SQL&gt; conn scott/tiger@myoral; SQL&gt; grant select on scott.emp to 角色名; SQL&gt; grant insert, update, delete on scott.emp to 角色名; 通过上面的步骤，就给角色授权了。 2.分配角色给某个用户 一般分配角色是由dba来完成的，如果要以其它用户身份分配角色，则要求用户必须具有grant any role的系统权限。 SQL&gt; conn system/manager; SQL&gt; grant 角色名 to blake with admin option; 因为我给了with admin option选项，所以，blake可以把system分配给它的角色分配给别的用户。 ? 删除角色 使用drop role，一般是dba来执行，如果其它用户则要求该用户具有drop any role系统权限。 SQL&gt; conn system/manager; SQL&gt; drop role 角色名; 问题：如果角色被删除，那么被授予角色的用户是否还具有之前角色里的权限？ 答案：不具有了 ? 显示角色信息 1.显示所有角色 SQL&gt; select * from dba_roles; 2.显示角色具有的系统权限 SQL&gt; select privilege, admin_option from role_sys_privs where role='角色名'; 3.显示角色具有的对象权限 通过查询数据字典视图dba_tab_privs可以查看角色具有的对象权限或是列的权限。 4.显示用户具有的角色，及默认角色 当以用户的身份连接到数据库时，oracle会自动的激活默认的角色，通过查询数据字典视图dba_role_privs可以显示某个用户具有的所有角色及当前默认的角色
+Oracle 笔记
+36
+SQL&gt; select granted_role, default_role from dba_role_privs where grantee = ‘用户名’; ? 精细访问控制 精细访问控制是指用户可以使用函数，策略实现更加细微的安全访问控制。如果使用精细访问控制，则当在客户端发出sql语句（select，insert，update，delete）时，oracle会自动在sql语句后追加谓词（where子句），并执行新的sql语句，通过这样的控制，可以使得不同的数据库用户在访问相同表时，返回不同的数据信息，如： 用户 scott blake jones 策略 emp_access 数据库表 emp 如上图所示，通过策略emp_access，用户scott，black，jones在执行相同的sql语句时，可以返回不同的结果。例如：当执行select ename from emp; 时，根据实际情况可以返回不同的结果。
+16.PL/SQL 块的结构和实例 韩顺平.玩转oralce第24讲.plsql编程(1) 玩转orcle实战教程(第六天) 内容介绍 1.上节回顾 2.pl/sql的介绍 √ 3.pl/sql的基础 √ 期望目标 1.理解oracle的pl/sql概念 2.掌握pl/sql编程技术（包括编写过程、函数、触发器...） pl/sql的介绍 pl/sql是什么 pl/sql(procedural language/sql)是oracle在标准的sql语言上的扩展。pl/sql不仅允许嵌入sql语言，还可以定义变量和常量，允许使用条件语句和循环语句，允许使用例外处理各种错误，这样使得它的功能变得更加强大。 为什么学pl/sql ? 学习必要性 1.提高应用程序的运行性能 2.模块化的设计思想【分页的过程，订单的过程，转账的过程。。】 3.减少网络传输量 4.提高安全性（sql会包括表名，有时还可能有密码，传输的时候会泄露。PL/SQL就不会） 为什么PL/SQL会快呢？看图： 不好的地方： 移植性不好（换数据库就用不了）， 用什么编写pl/sql ? sqlplus开发工具 sqlplus是oracle公司提供的一个工具，这个因为我们在以前介绍过的： 举一个简单的案例： 编写一个存储过程，该过程可以向某表中添加记录。 1.创建一个简单的表
+create table mytest(name varchar2(30),passwd varchar2(30));
+2.创建过程
+create or replace procedure sp_pro1 is
+Oracle 笔记
+37
+begin--执行部分
+insert into mytest values('韩顺平','m1234')；
+end;
+/ replace:表示如果有sp_pro1，就替换 如何查看错误信息：show error; 如何调用该过程： 1）exec 过程名（参数值1，参数值2...）； 2）call 过程名（参数值1，参数值2...）； ? pl/sql developer开发工具 pl/sql developer是用于开发pl/sql块的集成开发环境(ide)，它是一个独立的产品，而不是oracle的一个附带品。 举一个简单案例： 编写一个存储过程，该过程可以删除某表记录。
+create or replace procedure sp_pro2 is
+begin--执行部分
+delete from mytest where name='韩顺平'；
+end; pl/sql基础 pl/sql介绍 ? 介绍 开发人员使用pl/sql编写应用模块时，不仅需要掌握sql语句的编写方法，还要掌握pl/sql语句及语法规则。pl/sql编程可以使用变量和逻辑控制语句，从而可以编写非常有用的功能模块。比如：分页存储过程模块、订单处理存储过程模块、转账存储过程模块。而且如果使用pl/sql编程，我们可以轻松地完成非常复杂的查询要求。 pl/sql可以做什么 ? 简单分类 |————过程(存储过程) | |————函数 块(编程)—————| |————触发器 | |————包 编写规范 ? 编写规范 1.注释 单行注释 --
+select * from emp where empno=7788; --取得员工信息 多行注释 /*...*/来划分 2.标志符号的命名规范 1).当定义变量时，建议用v_作为前缀v_sal 2).当定义常量时，建议用c_作为前缀c_rate 3).当定义游标时，建议用_cursor作为后缀emp_cursor 4).当定义例外时，建议用e_作为前缀e_error pl/sql块介绍 ? 介绍
+Oracle 笔记
+38
+块(block)是pl/sql的基本程序单元，编写pl/sql程序实际上就是编写pl/sql块，要完成相对简单的应用功能，可能只需要编写一个pl/sql块，但是如果想要实现复杂的功能，可能需要在一个pl/sql块中嵌套其它的pl/sql块。 ? 块结构示意图 pl/sql块由三个部分构成：定义部分，执行部分，例外处理部分。 如下所示： declare /*定义部分——定义常量、变量、游标、例外、复杂数据类型*/ begin /*执行部分——要执行的pl/sql语句和sql语句*/ exception /*例外处理部分——处理运行的各种错误*/ end; 定义部分是从declare开始的，该部分是可选的； 执行部分是从begin开始的，该部分是必须的； 例外处理部分是从exception开始的，该部分是可选的。 可以和java编程结构做一个简单的比较。 pl/sql块的实例(1) ? 实例1-只包括执行部分的pl/sql块
+set serveroutput on --打开输出选项
+begin
+dbms_output.put_line('hello');
+end;
+相关说明： dbms_output是oracle所提供的包(类似java的开发包)，该包包含一些过程，put_line就是dbms_output包的一个过程。 pl/sql块的实例(2) ? 实例2-包含定义部分和执行部分的pl/sql块
+declare
+v_ename varchar2(5); --定义字符串变量
+begin
+select ename into v_ename from emp where empno=&amp;aa;
+dbms_output.put_line('雇员名：'||v_ename);
+end;
+/ 如果要把薪水也显示出来，那么执行部分就应该这么写：
+select ename,sal into v_ename,v_sal from emp where empno=&amp;aa;
+相关说明： &amp; 表示要接收从控制台输入的变量。 pl/sql块的实例(3) ? 实例3-包含定义部分，执行部分和例外处理部分 为了避免pl/sql程序的运行错误，提高pl/sql的健壮性，应该对可能的错误进行处理，这个很有必要。 1.比如在实例2中，如果输入了不存在的雇员号，应当做例外处理。 2.有时出现异常，希望用另外的逻辑处理，[网示] 我们看看如何完成1的要求。 相关说明： oracle事先预定义了一些例外，no_data_found就是找不到数据的例外。
+Oracle 笔记
+39
+declare
+--定义变量
+v_ename varchar2(5);
+v_sal number(7,2);
+begin
+--执行部分
+select ename,sal into v_ename,v_sal from emp where empno=&amp;aa;
+--在控制台显示用户名
+dbms_output.put_line('用户名是：'||v_ename||' 工资：'||v_sal);
+--异常处理
+exception
+when no_data_found then
+dbms_output.put_line('朋友，你的编号输入有误！')；
+end;
+/
+17.pl/sql分类 -- 过程，函数，包，触发器
+? 过程 过程用于执行特定的操作，当建立过程时，既可以指定输入参数(in)，也可以指定输出参数(out)， 通过在过程中使用输入参数，可以将数据传递到执行部分；通过使用输出参数，可以将执行部分的数据传递到应用环境。在sqlplus中可以使用create procedure命令来建立过程。 实例如下： 1.请考虑编写一个过程，可以输入雇员名，新工资，可修改雇员的工资 2.如何调用过程有两种方法； exec call 3.如何在java程序中调用一个存储过程 问题：如何使用过程返回值？ 特别说明： 对于过程我们会在以后给大家详细具体的介绍，现在请大家先有一个概念。 create procedure sp_pro3(spName varchar2, newSal number) is --不要写成number(3,2),表明类型就可以了，不需要大小。就好像Java写方法时的参数一样
+begin
+--执行部分，根据用户名去修改工资
+update emp set sal=newSal where ename=spName;
+end;
+/ java程序中调用一个存储过程 //演示java程序去调用oracle的存储过程案例
+import java.sql.*;
+public class TestOraclePro{
+public static void main(String[] args){
+try{
+//1.加载驱动
+Class.forName("oracle.jdbc.driver.OracleDriver");
+//2.得到连接
+Oracle 笔记
+40
+Connection ct = DriverManager.getConnection("jdbc:oracle:thin@127.0.0.1:1521:MYORA1","scott","m123");
+//3.创建CallableStatement
+CallableStatement cs = ct.prepareCall("{call sp_pro3(?,?)}");
+//4.给?赋值
+cs.setString(1,"SMITH");
+cs.setInt(2,10);
+//5.执行
+cs.execute();
+//关闭
+cs.close();
+ct.close();
+} catch(Exception e){
+e.printStackTrace();
+}
+}
+} ? 函数 函数用于返回特定的数据，当建立函数时，在函数头部必须包含return子句。而在函数体内必须包含return语句返回的数据。我们可以使用create function来建立函数，实际案例：
+--输入雇员的姓名，返回该雇员的年薪
+create function annual_incomec(name varchar2)
+return number is
+annual_salazy number(7,2);
+begin
+--执行部分
+select sal*12+nvl(comm, 0) into annual_salazy from emp where ename=name;
+return annual_salazy;
+end;
+/
+如果函数创建过程有编译错误，可以使用show error;命令显示错误 在sqlplus中调用函数
+SQL&gt; var income number
+SQL&gt; call annual_incomec('scott') into: income;
+SQL&gt; print income 同样我们可以在java程序中调用该函数 select annual_income('SCOTT') from dual; 这样可以通过rs.getInt(l)得到返回的结果。 ? 包 包用于在逻辑上组合过程和函数，它由包规范和包体两部分组成。 1.我们可以使用create package命令来创建包。 实例： --创建一个包sp_package --声明该包有一个过程update_sal --声明该包有一个函数annual_income
+Oracle 笔记
+41
+create package sp_package is
+procedure update_sal(name varchar2, newsal number);
+function annual_income(name varchar2) return number;
+end; 包的规范只包含了过程和函数的说明，但是没有过程和函数的实现代码。包体用于实现包规范中的过程和函数。 2.建立包体可以使用create package body命令 --给包sp_package实现包体
+create or replace package body sp_package is
+procedure update_sal(name varchar2, newsal number)
+is
+begin
+update emp set sal = newsal where ename = name;
+end;
+function annual_income(name varchar2) return number is
+annual_salary number;
+begin
+select sal * 12 + nvl(comm, 0) into annual_salary from emp
+where ename = name;
+return annual_salary;
+end;
+end;
+/ 3.如何调用包的过程或是函数 当调用包的过程或是函数时，在过程和函数前需要带有包名，如果要访问其它方案的包，还需要在包名前加方案名。 如： SQL&gt; call sp_package.update_sal('SCOTT', 1500); 特别说明： 包是pl/sql中非常重要的部分，我们在使用过程分页时，将会再次体验它的威力呵呵。 ? 触发器 触发器是指隐含的执行的存储过程。当定义触发器时，必须要指定触发的事件和触发的操作，常用的触发事件包括insert,update,delete语句，而触发操作实际就是一个pl/sql块。可以使用create trigger来建立触发器。 特别说明： 我们会在后面详细为大家介绍触发器的使用，因为触发器是非常有用的，可维护数据库的安全和一致性。
+18.定义并使用变量,复合类型 定义并使用变量 ? 介绍 在编写pl/sql程序时，可以定义变量和常量；在pl/sql程序中包括有： 1.标量类型(scalar) 2.复合类型(composite) 3.参照类型(reference) 4.lob(large object) ? 标量(scalar)——常用类型 在编写pl/sql块时，如果要使用变量，需在定义部分定义变量。pl/sql中定义变量和常量的语法如下： identifier [constant] datatype [not null] [:=| default expr]
+Oracle 笔记
+42
+identifier : 名称 constant ：指定常量。需要指定它的初始值，且其值是不能改变的 datatype ：数据类型 not null ：指定变量值不能为null := 给变量或是常量指定初始值 default 用于指定初始值 expr ：指定初始值的pl/sql表达式，可以是文本值、其它变量、函数等。 ? 标量定义的案例 1.定义一个变长字符串 v_ename varchar2(10); 2.定义一个小数,范围 -9999.99~9999.99 v_sal number(6,2); 3.定义一个小数并给一个初始值为5.4 :=是pl/sql的赋值号 v_sal2 number(6,2):=5.4; 4.定义一个日期类型的数据 v_hiredate date; 5.定义一个布尔变量，不能为空，初始值为false v_valid boolean not null default false; ? 标量(scalar)——使用标量 在定义好变量后，就可以使用这些变量。这里需要说明的是pl/sql块为变量赋值不同于其它的编程语言，需要在等号前面加冒号(:=) 下面以输入员工号，显示雇员姓名、工资、个人所得税(税率为0.03)为例。说明变量的使用，看看如何编写。
+declare
+c_tax_rate number(3,2):=0.03;
+--用户名
+v_ename varchar2(5);
+v_sal number(7,2);
+v_tax_sal number(7,2);
+begin
+--执行
+select ename,sal into v_ename,v_sal from emp where empno=&amp;no;
+--计算所得税
+v_tax_sal := v_sal*c_tax_rate;
+--输出
+dbms_output.put_line('姓名是：'||v_ename||'工资：'||v_sal||' 交税：'||v_tax_sal);
+end;
+/ ? 标量(scalar)——使用%type类型 对于上面的pl/sql块有一个问题： 就是如果员工的姓名超过了5个字符的话，就会有错误，为了降低pl/sql程序的维护工作量，可以使用%type属性定义变量，这样它会按照数据库列来确定你定义的变量的类型和长度。 我们看看这个怎么使用： 标识符名 表名.列名%type; 比如上例的v_ename，这样定义： v_ename emp.ename%type;
+Oracle 笔记
+43
+? 复合变量(composite)——介绍 用于存放多个值的变量。主要包括这几种： 1.pl/sql记录 2.pl/sql表 3.嵌套表 4.varray ? 复合类型——pl/sql记录 类似于高级语言中的结构体，需要注意的是，当引用pl/sql记录成员时，必须要加记录变量作为前缀(记录变量.记录成员)如下：
+declare
+--定义一个pl/sql记录类型emp_record_type,类型包含3个数据name,salary,title。说白了，就是一个类型可以存放3个数据，主要是为了好管理
+type emp_record_type is record(
+name emp.ename%type,
+salary emp.sal%type,
+title emp.job%type);
+--定义了一个sp_record变量，这个变量的类型是emp_record_type
+sp_record emp_record_type;
+begin
+select ename, sal, job into sp_record from emp where empno = 7788;
+dbms_output.put_line ('员工名:' || sp_record.name);
+end; ? 复合类型-pl/sql表 相当于高级语言中的数组，但是需要注意的是在高级语言中数组的下标不能为负数，而pl/sql是可以为负数的，并且表元素的下标没有限制。实例如下：
+declare
+--定义了一个pl/sql表类型sp_table_type，该类型是用于存放emp.ename%type
+--index by binary_integer 表示下标是整数
+type sp_table_type is table of emp.ename%type
+index by binary_integer;
+--定义了一个sp_table变量，这个变量的类型是sp_table_type
+sp_table sp_table_type;
+begin
+select ename into sp_table(-1) from emp where empno = 7788;
+dbms_output.put_line('员工名:' || sp_table(-1));
+end;
+说明： sp_table_type 是pl/sql表类型 emp.ename%type 指定了表的元素的类型和长度 sp_table 为pl/sql表变量 sp_table(0) 则表示下标为0的元素 注意：如果把select ename into sp_table(-1) from emp where empno = 7788;变成select ename into sp_table(-1) from emp;则运行时会出现错误，错误如下： ORA-01422:实际返回的行数超出请求的行数 解决方法是：使用参照变量（这里不讲）
+Oracle 笔记
+44
+? 复合变量——嵌套表(nested table) ? 复合变量——变长数组(varray) ? 参照变量——介绍 参照变量是指用于存放数值指针的变量。通过使用参照变量，可以使得应用程序共享相同对象，从而降低占用的空间。在编写pl/sql程序时，可以使用游标变量(ref cursor)和对象类型变量(ref obj_type)两种参照变量类型。 ? 参照变量——ref cursor游标变量 使用游标时，当定义游标时不需要指定相应的select语句，但是当使用游标时（open时）需要指定select语句，这样一个游标就与一个select语句结合了。实例如下： 1.请使用pl/sql编写一个块，可以输入部门号，并显示该部门所有员工姓名和他的工资。 2.在1的基础上，如果某个员工的工资低于200元，就添加100元。 1.
+declare
+--定义游标sp_emp_cursor
+type sp_emp_cursor is ref cursor;
+--定义一个游标变量
+test_cursor sp_emp_cursor;
+--定义变量
+v_ename emp.ename%type;
+v_sal emp.sal%type;
+begin
+--执行
+--把test_cursor和一个select结合
+open test_cursor for select ename,sal from emp where deptno=&amp;no;
+--循环取出
+loop
+fetch test_cursor into v_ename,v_sal;
+--判断是否test_cursor为空
+exit when test_cursor%notfound;
+dbms_output.put_line('名字：'||v_ename||' 工资：'||v_sal);
+end loop;
+end;
+/
+19.pl/sql的进阶--控制结构(分支，循环，控制)
+玩转oracle实战教程(第七天) 内容介绍 1.上节回顾 2.pl/sql的进阶 √ 3.oracle的视图(具有安全性，和简化复杂查询的功能) √ 4.oracle的触发器 √ 期望目标 1.掌握pl/sql的高级用法（能缩写分页过程模块，下订单过程模块...） 2.会处理oracle常见的例外 3.会编写oracle各种触发器
+Oracle 笔记
+45
+4.理解视图的概念并能灵活使用视图 pl/sql的进阶--控制结构 ? 介绍 在任何计算机语言(c，java，pascal)都有各种控制语句（条件语句，循环结构，顺序控制结构...）在pl/sql中也存在这样的控制结构。 在本部分学习完成后，希望大家达到： 1.使用各种if语句 2.使用循环语句 3.使用控制语句——goto和null； ? 条件分支语句 pl/sql中提供了三种条件分支语句if—then，if – then – else，if – then – elsif – then 这里我们可以和java语句进行一个比较 ? 简单的条件判断 if – then 问题：编写一个过程，可以输入一个雇员名，如果该雇员的工资低于2000，就给该员工工资增加10%。
+create or replace procedure sp_pro6(spName varchar2) is
+--定义
+v_sal emp.sal%type;
+begin
+--执行
+select sal into v_sal from emp where ename=spName;
+--判断
+if v_sal&lt;2000 then
+update emp set sal=sal+sal*10% where ename=spName;
+end if;
+end;
+/ ? 二重条件分支 if – then – else 问题：编写一个过程，可以输入一个雇员名，如果该雇员的补助不是0就在原来的基础上增加100；如果补助为0就把补助设为200；
+create or replace procedure sp_pro6(spName varchar2) is
+--定义
+v_comm emp.comm%type;
+begin
+--执行
+select comm into v_comm from emp where ename=spName;
+--判断
+if v_comm&lt;&gt;0 then
+update emp set comm=comm+100 where ename=spName;
+else
+update emp set comm=comm+200 where ename=spName;
+end if;
+end;
+/ ? 多重条件分支 if – then – elsif – then
+Oracle 笔记
+46
+问题：编写一个过程，可以输入一个雇员编号，如果该雇员的职位是PRESIDENT就给他的工资增加1000，如果该雇员的职位是MANAGER就给他的工资增加500，其它职位的雇员工资增加200。
+create or replace procedure sp_pro6(spNo number) is
+--定义
+v_job emp.job%type;
+begin
+--执行
+select job into v_job from emp where empno=spNo;
+if v_job='PRESIDENT' then
+update emp set sal=sal+1000 where empno=spNo;
+elsif v_job='MANAGER' then
+update emp set sal=sal+500 where empno=spNo;
+else
+update emp set sal=sal+200 where empno=spNo;
+end if;
+end;
+/ ? 循环语句 –loop 是pl/sql中最简单的循环语句，这种循环语句以loop开头，以end loop结尾，这种循环至少会被执行一次。 案例：现有一张表users，表结构如下： 用户id | 用户名 | 请编写一个过程，可以输入用户名，并循环添加10个用户到users表中，用户编号从1开始增加。
+create or replace procedure sp_pro6(spName varchar2) is
+--定义 :=表示赋值
+v_num number:=1;
+begin
+loop
+insert into users values(v_num,spName);
+--判断是否要退出循环
+exit when v_num=10;
+--自增
+v_num:=v_num+1;
+end loop;
+end;
+/ ? 环语句 –while循环 基本循环至少要执行循环体一次，而对于while循环来说，只有条件为true时，才会执行循环体语句，while循环以while...loop开始，以end loop结束。 案例：现有一张表users，表结构如下： 用户id 用户名 问题：请编写一个过程，可以输入用户名，并循环添加10个用户到users表中，用户编号从11开始增加。
+create or replace procedure sp_pro6(spName varchar2) is
+--定义 :=表示赋值
+v_num number:=11;
+Oracle 笔记
+47
+begin
+while v_num&lt;=20 loop
+--执行
+insert into users values(v_num,spName);
+v_num:=v_num+1;
+end loop;
+end;
+/ ? 循环语句 –for循环 基本for循环的基本结构如下
+begin
+for i in reverse 1..10 loop
+insert into users values (i, 'shunping');
+end loop;
+end;
+我们可以看到控制变量i，在隐含中就在不停地增加。 ? 顺序控制语句 –goto，null 1.goto语句 goto语句用于跳转到特定符号去执行语句。注意由于使用goto语句会增加程序的复杂性，并使得应用程序可读性变差，所以在做一般应用开发时，建议大家不要使用goto语句。 基本语法如下 goto lable，其中lable是已经定义好的标号名，
+declare
+i int := 1;
+begin
+loop
+dbms_output.put_line('输出i=' || i);
+if i = 1{} then
+goto end_loop;
+end if;
+i := i + 1;
+end loop;
+&lt;&lt;end_loop&gt;&gt;
+dbms_output.put_line('循环结束');
+end; 2.null null语句不会执行任何操作，并且会直接将控制传递到下一条语句。使用null语句的主要好处是可以提高pl/sql的可读性。
+declare
+v_sal emp.sal%type;
+v_ename emp.ename%type;
+begin
+select ename, sal into v_ename, v_sal from emp where empno = &amp;no;
+if v_sal &lt; 3000 then
+update emp set comm = sal * 0.1 where ename = v_ename;
+else
+null;
+Oracle 笔记
+48
+end if;
+end;
+20.PL/SQL分页 编写分页过程 ? 介绍 分页是任何一个网站(bbs,网上商城，blog)都会使用到的技术，因此学习pl/sql编程开发就一定要掌握该技术。看图： ? 无返回值的存储过程 古人云：欲速则不达，为了让大家伙比较容易接受分页过程编写，我还是从简单到复杂，循序渐进的给大家讲解。首先是掌握最简单的存储过程，无返回值的存储过程： 案例：现有一张表book，表结构如下：看图： 书号 书名 出版社 请写一个过程，可以向book表添加书，要求通过java程序调用该过程。 --in:表示这是一个输入参数，默认为in --out:表示一个输出参数
+create or replace procedure sp_pro7(spBookId in number,spbookName in varchar2,sppublishHouse in varchar2) is
+begin
+insert into book values(spBookId,spbookName,sppublishHouse);
+end;
+/ --在java中调用
+//调用一个无返回值的过程
+import java.sql.*;
+public class Test2{
+public static void main(String[] args){
+try{
+	//1.加载驱动
+	Class.forName("oracle.jdbc.driver.OracleDriver");
+	//2.得到连接
+	Connection ct = DriverManager.getConnection("jdbc:oracle:thin@127.0.0.1:1521:MYORA1","scott","m123");
+	//3.创建CallableStatement
+	CallableStatement cs = ct.prepareCall("{call sp_pro7(?,?,?)}");
+	//4.给?赋值
+	cs.setInt(1,10);
+	cs.setString(2,"笑傲江湖");
+	cs.setString(3,"人民出版社");
+	//5.执行
+	cs.execute();
+	} catch(Exception e){
+		e.printStackTrace();
+	} finally{
+	//6.关闭各个打开的资源
+	cs.close
+	//Oracle 笔记
+	ct.close();
+	}
+	}
+}
+执行，记录被加进去了 ? 有返回值的存储过程（非列表） 再看如何处理有返回值的存储过程： 案例：编写一个过程，可以输入雇员的编号，返回该雇员的姓名。 案例扩张：编写一个过程，可以输入雇员的编号，返回该雇员的姓名、工资和岗位。
+--有输入和输出的存储过程
+create or replace procedure sp_pro8
+(spno in number, spName out varchar2) is
+begin
+select ename into spName from emp where empno=spno;
+end;
+/
+import java.sql.*;
+public class Test2{
+public static void main(String[] args){
+try{
+//1.加载驱动
+Class.forName("oracle.jdbc.driver.OracleDriver");
+//2.得到连接
+Connection ct = DriverManager.getConnection("jdbc:oracle:thin@127.0.0.1:1521:MYORA1","scott","m123");
+//3.创建CallableStatement
+/*CallableStatement cs = ct.prepareCall("{call sp_pro7(?,?,?)}");
+//4.给?赋值
+cs.setInt(1,10);
+cs.setString(2,"笑傲江湖");
+cs.setString(3,"人民出版社");*/
+//看看如何调用有返回值的过程
+//创建CallableStatement
+/*CallableStatement cs = ct.prepareCall("{call sp_pro8(?,?)}");
+//给第一个？赋值
+cs.setInt(1,7788);
+//给第二个？赋值
+cs.registerOutParameter(2,oracle.jdbc.OracleTypes.VARCHAR);
+//5.执行
+cs.execute();
+//取出返回值,要注意？的顺序
+String name=cs.getString(2);
+System.out.println("7788的名字"+name);
+} catch(Exception e){
+e.printStackTrace();
+Oracle 笔记
+50
+} finally{
+//6.关闭各个打开的资源
+cs.close();
+ct.close();
+}
+}
+}
+运行，成功得出结果。。 案例扩张：编写一个过程，可以输入雇员的编号，返回该雇员的姓名、工资和岗位。
+--有输入和输出的存储过程
+create or replace procedure sp_pro8
+(spno in number, spName out varchar2,spSal out number,spJob out varchar2) is
+begin
+select ename,sal,job into spName,spSal,spJob from emp where empno=spno;
+end;
+/
+import java.sql.*;
+public class Test2{
+public static void main(String[] args){
+try{
+//1.加载驱动
+Class.forName("oracle.jdbc.driver.OracleDriver");
+//2.得到连接
+Connection ct = DriverManager.getConnection("jdbc:oracle:thin@127.0.0.1:1521:MYORA1","scott","m123");
+//3.创建CallableStatement
+/*CallableStatement cs = ct.prepareCall("{call sp_pro7(?,?,?)}");
+//4.给?赋值
+cs.setInt(1,10);
+cs.setString(2,"笑傲江湖");
+cs.setString(3,"人民出版社");*/
+//看看如何调用有返回值的过程
+//创建CallableStatement
+/*CallableStatement cs = ct.prepareCall("{call sp_pro8(?,?,?,?)}");
+//给第一个？赋值
+cs.setInt(1,7788);
+//给第二个？赋值
+cs.registerOutParameter(2,oracle.jdbc.OracleTypes.VARCHAR);
+//给第三个？赋值
+cs.registerOutParameter(3,oracle.jdbc.OracleTypes.DOUBLE);
+//给第四个？赋值
+cs.registerOutParameter(4,oracle.jdbc.OracleTypes.VARCHAR);
+//5.执行
+cs.execute();
+//取出返回值,要注意？的顺序
+Oracle 笔记
+51
+String name=cs.getString(2);
+String job=cs.getString(4);
+System.out.println("7788的名字"+name+" 工作："+job);
+} catch(Exception e){
+e.printStackTrace();
+} finally{
+//6.关闭各个打开的资源
+cs.close();
+ct.close();
+}
+}
+}
+运行，成功找出记录 ? 有返回值的存储过程（列表[结果集]） 案例：编写一个过程，输入部门号，返回该部门所有雇员信息。 对该题分析如下： 由于oracle存储过程没有返回值，它的所有返回值都是通过out参数来替代的，列表同样也不例外，但由于是集合，所以不能用一般的参数，必须要用pagkage了。所以要分两部分： 返回结果集的过程 1.建立一个包，在该包中，我定义类型test_cursor,是个游标。 如下：
+create or replace package testpackage as
+TYPE test_cursor is ref cursor;
+end testpackage; 2.建立存储过程。如下：
+create or replace procedure sp_pro9(spNo in number,p_cursor out testpackage.test_cursor) is
+begin
+open p_cursor for
+select * from emp where deptno = spNo;
+end sp_pro9; 3.如何在java程序中调用该过程
+import java.sql.*;
+public class Test2{
+public static void main(String[] args){
+try{
+//1.加载驱动
+Class.forName("oracle.jdbc.driver.OracleDriver");
+//2.得到连接
+Connection ct = DriverManager.getConnection("jdbc:oracle:thin@127.0.0.1:1521:MYORA1","scott","m123");
+//看看如何调用有返回值的过程
+//3.创建CallableStatement
+/*CallableStatement cs = ct.prepareCall("{call sp_pro9(?,?)}");
+//4.给第？赋值
+cs.setInt(1,10);
+//给第二个？赋值
+Oracle 笔记
+52
+cs.registerOutParameter(2,oracle.jdbc.OracleTypes.CURSOR);
+//5.执行
+cs.execute();
+//得到结果集
+ResultSet rs=(ResultSet)cs.getObject(2);
+while(rs.next()){
+System.out.println(rs.getInt(1)+" "+rs.getString(2));
+}
+} catch(Exception e){
+e.printStackTrace();
+} finally{
+//6.关闭各个打开的资源
+cs.close();
+ct.close();
+}
+}
+}
+运行，成功得出部门号是10的所有用户 ? 编写分页过程 有了上面的基础，相信大家可以完成分页存储过程了。 要求，请大家编写一个存储过程，要求可以输入表名、每页显示记录数、当前页。返回总记录数，总页数，和返回的结果集。 如果大家忘了oracle中如何分页，请参考第三天的内容。 先自己完成，老师在后面给出答案，并讲解。 --oracle的分页
+select t1.*, rownum rn from (select * from emp) t1 where rownum&lt;=10;
+--在分页时，大家可以把下面的sql语句当做一个模板使用
+select * from
+(select t1.*, rownum rn from (select * from emp) t1 where rownum&lt;=10)
+where rn&gt;=6; --开发一个包 --建立一个包，在该包中，我定义类型test_cursor,是个游标。 如下：
+create or replace package testpackage as
+TYPE test_cursor is ref cursor;
+end testpackage;
+--开始编写分页的过程
+create or replace procedure fenye
+(tableName in varchar2,
+Pagesize in number,--一页显示记录数
+pageNow in number,
+myrows out number,--总记录数
+myPageCount out number,--总页数
+p_cursor out testpackage.test_cursor--返回的记录集
+) is
+--定义部分
+--定义sql语句 字符串
+Oracle 笔记
+53
+v_sql varchar2(1000);
+--定义两个整数
+v_begin number:=(pageNow-1)*Pagesize+1;
+v_end number:=pageNow*Pagesize;
+begin
+--执行部分
+v_sql:='select * from (select t1.*, rownum rn from (select * from '||tableName||') t1 where rownum&lt;='||v_end||') where rn&gt;='||v_begin;
+--把游标和sql关联
+open p_cursor for v_sql;
+--计算myrows和myPageCount
+--组织一个sql语句
+v_sql:='select count(*) from '||tableName;
+--执行sql,并把返回的值，赋给myrows；
+execute inmediate v_sql into myrows;
+--计算myPageCount
+--if myrows%Pagesize=0 then这样写是错的
+if mod(myrows,Pagesize)=0 then
+myPageCount:=myrows/Pagesize;
+else
+myPageCount:=myrows/Pagesize+1
+end if;
+--关闭游标
+close p_cursor;
+end;
+/ --使用java测试 //测试分页
+import java.sql.*;
+public class FenYe{
+public static void main(String[] args){
+try{
+//1.加载驱动
+Class.forName("oracle.jdbc.driver.OracleDriver");
+//2.得到连接
+Connection ct = DriverManager.getConnection("jdbc:oracle:thin@127.0.0.1:1521:MYORA1","scott","m123");
+//3.创建CallableStatement
+CallableStatement cs = ct.prepareCall("{call fenye(?,?,?,?,?,?)}");
+//4.给第？赋值
+cs.seString(1,"emp");
+cs.setInt(2,5);
+cs.setInt(3,2);
+//注册总记录数
+Oracle 笔记
+54
+cs.registerOutParameter(4,oracle.jdbc.OracleTypes.INTEGER);
+//注册总页数
+cs.registerOutParameter(5,oracle.jdbc.OracleTypes.INTEGER);
+//注册返回的结果集
+cs.registerOutParameter(6,oracle.jdbc.OracleTypes.CURSOR);
+//5.执行
+cs.execute();
+//取出总记录数 /这里要注意，getInt(4)中4，是由该参数的位置决定的
+int rowNum=cs.getInt(4);
+int pageCount = cs.getInt(5);
+ResultSet rs=(ResultSet)cs.getObject(6);
+//显示一下，看看对不对
+System.out.println("rowNum="+rowNum);
+System.out.println("总页数="+pageCount);
+while(rs.next()){
+System.out.println("编号："+rs.getInt(1)+" 名字："+rs.getString(2)+" 工资："+rs.getFloat(6));
+}
+} catch(Exception e){
+e.printStackTrace();
+} finally{
+//6.关闭各个打开的资源
+cs.close();
+ct.close();
+}
+}
+}
+运行，控制台输出： rowNum=19 总页数：4 编号：7369 名字：SMITH 工资：2850.0 编号：7499 名字：ALLEN 工资：2450.0 编号：7521 名字：WARD 工资：1562.0 编号：7566 名字：JONES 工资：7200.0 编号：7654 名字：MARTIN 工资：1500.0 --新的需要，要求按照薪水从低到高排序，然后取出6-10 过程的执行部分做下改动，如下：
+begin
+--执行部分
+v_sql:='select * from (select t1.*, rownum rn from (select * from '||tableName||' order by sal) t1 where rownum&lt;='||v_end||') where rn&gt;='||v_begin; 重新执行一次procedure,java不用改变，运行，控制台输出： rowNum=19 总页数：4 编号：7900 名字：JAMES 工资：950.0 编号：7876 名字：ADAMS 工资：1100.0
+Oracle 笔记
+55
+编号：7521 名字：WARD 工资：1250.0 编号：7654 名字：MARTIN 工资：1250.0 编号：7934 名字：MILLER 工资：1300.0
+21.例外处理 例外处理 ? 例外的分类 oracle将例外分为预定义例外，非预定义例外和自定义例外三种。 预定义例外用于处理常见的oracle错误 非预定义例外用于处理预定义例外不能处理的例外 自定义例外用于处理与oracle错误无关的其它情况 ? 例外传递 如果不处理例外我们看看会出现什么情况： 案例，编写一个过程，可接收雇员的编号，并显示该雇员的姓名。 问题是，如果输入的雇员编号不存在，怎样去处理呢？
+--例外案例
+declare
+--定义
+v_ename emp.ename%type;
+begin
+--
+select ename into v_ename from emp where empno=&amp;gno;
+dbms_output.put_line('名字：'||v_ename)
+/ 执行，弹出框，看图： 随便输个不在的编号，回车，会抛出异常，显示： ORA-01403: 未找到数据 ORA-06512: 在line 6
+declare
+--定义
+v_ename emp.ename%type;
+begin
+--
+select ename into v_ename from emp where empno=&amp;gno;
+dbms_output.put_line('名字：'||v_ename)
+exception
+when no_data_found then
+dbms_output.put_line('编号没有！');
+/
+执行，输入一个不存在的编号，回车，显示： 编号没有！ ? 处理预定义例外 预定义例外是由pl/sql所提供的系统例外。当pl/sql应用程序违反了oracle 规定的限制时，则会隐含的触发一个内部例外。pl/sql为开发人员提供了二十多个预定义例外。我们给大家介绍常用的例外。
+Oracle 笔记
+56
+? 预定义例外 case_not_found 在开发pl/sql块中编写case语句时，如果在when子句中没有包含必须的条件分支，就会触发case_not_found的例外：
+create or replace procedure sp_pro6(spno number) is
+v_sal emp.sal%type;
+begin
+select sal into v_sal from emp where empno = spno;
+case
+when v_sal &lt; 1000 then
+update emp set sal = sal + 100 where empno = spno;
+when v_sal &lt; 2000 then
+update emp set sal = sal + 200 where empno = spno;
+end case;
+exception
+when case_not_found then
+dbms_output.put_line('case语句没有与' || v_sal || '相匹配的条件');
+end; ? 预定义例外 cursor_already_open 当重新打开已经打开的游标时，会隐含的触发例外cursor_already_open
+declare
+cursor emp_cursor is select ename, sal from emp;
+begin
+open emp_cursor;
+for emp_record1 in emp_cursor loop
+dbms_output.put_line(emp_record1.ename);
+end loop;
+exception
+when cursor_already_open then
+dbms_output.put_line('游标已经打开');
+end;
+/ ? 预定义例外 dup_val_on_index 在唯一索引所对应的列上插入重复的值时，会隐含的触发例外dup_val_on_index例外
+begin
+insert into dept values (10, '公关部', '北京');
+exception
+when dup_val_on_index then
+dbms_output.put_line('在deptno列上不能出现重复值');
+end; ? 预定义例外 invalid_cursor 当试图在不合法的游标上执行操作时，会触发该例外 例如：试图从没有打开的游标提取数据，或是关闭没有打开的游标。则会触发该例外
+declare
+cursor emp_cursor is select ename, sal from emp;
+emp_record emp_cursor%rowtype;
+begin
+Oracle 笔记
+57
+--open emp_cursor; --打开游标
+fetch emp_cursor into emp_record;
+dbms_output.put_line(emp_record.ename);
+close emp_cursor;
+exception
+when invalid_cursor then
+dbms_output.put_line('请检测游标是否打开');
+end; ? 预定义例外 invalid_number 当输入的数据有误时，会触发该例外 比如：数字100写成了loo就会触发该例外
+begin
+update emp set sal= sal + 'loo';
+exception
+when invalid_number then
+dbms_output.put_line('输入的数字不正确');
+end; 预定义例外 no_data_found 下面是一个pl/sql块，当执行select into 没有返回行，就会触发该例外
+declare
+v_sal emp.sal%type;
+begin
+select sal into v_sal from emp
+when ename='&amp;name';
+exception
+when no_data_found then
+dbms_output.put_line('不存在该员工')；
+end; ? 预定义例外 too_many_rows 当执行select into语句时，如果返回超过了一行，则会触发该例外。
+declare
+v_ename emp.ename%type;
+begin
+select ename into v_ename from emp;
+exception
+when too_many_rows then
+dbms_output.put_line('返回了多行');
+end; ? 预义例外 zero_divide 当执行2/0语句时，则会触发该例外。 ? 预定义例外 value_error 当在执行赋值操作时，如果变量的长度不足以容纳实际数据，则会触发该例外value_error，比如：
+declare
+v_ename varchar2(5);
+begin
+Oracle 笔记
+58
+select ename into v_ename from emp where empno = &amp;no1;
+dbms_output.put_line(v_ename);
+exception
+when value_error then
+dbms_output.put_line('变量尺寸不足');
+end; ? 其它预定义例外(这些例外不是在pl/sql里触发的，而是在用oracle时触发的，所以取名叫其它预定义例外) 1.login_denied 当用户非法登录时，会触发该例外 2.not_logged_on 如果用户没有登录就执行dml操作，就会触发该例外 3.storage_error 如果超过了内存空间或是内存被损坏，就触发该例外 4.timeout_on_resource 如果oracle在等待资源时，出现了超时就触发该例外 ? 非预定义例外 非预定义例外用于处理与预定义例外无关的oracle错误。使用预定义例外只能处理21个oracle错误，而当使用pl/sql开发应用程序时，可能会遇到其它的一些oracle错误。比如在pl/sql块中执行dml语句时，违反了约束规定等等。在这样的情况下，也可以处理oracle的各种例外，因为非预定义例外用的不多，这里我就不举例了。 ? 处理自定义例外 预定义例外和自定义例外都是与oracle错误相关的，并且出现的oracle错误会隐含的触发相应的例外；而自定义例外与oracle错误没有任何关联，它是由开发人员为特定情况所定义的例外. 问题：请编写一个pl/sql块，接收一个雇员的编号，并给该雇员工资增加1000元，如果该雇员不存在，请提示。
+--自定义例外
+create or replace procedure ex_test(spNo number)
+is
+begin
+--更新用户sal
+update emp set sal=sal+1000 where empno=spNo;
+end;
+/ 运行，该过程被成功创建。 SQL&gt; exec ex_test(56); PL/SQL过程被成功完成 这里，编号为56是不存在的，刚才的报异常了，为什么现在不报异常呢？ 因为刚才的是select语句 怎么解决这个问题呢？ 修改代码，如下：
+--自定义例外
+create or replace procedure ex_test(spNo number)
+is
+--定义一个例外
+myex exception;
+begin
+--更新用户sal
+update emp set sal=sal+1000 where empno=spNo;
+Oracle 笔记
+59
+--sql%notfound这是表示没有update
+--raise myex;触发myex
+if sql%notfound then
+raise myex;
+end if;
+exception
+when myex then
+dbms_output.put_line('没有更新任何用户')；
+end;
+/ 现在再测试一次： SQL&gt; exec ex_test(56); 没有更新任何用户
+22.oracle的视图 oracle的视图 ? 介绍 视图是一个虚拟表，其内容由查询定义，同真实的表一样，视图包含一系列带有名称的列和行数据。但是，视图并不在数据库中以存储的数据值集形式存在。行和列数据来自由定义视图的查询所引用的表，并且在引用视图时动态生成。（视图不是真实存在磁盘上的） 看图： 视与表的区别 ? 视图与表的区别 1.表需要占用磁盘空间，视图不需要 2.视图不能添加索引（所以查询速度略微慢点） 3.使用视图可以简化，复杂查询 比如：学生选课系统 4.视图的使用利于提高安全性 比如：不同用户查看不同视图 创建/修改视图 ? 创建视图 create view 视图名 as select 语句 [with read only] ? 创建或修改视图 create or replace view 视图名 as select 语句 [with read only] ? 删除视图 drop view 视图名 当表结构国语复杂，请使用视图吧！ --创建视图，把emp表的sal&lt;1000的雇员映射到该视图（view）
+create view myview as select * from emp where sal&lt;1000; --为简化操作，用一个视图解决 显示雇员编号，姓名和部门名称
+create view myview2 as select emp.empno,emp.ename,dept.dname from emp,dept where emp.deptno=dept.deptno; 视图之间也可以做联合查询</pre>
+<p> </p>
+<pre name="code" >一、基础
+1、说明：创建数据库
+CREATE DATABASE database-name 
+2、说明：删除数据库
+drop database dbname
+3、说明：备份sql server
+--- 创建 备份数据的 device
+USE master
+EXEC sp_addumpdevice 'disk', 'testBack', 'c:\mssql7backup\MyNwind_1.dat'
+--- 开始 备份
+BACKUP DATABASE pubs TO testBack 
+4、说明：创建新表
+create table tabname(col1 type1 [not null] [primary key],col2 type2 [not null],..)
+根据已有的表创建新表： 
+A：create table tab_new like tab_old (使用旧表创建新表)
+B：create table tab_new as select col1,col2… from tab_old definition only
+5、说明：删除新表
+drop table tabname 
+6、说明：增加一个列
+Alter table tabname add column col type
+注：列增加后将不能删除。DB2中列加上后数据类型也不能改变，唯一能改变的是增加varchar类型的长度。
+7、说明：添加主键： Alter table tabname add primary key(col) 
+说明：删除主键： Alter table tabname drop primary key(col) 
+8、说明：创建索引：create [unique] index idxname on tabname(col….) 
+删除索引：drop index idxname
+注：索引是不可更改的，想更改必须删除重新建。
+9、说明：创建视图：create view viewname as select statement 
+删除视图：drop view viewname
+10、说明：几个简单的基本的sql语句
+选择：select * from table1 where 范围
+插入：insert into table1(field1,field2) values(value1,value2)
+删除：delete from table1 where 范围
+更新：update table1 set field1=value1 where 范围
+查找：select * from table1 where field1 like ’%value1%’ ---like的语法很精妙，查资料!
+排序：select * from table1 order by field1,field2 [desc]
+总数：select count as totalcount from table1
+求和：select sum(field1) as sumvalue from table1
+平均：select avg(field1) as avgvalue from table1
+最大：select max(field1) as maxvalue from table1
+最小：select min(field1) as minvalue from table1
+11、说明：几个高级查询运算词
+A： UNION 运算符 
+UNION 运算符通过组合其他两个结果表（例如 TABLE1 和 TABLE2）并消去表中任何重复行而派生出一个结果表。当 ALL 随 UNION 一起使用时（即 UNION ALL），不消除重复行。两种情况下，派生表的每一行不是来自 TABLE1 就是来自 TABLE2。 
+B： EXCEPT 运算符 
+EXCEPT 运算符通过包括所有在 TABLE1 中但不在 TABLE2 中的行并消除所有重复行而派生出一个结果表。当 ALL 随 EXCEPT 一起使用时 (EXCEPT ALL)，不消除重复行。 
+C： INTERSECT 运算符
+INTERSECT 运算符通过只包括 TABLE1 和 TABLE2 中都有的行并消除所有重复行而派生出一个结果表。当 ALL 随 INTERSECT 一起使用时 (INTERSECT ALL)，不消除重复行。 
+注：使用运算词的几个查询结果行必须是一致的。 
+12、说明：使用外连接 
+A、left （outer） join： 
+左外连接（左连接）：结果集几包括连接表的匹配行，也包括左连接表的所有行。 
+SQL: select a.a, a.b, a.c, b.c, b.d, b.f from a LEFT OUT JOIN b ON a.a = b.c
+B：right （outer） join: 
+右外连接(右连接)：结果集既包括连接表的匹配连接行，也包括右连接表的所有行。 
+C：full/cross （outer） join： 
+全外连接：不仅包括符号连接表的匹配行，还包括两个连接表中的所有记录。
+12、分组:Group by:
+ 	一张表，一旦分组 完成后，查询后只能得到组相关的信息。
+	组相关的信息：（统计信息） count,sum,max,min,avg  分组的标准)
+    在SQLServer中分组时：不能以text,ntext,image类型的字段作为分组依据
+	在selecte统计函数中的字段，不能和普通的字段放在一起；
+13、对数据库进行操作：
+	分离数据库： sp_detach_db; 附加数据库：sp_attach_db 后接表明，附加需要完整的路径名
+14.如何修改数据库的名称:
+sp_renamedb 'old_name', 'new_name' 
+
+二、提升
+1、说明：复制表(只复制结构,源表名：a 新表名：b) (Access可用)
+法一：select * into b from a where 1&lt;&gt;1（仅用于SQlServer）
+法二：select top 0 * into b from a
+2、说明：拷贝表(拷贝数据,源表名：a 目标表名：b) (Access可用)
+insert into b(a, b, c) select d,e,f from b;
+3、说明：跨数据库之间表的拷贝(具体数据使用绝对路径) (Access可用)
+insert into b(a, b, c) select d,e,f from b in ‘具体数据库’ where 条件
+例子：..from b in '"&amp;Server.MapPath(".")&amp;"\data.mdb" &amp;"' where..
+4、说明：子查询(表名1：a 表名2：b)
+select a,b,c from a where a IN (select d from b ) 或者: select a,b,c from a where a IN (1,2,3)
+5、说明：显示文章、提交人和最后回复时间
+select a.title,a.username,b.adddate from table a,(select max(adddate) adddate from table where table.title=a.title) b
+6、说明：外连接查询(表名1：a 表名2：b)
+select a.a, a.b, a.c, b.c, b.d, b.f from a LEFT OUT JOIN b ON a.a = b.c
+7、说明：在线视图查询(表名1：a )
+select * from (SELECT a,b,c FROM a) T where t.a &gt; 1;
+8、说明：between的用法,between限制查询数据范围时包括了边界值,not between不包括
+select * from table1 where time between time1 and time2
+select a,b,c, from table1 where a not between 数值1 and 数值2
+9、说明：in 的使用方法
+select * from table1 where a [not] in (‘值1’,’值2’,’值4’,’值6’)
+10、说明：两张关联表，删除主表中已经在副表中没有的信息 
+delete from table1 where not exists ( select * from table2 where table1.field1=table2.field1 )
+11、说明：四表联查问题：
+select * from a left inner join b on a.a=b.b right inner join c on a.a=c.c inner join d on a.a=d.d where .....
+12、说明：日程安排提前五分钟提醒 
+SQL: select * from 日程安排 where datediff('minute',f开始时间,getdate())&gt;5
+13、说明：一条sql 语句搞定数据库分页
+select top 10 b.* from (select top 20 主键字段,排序字段 from 表名 order by 排序字段 desc) a,表名 b where b.主键字段 = a.主键字段 order by a.排序字段
+具体实现：
+关于数据库分页：
+  declare @start int,@end int 
+  @sql  nvarchar(600)
+  set @sql=’select top’+str(@end-@start+1)+’+from T where rid not in(select top’+str(@str-1)+’Rid from T where Rid&gt;-1)’
+  exec sp_executesql @sql
+
+注意：在top后不能直接跟一个变量，所以在实际应用中只有这样的进行特殊的处理。Rid为一个标识列，如果top后还有具体的字段，这样做是非常有好处的。因为这样可以避免 top的字段如果是逻辑索引的，查询的结果后实际表中的不一致（逻辑索引中的数据有可能和数据表中的不一致，而查询时如果处在索引则首先查询索引）
+14、说明：前10条记录
+select top 10 * form table1 where 范围
+15、说明：选择在每一组b值相同的数据中对应的a最大的记录的所有信息(类似这样的用法可以用于论坛每月排行榜,每月热销产品分析,按科目成绩排名,等等.)
+select a,b,c from tablename ta where a=(select max(a) from tablename tb where tb.b=ta.b)
+16、说明：包括所有在 TableA 中但不在 TableB和TableC 中的行并消除所有重复行而派生出一个结果表
+(select a from tableA ) except (select a from tableB) except (select a from tableC)
+17、说明：随机取出10条数据
+select top 10 * from tablename order by newid()
+18、说明：随机选择记录
+select newid()
+19、说明：删除重复记录
+1),delete from tablename where id not in (select max(id) from tablename group by col1,col2,...)
+2),select distinct * into temp from tablename
+  delete from tablename
+  insert into tablename select * from temp
+评价： 这种操作牵连大量的数据的移动，这种做法不适合大容量但数据操作
+3),例如：在一个外部表中导入数据，由于某些原因第一次只导入了一部分，但很难判断具体位置，这样只有在下一次全部导入，这样也就产生好多重复的字段，怎样删除重复字段
+alter table tablename
+--添加一个自增列
+add  column_b int identity(1,1)
+ delete from tablename where column_b not in(
+select max(column_b)  from tablename group by column1,column2,...)
+alter table tablename drop column column_b
+20、说明：列出数据库里所有的表名
+select name from sysobjects where type='U' // U代表用户
+21、说明：列出表里的所有的列名
+select name from syscolumns where id=object_id('TableName')
+22、说明：列示type、vender、pcs字段，以type字段排列，case可以方便地实现多重选择，类似select 中的case。
+select type,sum(case vender when 'A' then pcs else 0 end),sum(case vender when 'C' then pcs else 0 end),sum(case vender when 'B' then pcs else 0 end) FROM tablename group by type
+显示结果：
+type vender pcs
+电脑 A 1
+电脑 A 1
+光盘 B 2
+光盘 A 2
+手机 B 3
+手机 C 3
+23、说明：初始化表table1
+TRUNCATE TABLE table1
+24、说明：选择从10到15的记录
+select top 5 * from (select top 15 * from table order by id asc) table_别名 order by id desc
+三、技巧
+1、1=1，1=2的使用，在SQL语句组合时用的较多
+“where 1=1” 是表示选择全部    “where 1=2”全部不选，
+如：
+if @strWhere !='' 
+begin
+set @strSQL = 'select count(*) as Total from [' + @tblName + '] where ' + @strWhere 
+end
+else 
+begin
+set @strSQL = 'select count(*) as Total from [' + @tblName + ']' 
+end 
+我们可以直接写成
+错误！未找到目录项。
+set @strSQL = 'select count(*) as Total from [' + @tblName + '] where 1=1 安定 '+ @strWhere 2、收缩数据库
+--重建索引
+DBCC REINDEX
+DBCC INDEXDEFRAG
+--收缩数据和日志
+DBCC SHRINKDB
+DBCC SHRINKFILE
+3、压缩数据库
+dbcc shrinkdatabase(dbname)
+4、转移数据库给新用户以已存在用户权限
+exec sp_change_users_login 'update_one','newname','oldname'
+go
+5、检查备份集
+RESTORE VERIFYONLY from disk='E:\dvbbs.bak'
+6、修复数据库
+ALTER DATABASE [dvbbs] SET SINGLE_USER
+GO
+DBCC CHECKDB('dvbbs',repair_allow_data_loss) WITH TABLOCK
+GO
+ALTER DATABASE [dvbbs] SET MULTI_USER
+GO
+7、日志清除
+SET NOCOUNT ON
+DECLARE @LogicalFileName sysname,
+ @MaxMinutes INT,
+ @NewSize INT
+
+USE tablename -- 要操作的数据库名
+SELECT  @LogicalFileName = 'tablename_log', -- 日志文件名
+@MaxMinutes = 10, -- Limit on time allowed to wrap log.
+ @NewSize = 1  -- 你想设定的日志文件的大小(M)
+Setup / initialize
+DECLARE @OriginalSize int
+SELECT @OriginalSize = size 
+ FROM sysfiles
+ WHERE name = @LogicalFileName
+SELECT 'Original Size of ' + db_name() + ' LOG is ' + 
+ CONVERT(VARCHAR(30),@OriginalSize) + ' 8K pages or ' + 
+ CONVERT(VARCHAR(30),(@OriginalSize*8/1024)) + 'MB'
+ FROM sysfiles
+ WHERE name = @LogicalFileName
+CREATE TABLE DummyTrans
+ (DummyColumn char (8000) not null)
+
+DECLARE @Counter    INT,
+ @StartTime DATETIME,
+ @TruncLog   VARCHAR(255)
+SELECT @StartTime = GETDATE(),
+ @TruncLog = 'BACKUP LOG ' + db_name() + ' WITH TRUNCATE_ONLY'
+DBCC SHRINKFILE (@LogicalFileName, @NewSize)
+EXEC (@TruncLog)
+-- Wrap the log if necessary.
+WHILE @MaxMinutes &gt; DATEDIFF (mi, @StartTime, GETDATE()) -- time has not expired
+ AND @OriginalSize = (SELECT size FROM sysfiles WHERE name = @LogicalFileName)  
+ AND (@OriginalSize * 8 /1024) &gt; @NewSize  
+ BEGIN -- Outer loop.
+SELECT @Counter = 0
+ WHILE   ((@Counter &lt; @OriginalSize / 16) AND (@Counter &lt; 50000))
+ BEGIN -- update
+ INSERT DummyTrans VALUES ('Fill Log') DELETE DummyTrans
+ SELECT @Counter = @Counter + 1
+ END
+ EXEC (@TruncLog)  
+ END
+SELECT 'Final Size of ' + db_name() + ' LOG is ' +
+ CONVERT(VARCHAR(30),size) + ' 8K pages or ' + 
+ CONVERT(VARCHAR(30),(size*8/1024)) + 'MB'
+ FROM sysfiles 
+ WHERE name = @LogicalFileName
+DROP TABLE DummyTrans
+SET NOCOUNT OFF 
+8、说明：更改某个表
+exec sp_changeobjectowner 'tablename','dbo'
+9、存储更改全部表
+CREATE PROCEDURE dbo.User_ChangeObjectOwnerBatch
+@OldOwner as NVARCHAR(128),
+@NewOwner as NVARCHAR(128)
+AS
+DECLARE @Name    as NVARCHAR(128)
+DECLARE @Owner   as NVARCHAR(128)
+DECLARE @OwnerName   as NVARCHAR(128)
+DECLARE curObject CURSOR FOR 
+select 'Name'    = name,
+   'Owner'    = user_name(uid)
+from sysobjects
+where user_name(uid)=@OldOwner
+order by name
+OPEN   curObject
+FETCH NEXT FROM curObject INTO @Name, @Owner
+WHILE(@@FETCH_STATUS=0)
+BEGIN     
+if @Owner=@OldOwner 
+begin
+   set @OwnerName = @OldOwner + '.' + rtrim(@Name)
+   exec sp_changeobjectowner @OwnerName, @NewOwner
+end
+-- select @name,@NewOwner,@OldOwner
+FETCH NEXT FROM curObject INTO @Name, @Owner
+END
+close curObject
+deallocate curObject
+GO
+
+10、SQL SERVER中直接循环写入数据
+declare @i int
+set @i=1
+while @i&lt;30
+begin
+    insert into test (userid) values(@i)
+    set @i=@i+1
+end
+案例：
+有如下表，要求就裱中所有沒有及格的成績，在每次增長0.1的基礎上，使他們剛好及格:
+	Name     score
+	Zhangshan	80
+	Lishi       59
+	Wangwu      50
+	Songquan	69
+while((select min(score) from tb_table)&lt;60)
+begin
+update tb_table set score =score*1.01 
+where score&lt;60
+if  (select min(score) from tb_table)&gt;60
+  break
+ else
+    continue
+end
+
+数据开发-经典
+
+1.按姓氏笔画排序:
+Select * From TableName Order By CustomerName Collate Chinese_PRC_Stroke_ci_as //从少到多
+2.数据库加密:
+select encrypt('原始密码')
+select pwdencrypt('原始密码')
+select pwdcompare('原始密码','加密后密码') = 1--相同；否则不相同 encrypt('原始密码')
+select pwdencrypt('原始密码')
+select pwdcompare('原始密码','加密后密码') = 1--相同；否则不相同
+3.取回表中字段:
+declare @list varchar(1000),
+@sql nvarchar(1000) 
+select @list=@list+','+b.name from sysobjects a,syscolumns b where a.id=b.id and a.name='表A'
+set @sql='select '+right(@list,len(@list)-1)+' from 表A' 
+exec (@sql)
+4.查看硬盘分区:
+EXEC master..xp_fixeddrives
+5.比较A,B表是否相等:
+if (select checksum_agg(binary_checksum(*)) from A)
+     =
+    (select checksum_agg(binary_checksum(*)) from B)
+print '相等'
+else
+print '不相等'
+6.杀掉所有的事件探察器进程:
+DECLARE hcforeach CURSOR GLOBAL FOR SELECT 'kill '+RTRIM(spid) FROM master.dbo.sysprocesses
+WHERE program_name IN('SQL profiler',N'SQL 事件探查器')
+EXEC sp_msforeach_worker '?'
+7.记录搜索:
+开头到N条记录
+Select Top N * From 表
+-------------------------------
+N到M条记录(要有主索引ID)
+Select Top M-N * From 表 Where ID in (Select Top M ID From 表) Order by ID   Desc
+----------------------------------
+N到结尾记录
+Select Top N * From 表 Order by ID Desc
+案例
+例如1：一张表有一万多条记录，表的第一个字段 RecID 是自增长字段， 写一个SQL语句， 找出表的第31到第40个记录。
+ select top 10 recid from A where recid not  in(select top 30 recid from A)
+分析：如果这样写会产生某些问题，如果recid在表中存在逻辑索引。
+	select top 10 recid from A where……是从索引中查找，而后面的select top 30 recid from A则在数据表中查找，这样由于索引中的顺序有可能和数据表中的不一致，这样就导致查询到的不是本来的欲得到的数据。
+解决方案
+1，	用order by select top 30 recid from A order by ricid 如果该字段不是自增长，就会出现问题
+2，	在那个子查询中也加条件：select top 30 recid from A where recid&gt;-1
+例2：查询表中的最后以条记录，并不知道这个表共有多少数据,以及表结构。
+set @s = 'select top 1 * from T   where pid not in (select top ' + str(@count-1) + ' pid  from  T)'
+print @s      exec  sp_executesql  @s
+9：获取当前数据库中的所有用户表
+select Name from sysobjects where xtype='u' and status&gt;=0
+10：获取某一个表的所有字段
+select name from syscolumns where id=object_id('表名')
+select name from syscolumns where id in (select id from sysobjects where type = 'u' and name = '表名')
+两种方式的效果相同
+11：查看与某一个表相关的视图、存储过程、函数
+select a.* from sysobjects a, syscomments b where a.id = b.id and b.text like '%表名%'
+12：查看当前数据库中所有存储过程
+select name as 存储过程名称 from sysobjects where xtype='P'
+13：查询用户创建的所有数据库
+select * from master..sysdatabases D where sid not in(select sid from master..syslogins where name='sa')
+或者
+select dbid, name AS DB_NAME from master..sysdatabases where sid &lt;&gt; 0x01
+14：查询某一个表的字段和数据类型
+select column_name,data_type from information_schema.columns
+where table_name = '表名' 
+15：不同服务器数据库之间的数据操作
+--创建链接服务器 
+exec sp_addlinkedserver   'ITSV ', ' ', 'SQLOLEDB ', '远程服务器名或ip地址 ' 
+exec sp_addlinkedsrvlogin  'ITSV ', 'false ',null, '用户名 ', '密码 ' 
+--查询示例 
+select * from ITSV.数据库名.dbo.表名 
+--导入示例 
+select * into 表 from ITSV.数据库名.dbo.表名 
+--以后不再使用时删除链接服务器 
+exec sp_dropserver  'ITSV ', 'droplogins ' 
+
+--连接远程/局域网数据(openrowset/openquery/opendatasource) 
+--1、openrowset 
+--查询示例 
+select * from openrowset( 'SQLOLEDB ', 'sql服务器名 '; '用户名 '; '密码 ',数据库名.dbo.表名) 
+--生成本地表 
+select * into 表 from openrowset( 'SQLOLEDB ', 'sql服务器名 '; '用户名 '; '密码 ',数据库名.dbo.表名) 
+
+--把本地表导入远程表 
+insert openrowset( 'SQLOLEDB ', 'sql服务器名 '; '用户名 '; '密码 ',数据库名.dbo.表名) 
+select *from 本地表 
+--更新本地表 
+update b 
+set b.列A=a.列A 
+ from openrowset( 'SQLOLEDB ', 'sql服务器名 '; '用户名 '; '密码 ',数据库名.dbo.表名)as a inner join 本地表 b 
+on a.column1=b.column1 
+--openquery用法需要创建一个连接 
+--首先创建一个连接创建链接服务器 
+exec sp_addlinkedserver   'ITSV ', ' ', 'SQLOLEDB ', '远程服务器名或ip地址 ' 
+--查询 
+select * 
+FROM openquery(ITSV,  'SELECT *  FROM 数据库.dbo.表名 ') 
+--把本地表导入远程表 
+insert openquery(ITSV,  'SELECT *  FROM 数据库.dbo.表名 ') 
+select * from 本地表 
+--更新本地表 
+update b 
+set b.列B=a.列B 
+FROM openquery(ITSV,  'SELECT * FROM 数据库.dbo.表名 ') as a  
+inner join 本地表 b on a.列A=b.列A 
+
+--3、opendatasource/openrowset 
+SELECT   * 
+FROM   opendatasource( 'SQLOLEDB ',  'Data Source=ip/ServerName;User ID=登陆名;Password=密码 ' ).test.dbo.roy_ta 
+--把本地表导入远程表 
+insert opendatasource( 'SQLOLEDB ',  'Data Source=ip/ServerName;User ID=登陆名;Password=密码 ').数据库.dbo.表名 
+select * from 本地表  
+SQL Server基本函数
+SQL Server基本函数
+1.字符串函数 长度与分析用 
+1,datalength(Char_expr) 返回字符串包含字符数,但不包含后面的空格
+2,substring(expression,start,length) 取子串，字符串的下标是从“1”，start为起始位置，length为字符串长度，实际应用中以len(expression)取得其长度
+3,right(char_expr,int_expr) 返回字符串右边第int_expr个字符，还用left于之相反
+4,isnull( check_expression , replacement_value )如果check_expression為空，則返回replacement_value的值，不為空，就返回check_expression字符操作类 
+5,Sp_addtype 自定義數據類型
+例如：EXEC sp_addtype birthday, datetime, 'NULL'
+6,set nocount {on|off}
+使返回的结果中不包含有关受 Transact-SQL 语句影响的行数的信息。如果存储过程中包含的一些语句并不返回许多实际的数据，则该设置由于大量减少了网络流量，因此可显著提高性能。SET NOCOUNT 设置是在执行或运行时设置，而不是在分析时设置。
+SET NOCOUNT 为 ON 时，不返回计数（表示受 Transact-SQL 语句影响的行数）。
+SET NOCOUNT 为 OFF 时，返回计数
+常识
+
+在SQL查询中：from后最多可以跟多少张表或视图：256
+在SQL语句中出现 Order by,查询时，先排序，后取
+在SQL中，一个字段的最大容量是8000，而对于nvarchar(4000),由于nvarchar是Unicode码。  
+	
+SQLServer2000同步复制技术实现步骤
+一、 预备工作
+1.发布服务器,订阅服务器都创建一个同名的windows用户,并设置相同的密码,做为发布快照文件夹的有效访问用户
+--管理工具
+--计算机管理
+--用户和组
+--右键用户
+--新建用户
+--建立一个隶属于administrator组的登陆windows的用户（SynUser）
+2.在发布服务器上,新建一个共享目录,做为发布的快照文件的存放目录,操作:
+我的电脑--D:\ 新建一个目录,名为: PUB
+--右键这个新建的目录
+--属性--共享
+--选择"共享该文件夹"
+--通过"权限"按纽来设置具体的用户权限,保证第一步中创建的用户(SynUser) 具有对该文件夹的所有权限
+
+--确定
+3.设置SQL代理(SQLSERVERAGENT)服务的启动用户(发布/订阅服务器均做此设置)
+开始--程序--管理工具--服务
+--右键SQLSERVERAGENT
+--属性--登陆--选择"此账户"
+--输入或者选择第一步中创建的windows登录用户名（SynUser）
+--"密码"中输入该用户的密码
+4.设置SQL Server身份验证模式,解决连接时的权限问题(发布/订阅服务器均做此设置)
+企业管理器
+--右键SQL实例--属性
+--安全性--身份验证
+--选择"SQL Server 和 Windows"
+--确定
+5.在发布服务器和订阅服务器上互相注册
+企业管理器
+--右键SQL Server组
+--新建SQL Server注册...
+--下一步--可用的服务器中,输入你要注册的远程服务器名 --添加
+--下一步--连接使用,选择第二个"SQL Server身份验证"
+--下一步--输入用户名和密码（SynUser）
+--下一步--选择SQL Server组,也可以创建一个新组
+--下一步--完成
+6.对于只能用IP,不能用计算机名的,为其注册服务器别名（此步在实施中没用到）
+ (在连接端配置,比如,在订阅服务器上配置的话,服务器名称中输入的是发布服务器的IP)
+开始--程序--Microsoft SQL Server--客户端网络实用工具
+--别名--添加
+--网络库选择"tcp/ip"--服务器别名输入SQL服务器名
+--连接参数--服务器名称中输入SQL服务器ip地址
+--如果你修改了SQL的端口,取消选择"动态决定端口",并输入对应的端口号
+二、 正式配置
+1、配置发布服务器
+打开企业管理器，在发布服务器（B、C、D）上执行以下步骤:
+(1) 从[工具]下拉菜单的[复制]子菜单中选择[配置发布、订阅服务器和分发]出现配置发布和分发向导 
+(2) [下一步] 选择分发服务器 可以选择把发布服务器自己作为分发服务器或者其他sql的服务器（选择自己）
+(3) [下一步] 设置快照文件夹
+采用默认\\servername\Pub
+(4) [下一步] 自定义配置 
+可以选择:是,让我设置分发数据库属性启用发布服务器或设置发布设置
+否,使用下列默认设置（推荐）
+(5) [下一步] 设置分发数据库名称和位置 采用默认值
+(6) [下一步] 启用发布服务器 选择作为发布的服务器
+(7) [下一步] 选择需要发布的数据库和发布类型
+(8) [下一步] 选择注册订阅服务器
+(9) [下一步] 完成配置
+2、创建出版物
+发布服务器B、C、D上
+(1)从[工具]菜单的[复制]子菜单中选择[创建和管理发布]命令
+(2)选择要创建出版物的数据库，然后单击[创建发布]
+(3)在[创建发布向导]的提示对话框中单击[下一步]系统就会弹出一个对话框。对话框上的内容是复制的三个类型。我们现在选第一个也就是默认的快照发布(其他两个大家可以去看看帮助)
+(4)单击[下一步]系统要求指定可以订阅该发布的数据库服务器类型,
+SQLSERVER允许在不同的数据库如 orACLE或ACCESS之间进行数据复制。
+但是在这里我们选择运行"SQL SERVER 2000"的数据库服务器
+(5)单击[下一步]系统就弹出一个定义文章的对话框也就是选择要出版的表
+注意: 如果前面选择了事务发布 则再这一步中只能选择带有主键的表
+(6)选择发布名称和描述
+(7)自定义发布属性 向导提供的选择:
+是 我将自定义数据筛选,启用匿名订阅和或其他自定义属性
+否 根据指定方式创建发布 （建议采用自定义的方式）
+(8)[下一步] 选择筛选发布的方式 
+(9)[下一步] 可以选择是否允许匿名订阅
+1)如果选择署名订阅,则需要在发布服务器上添加订阅服务器
+方法: [工具]-&gt;[复制]-&gt;[配置发布、订阅服务器和分发的属性]-&gt;[订阅服务器] 中添加
+否则在订阅服务器上请求订阅时会出现的提示:改发布不允许匿名订阅
+如果仍然需要匿名订阅则用以下解决办法 
+[企业管理器]-&gt;[复制]-&gt;[发布内容]-&gt;[属性]-&gt;[订阅选项] 选择允许匿名请求订阅
+2)如果选择匿名订阅,则配置订阅服务器时不会出现以上提示
+(10)[下一步] 设置快照 代理程序调度
+(11)[下一步] 完成配置
+当完成出版物的创建后创建出版物的数据库也就变成了一个共享数据库
+有数据 
+srv1.库名..author有字段:id,name,phone, 
+srv2.库名..author有字段:id,name,telphone,adress 
+
+要求： 
+srv1.库名..author增加记录则srv1.库名..author记录增加 
+srv1.库名..author的phone字段更新，则srv1.库名..author对应字段telphone更新 
+--*/ 
+
+--大致的处理步骤 
+--1.在 srv1 上创建连接服务器,以便在 srv1 中操作 srv2,实现同步 
+exec sp_addlinkedserver 'srv2','','SQLOLEDB','srv2的sql实例名或ip' 
+exec sp_addlinkedsrvlogin 'srv2','false',null,'用户名','密码' 
+go
+--2.在 srv1 和 srv2 这两台电脑中,启动 msdtc(分布式事务处理服务),并且设置为自动启动
+。我的电脑--控制面板--管理工具--服务--右键 Distributed Transaction Coordinator--属性--启动--并将启动类型设置为自动启动 
+go 
+
+
+--然后创建一个作业定时调用上面的同步处理存储过程就行了 
+
+企业管理器 
+--管理 
+--SQL Server代理 
+--右键作业 
+--新建作业 
+--"常规"项中输入作业名称 
+--"步骤"项 
+--新建 
+--"步骤名"中输入步骤名 
+--"类型"中选择"Transact-SQL 脚本(TSQL)" 
+--"数据库"选择执行命令的数据库 
+--"命令"中输入要执行的语句: exec p_process 
+--确定 
+--"调度"项 
+--新建调度 
+--"名称"中输入调度名称 
+--"调度类型"中选择你的作业执行安排 
+--如果选择"反复出现" 
+--点"更改"来设置你的时间安排 
+
+
+然后将SQL Agent服务启动,并设置为自动启动,否则你的作业不会被执行 
+
+设置方法: 
+我的电脑--控制面板--管理工具--服务--右键 SQLSERVERAGENT--属性--启动类型--选择"自动启动"--确定. 
+
+
+--3.实现同步处理的方法2,定时同步 
+
+--在srv1中创建如下的同步处理存储过程 
+create proc p_process 
+as 
+--更新修改过的数据 
+update b set name=i.name,telphone=i.telphone 
+from srv2.库名.dbo.author b,author i 
+where b.id=i.id and
+(b.name &lt;&gt; i.name or b.telphone &lt;&gt; i.telphone) 
+
+--插入新增的数据 
+insert srv2.库名.dbo.author(id,name,telphone) 
+select id,name,telphone from author i 
+where not exists( 
+select * from srv2.库名.dbo.author where id=i.id) 
+
+--删除已经删除的数据(如果需要的话) 
+delete b 
+from srv2.库名.dbo.author b 
+where not exists( 
+select * from author where id=b.id)
+go
